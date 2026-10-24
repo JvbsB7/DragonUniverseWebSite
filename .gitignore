@@ -1,0 +1,15 @@
+# Arquivos internos dos agentes do Maestri
+.maestri/
+
+# Documentos internos da equipe (ficam só no servidor, fora do repositório público)
+entregas/
+BRIEF_V2.md
+PROMPT_SITE.md
+STATUS_PROJETO.md
+PASSAGEM_COORDINATOR.md
+NOTAS_NOVA_CONTA.md
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

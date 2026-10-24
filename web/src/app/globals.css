@@ -1,0 +1,60 @@
+@import "tailwindcss";
+/* Tokens v2 (entregas/v2-04-design/tokens.css, §12 de v2-04-design.md): tema, foco duplo e reduced-motion. */
+@import "./tokens.css";
+
+/* Contêiner do conteúdo: 16 px de margem no celular, 24 px a partir de 768 px, largura útil de 72rem (§5.1). */
+@utility du-container {
+  inline-size: min(calc(100% - 2rem), var(--du-container));
+  margin-inline: auto;
+  @media (min-width: 48rem) {
+    inline-size: min(calc(100% - 3rem), var(--du-container));
+  }
+}
+
+@layer base {
+  /* Reserva do fim da página: só é diferente de zero quando a hotbar está fixa (components/hotbar.tsx). */
+  body {
+    padding-block-end: var(--du-bottom-reserve, 0px);
+  }
+
+  /* Reflow com texto ampliado (§11.2): itens de flex/grid podem encolher e palavras longas quebram.
+     Os rótulos da hotbar ficam de fora (nowrap) e vivem fora do <main>. */
+  main :where(.grid, .flex) > * {
+    min-inline-size: 0;
+  }
+  main :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, figcaption, blockquote, summary, a, strong, span, label) {
+    overflow-wrap: anywhere;
+  }
+
+  /* Mídia nunca passa da largura do contêiner (§11.2). */
+  img,
+  svg,
+  video,
+  canvas {
+    max-inline-size: 100%;
+  }
+}
+
+/* Cores forçadas (§11.1): sem sombras, a hotbar mantém bordas de sistema e o item atual ganha um filete de 4 px. */
+@media (forced-colors: active) {
+  nav[aria-label="Navegação rápida"] :is(a, button) {
+    border: 1px solid ButtonText;
+  }
+  nav[aria-label="Navegação rápida"] a[aria-current="page"] {
+    border-block-start: 4px solid Highlight;
+  }
+}
+
+/* Item atual da hotbar com foco: o foco global (fora de @layer) troca o box-shadow; aqui o filete de 4 px e a borda
+   interna continuam, com a faixa preta de 3 px por fora (v2-04-design.md §11.1). */
+nav[aria-label="Navegação rápida"] a[aria-current="page"]:focus-visible {
+  box-shadow:
+    inset 0 4px 0 var(--du-brand),
+    inset 0 0 0 1px var(--du-border),
+    0 0 0 3px #000000;
+}
+@media (forced-colors: active) {
+  nav[aria-label="Navegação rápida"] a[aria-current="page"]:focus-visible {
+    box-shadow: none;
+  }
+}

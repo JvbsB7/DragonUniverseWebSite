@@ -1,0 +1,78 @@
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { TestWarning } from "@/components/test-warning";
+import { Hotbar } from "@/components/hotbar";
+import { MenuHost } from "@/components/menu-host";
+import { siteConfig } from "@/config/site";
+import { defaultImage } from "@/lib/seo";
+import { asset } from "@/lib/asset";
+import { cn } from "@/lib/utils";
+
+const chakra = localFont({
+  variable: "--next-font-display",
+  display: "swap",
+  src: [
+    { path: "./fonts/chakra-petch-latin-600-normal.woff2", weight: "600" },
+    { path: "./fonts/chakra-petch-latin-700-normal.woff2", weight: "700" },
+  ],
+});
+
+const barlow = localFont({
+  variable: "--next-font-body",
+  display: "swap",
+  src: [
+    { path: "./fonts/barlow-latin-400-normal.woff2", weight: "400" },
+    { path: "./fonts/barlow-latin-600-normal.woff2", weight: "600" },
+  ],
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  // Ícones do D original (logo/export/). Favicon transparente; atalho Apple com fundo #101D34 e margem de 12%.
+  icons: {
+    icon: [
+      { url: asset("/img/logo/favicon-16.png"), sizes: "16x16", type: "image/png" },
+      { url: asset("/img/logo/favicon-32.png"), sizes: "32x32", type: "image/png" },
+      { url: asset("/img/logo/favicon-48.png"), sizes: "48x48", type: "image/png" },
+    ],
+    apple: { url: asset("/img/logo/apple-touch-icon-180.png"), sizes: "180x180", type: "image/png" },
+  },
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [{ url: defaultImage, width: 1200, height: 630, alt: "Logo do Dragon Universe, em letras azuis blocadas." }],
+    locale: "pt_BR",
+    type: "website",
+  },
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="pt-BR" className={cn("h-full", chakra.variable, barlow.variable)}>
+      <body className="flex min-h-full flex-col">
+        <a
+          href="#conteudo"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-80 focus:bg-action focus:px-4 focus:py-3 focus:text-bg"
+        >
+          Pular para o conteúdo
+        </a>
+        <TestWarning />
+        <SiteHeader />
+        <main id="conteudo" className="flex-1">
+          {children}
+        </main>
+        <SiteFooter />
+        <Hotbar />
+        <MenuHost />
+      </body>
+    </html>
+  );
+}

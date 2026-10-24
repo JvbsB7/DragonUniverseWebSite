@@ -1,0 +1,661 @@
+/*
+ * Dragon Universe — tokens visuais v2 / R3a
+ *
+ * Incorporar depois de @import "tailwindcss".
+ * Substitui integralmente o arquivo da R1.
+ * Não importa fontes, bibliotecas ou recursos externos.
+ *
+ * TEXTO E ENERGIA:
+ * --du-form-* = tons claros para leitura sobre superfícies escuras.
+ * --du-energy-* = cores intensas para áreas decorativas.
+ * Texto sobre energia: somente nas combinações sólidas autorizadas
+ * na §3 de v2-04-design.md. Não colocar texto diretamente sobre auras.
+ *
+ * FOCO:
+ * Aro interno preto de 3 px + aro externo branco de 3 px.
+ * Não usar apenas --du-focus ou --ring como solução completa.
+ *
+ * MIGRAÇÃO:
+ * text-muted da v1 -> text-muted-foreground ou text-muted-text.
+ * Revisar opacity-* de controles disabled e fundos transparentes.
+ */
+
+:root,
+.dark {
+  color-scheme: dark;
+
+  /* Base */
+  --du-bg: #080f1f;
+  --du-surface: #101d34;
+  --du-raised: #192d4c;
+  --du-text: #f4f7ff;
+  --du-muted-text: #b9c7df;
+  --du-brand: #70c9ff;
+  --du-brand-decor: #2867d6;
+
+  /* Ações */
+  --du-action: #ff9a3c;
+  --du-action-hover: #ffb366;
+  --du-action-pressed: #e47c25;
+  --du-disabled: #26344c;
+  --du-border: #7186a8;
+  --du-shadow: #02060e;
+
+  /* Foco duplo: manter as duas faixas */
+  --du-focus-dark: #000000;
+  --du-focus-light: #ffffff;
+  --du-focus: var(--du-focus-light);
+  --du-focus-width: 3px;
+  --du-focus-offset: 3px;
+  --du-focus-clearance: 9px;
+  --du-shadow-focus: 0 0 0 3px var(--du-focus-dark);
+
+  /* Status */
+  --du-live-fg: #9fe0b8;
+  --du-live-bg: #143b2b;
+  --du-dev-fg: #a9deff;
+  --du-dev-bg: #153a58;
+  --du-planned-fg: #d5c5fa;
+  --du-planned-bg: #33284b;
+  --du-preview-fg: #ffe2ad;
+  --du-preview-bg: #503a14;
+  --du-alert-fg: #ffe2ad;
+  --du-alert-bg: #392910;
+
+  /*
+   * Transformações: tons de TEXTO.
+   * Ultra Ego deixa de compartilhar o lilás de Planejado.
+   * Golden deixa de compartilhar o dourado do Super Saiyajin.
+   */
+  --du-form-ssj: #ffe087;
+  --du-form-god: #ff8888;
+  --du-form-blue: #66ddff;
+  --du-form-rose: #ffaaff;
+  --du-form-instinto: #dddddd;
+  --du-form-ego: #cc99ff;
+  --du-form-besta: #f4f7ff;
+  --du-form-besta-secondary: #ff8888;
+  --du-form-golden: #ffbb66;
+  --du-form-golden-secondary: #cc99ff;
+
+  /*
+   * ENERGIA: áreas decorativas, cabeçalhos sem texto, auras e faixas.
+   * A intensidade visual vem destas cores, não do texto.
+   */
+  --du-energy-brand: #2867d6;
+  --du-energy-ssj: #ffcc00;
+  --du-energy-god: #ff3333;
+  --du-energy-blue: #0088ff;
+  --du-energy-rose: #ff3399;
+  --du-energy-instinto: #ccddee;
+  --du-energy-instinto-secondary: #ddeeff;
+  --du-energy-ego: #aa00ff;
+  --du-energy-besta: #ffffff;
+  --du-energy-besta-secondary: #ff0033;
+  --du-energy-golden: #ff8800;
+  --du-energy-golden-secondary: #7700ff;
+  --du-energy-racial-green: #33cc66;
+
+  /* Raças: associações editoriais, sem significado de atributo */
+  --du-race-terraqueo: var(--du-brand);
+  --du-race-saiyajin: var(--du-form-ssj);
+  --du-race-namekuseijin: var(--du-live-fg);
+  --du-race-freeza: var(--du-form-golden);
+  --du-race-freeza-secondary: var(--du-form-golden-secondary);
+  --du-race-majin: var(--du-form-rose);
+  --du-race-bio-android: var(--du-live-fg);
+  --du-race-demonio: var(--du-form-god);
+
+  /* Contexto padrão de um componente */
+  --du-item-accent: var(--du-brand);
+  --du-item-accent-secondary: var(--du-brand);
+  --du-item-energy: var(--du-energy-brand);
+  --du-item-energy-secondary: var(--du-energy-brand);
+
+  /* Fontes existentes; nenhum download é feito por este arquivo */
+  --du-font-display:
+    var(--next-font-display, "Chakra Petch"),
+    "Trebuchet MS",
+    ui-sans-serif,
+    sans-serif;
+  --du-font-body:
+    var(--next-font-body, "Barlow"),
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+
+  /* Espaçamento */
+  --du-space-1: 0.25rem;
+  --du-space-2: 0.5rem;
+  --du-space-3: 0.75rem;
+  --du-space-4: 1rem;
+  --du-space-5: 1.5rem;
+  --du-space-6: 2rem;
+  --du-space-7: 2.5rem;
+  --du-space-8: 3rem;
+  --du-space-9: 4rem;
+  --du-space-10: 5rem;
+  --du-space-11: 6rem;
+
+  /* Layout */
+  --du-container: 72rem;
+  --du-reading: 47.5rem;
+  --du-prose-measure: 65ch;
+  --du-hero-measure: 48ch;
+  --du-page-gutter: 1rem;
+  --du-grid-gap: 1rem;
+  --du-section-space: 4rem;
+  --du-card-padding: 1.25rem;
+  --du-control-min: 3rem;
+  --du-border-width: 2px;
+  --du-radius: 0rem;
+
+  /*
+   * Altura real da hotbar fixa, escrita pelo componente.
+   * A medição deve incluir padding e safe area.
+   */
+  --du-hotbar-height: 0px;
+  --du-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --du-scroll-gap: 1.5rem;
+
+  /* Sombras duras */
+  --du-shadow-button: 4px 4px 0 var(--du-shadow);
+  --du-shadow-button-hover: 6px 6px 0 var(--du-shadow);
+  --du-shadow-button-pressed: 2px 2px 0 var(--du-shadow);
+  --du-shadow-card: 6px 6px 0 var(--du-shadow);
+  --du-shadow-media: 12px 12px 0 var(--du-shadow);
+
+  /* Movimento: aplicação seletiva, sem transition: all */
+  --du-motion-fast: 140ms;
+  --du-motion-enter: 220ms;
+  --du-motion-scene-max: 4000ms;
+  --du-motion-shift: 2px;
+  --du-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Camadas */
+  --du-layer-content: 0;
+  --du-layer-hotbar: 20;
+  --du-layer-header: 30;
+  --du-layer-sheet: 40;
+  --du-layer-lightbox: 60;
+  --du-layer-skip-link: 80;
+
+  /* Ponte shadcn */
+  --background: var(--du-bg);
+  --foreground: var(--du-text);
+  --card: var(--du-surface);
+  --card-foreground: var(--du-text);
+  --popover: var(--du-surface);
+  --popover-foreground: var(--du-text);
+  --primary: var(--du-action);
+  --primary-foreground: var(--du-bg);
+  --secondary: var(--du-raised);
+  --secondary-foreground: var(--du-text);
+  --muted: var(--du-disabled);
+  --muted-foreground: var(--du-muted-text);
+  --accent: var(--du-raised);
+  --accent-foreground: var(--du-text);
+  --destructive: var(--du-form-god);
+  --destructive-foreground: var(--du-bg);
+  --border: var(--du-border);
+  --input: var(--du-border);
+  --ring: var(--du-focus-light);
+  --radius: var(--du-radius);
+
+  --sidebar: var(--du-surface);
+  --sidebar-foreground: var(--du-text);
+  --sidebar-primary: var(--du-brand);
+  --sidebar-primary-foreground: var(--du-bg);
+  --sidebar-accent: var(--du-raised);
+  --sidebar-accent-foreground: var(--du-text);
+  --sidebar-border: var(--du-border);
+  --sidebar-ring: var(--du-focus-light);
+
+  /*
+   * Compatibilidade apenas.
+   * Estes tokens não autorizam gráficos com dados inventados.
+   */
+  --chart-1: var(--du-form-blue);
+  --chart-2: var(--du-form-god);
+  --chart-3: var(--du-form-ssj);
+  --chart-4: var(--du-form-rose);
+  --chart-5: var(--du-form-ego);
+}
+
+@theme inline {
+  /* Base e compatibilidade com a v1 */
+  --color-bg: var(--du-bg);
+  --color-surface: var(--du-surface);
+  --color-raised: var(--du-raised);
+  --color-text: var(--du-text);
+  --color-muted-text: var(--du-muted-text);
+  --color-brand: var(--du-brand);
+  --color-brand-decor: var(--du-brand-decor);
+  --color-action: var(--du-action);
+  --color-action-hover: var(--du-action-hover);
+  --color-action-pressed: var(--du-action-pressed);
+  --color-disabled: var(--du-disabled);
+  --color-focus: var(--du-focus);
+  --color-focus-dark: var(--du-focus-dark);
+  --color-focus-light: var(--du-focus-light);
+  --color-shadow: var(--du-shadow);
+
+  /* Status */
+  --color-live-fg: var(--du-live-fg);
+  --color-live-bg: var(--du-live-bg);
+  --color-dev-fg: var(--du-dev-fg);
+  --color-dev-bg: var(--du-dev-bg);
+  --color-planned-fg: var(--du-planned-fg);
+  --color-planned-bg: var(--du-planned-bg);
+  --color-preview-fg: var(--du-preview-fg);
+  --color-preview-bg: var(--du-preview-bg);
+  --color-alert-fg: var(--du-alert-fg);
+  --color-alert-bg: var(--du-alert-bg);
+
+  /* Texto por transformação */
+  --color-form-ssj: var(--du-form-ssj);
+  --color-form-god: var(--du-form-god);
+  --color-form-blue: var(--du-form-blue);
+  --color-form-rose: var(--du-form-rose);
+  --color-form-instinto: var(--du-form-instinto);
+  --color-form-ego: var(--du-form-ego);
+  --color-form-besta: var(--du-form-besta);
+  --color-form-besta-secondary: var(--du-form-besta-secondary);
+  --color-form-golden: var(--du-form-golden);
+  --color-form-golden-secondary: var(--du-form-golden-secondary);
+
+  /* Energia decorativa */
+  --color-energy-brand: var(--du-energy-brand);
+  --color-energy-ssj: var(--du-energy-ssj);
+  --color-energy-god: var(--du-energy-god);
+  --color-energy-blue: var(--du-energy-blue);
+  --color-energy-rose: var(--du-energy-rose);
+  --color-energy-instinto: var(--du-energy-instinto);
+  --color-energy-instinto-secondary: var(--du-energy-instinto-secondary);
+  --color-energy-ego: var(--du-energy-ego);
+  --color-energy-besta: var(--du-energy-besta);
+  --color-energy-besta-secondary: var(--du-energy-besta-secondary);
+  --color-energy-golden: var(--du-energy-golden);
+  --color-energy-golden-secondary: var(--du-energy-golden-secondary);
+  --color-energy-racial-green: var(--du-energy-racial-green);
+
+  /* Raças */
+  --color-race-terraqueo: var(--du-race-terraqueo);
+  --color-race-saiyajin: var(--du-race-saiyajin);
+  --color-race-namekuseijin: var(--du-race-namekuseijin);
+  --color-race-freeza: var(--du-race-freeza);
+  --color-race-freeza-secondary: var(--du-race-freeza-secondary);
+  --color-race-majin: var(--du-race-majin);
+  --color-race-bio-android: var(--du-race-bio-android);
+  --color-race-demonio: var(--du-race-demonio);
+
+  /* Contexto herdado pelo componente */
+  --color-item-accent: var(--du-item-accent);
+  --color-item-accent-secondary: var(--du-item-accent-secondary);
+  --color-item-energy: var(--du-item-energy);
+  --color-item-energy-secondary: var(--du-item-energy-secondary);
+
+  /* shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Fontes */
+  --font-display: var(--du-font-display);
+  --font-body: var(--du-font-body);
+  --font-sans: var(--du-font-body);
+
+  /* Tipografia */
+  --text-hero: clamp(2rem, 1.5rem + 2vw, 3rem);
+  --text-hero--line-height: 1.18;
+  --text-hero--font-weight: 700;
+
+  --text-section: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  --text-section--line-height: 1.22;
+  --text-section--font-weight: 700;
+
+  --text-card-title: clamp(1.375rem, 1.3rem + 0.3vw, 1.5rem);
+  --text-card-title--line-height: 1.27;
+  --text-card-title--font-weight: 600;
+
+  --text-body-copy: clamp(1.0625rem, 1.025rem + 0.15vw, 1.125rem);
+  --text-body-copy--line-height: 1.6;
+  --text-body-copy--font-weight: 400;
+
+  --text-control: 1rem;
+  --text-control--line-height: 1.5;
+  --text-control--font-weight: 600;
+
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.5715;
+
+  --text-hotbar: 0.875rem;
+  --text-hotbar--line-height: 1.4286;
+  --text-hotbar--font-weight: 600;
+
+  /* Raios */
+  --radius-xs: var(--radius);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+
+  /* Medidas */
+  --spacing-control: var(--du-control-min);
+  --spacing-section: var(--du-section-space);
+  --spacing-card: var(--du-card-padding);
+  --spacing-gutter: var(--du-page-gutter);
+  --spacing-grid: var(--du-grid-gap);
+  --container-site: var(--du-container);
+  --container-reading: var(--du-reading);
+  --breakpoint-nav: 68.75rem;
+
+  /* Sombras */
+  --shadow-block-button: var(--du-shadow-button);
+  --shadow-block-button-hover: var(--du-shadow-button-hover);
+  --shadow-block-button-pressed: var(--du-shadow-button-pressed);
+  --shadow-block-card: var(--du-shadow-card);
+  --shadow-block-media: var(--du-shadow-media);
+
+  --ease-du-out: var(--du-ease-out);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --du-page-gutter: 1.5rem;
+    --du-section-space: 5rem;
+    --du-card-padding: 1.5rem;
+  }
+}
+
+@media (min-width: 68.75rem) {
+  :root {
+    --du-grid-gap: 1.5rem;
+    --du-section-space: 6rem;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--background);
+    color: var(--foreground);
+    scroll-padding-block-start: var(--du-scroll-gap);
+    scroll-padding-block-end:
+      calc(var(--du-hotbar-height) + var(--du-scroll-gap));
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--du-font-body);
+    font-size: clamp(1.0625rem, 1.025rem + 0.15vw, 1.125rem);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--du-font-display);
+    font-weight: 700;
+    line-height: 1.22;
+    overflow-wrap: break-word;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    line-height: 1.18;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  }
+
+  h3 {
+    font-size: clamp(1.375rem, 1.3rem + 0.3vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.27;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+  a.du-text-link {
+    color: var(--du-brand);
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.2em;
+  }
+
+  a.du-text-link:hover {
+    text-decoration-thickness: 0.14em;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]) {
+    scroll-margin-block: var(--du-scroll-gap);
+  }
+
+  ::selection {
+    color: var(--du-bg);
+    background: var(--du-brand);
+  }
+}
+
+/*
+ * Contextos: só escolhem cores.
+ * Não alteram status, taxonomia, atributos ou disponibilidade.
+ */
+@layer components {
+  [data-race] {
+    --du-item-accent: var(--du-brand);
+    --du-item-accent-secondary: var(--du-brand);
+    --du-item-energy: var(--du-energy-brand);
+    --du-item-energy-secondary: var(--du-energy-brand);
+  }
+
+  [data-race="terraqueo"] {
+    --du-item-accent: var(--du-race-terraqueo);
+    --du-item-accent-secondary: var(--du-race-terraqueo);
+    --du-item-energy: var(--du-energy-blue);
+    --du-item-energy-secondary: var(--du-energy-blue);
+  }
+
+  [data-race="saiyajin"] {
+    --du-item-accent: var(--du-race-saiyajin);
+    --du-item-accent-secondary: var(--du-race-saiyajin);
+    --du-item-energy: var(--du-energy-ssj);
+    --du-item-energy-secondary: var(--du-energy-ssj);
+  }
+
+  [data-race="namekuseijin"] {
+    --du-item-accent: var(--du-race-namekuseijin);
+    --du-item-accent-secondary: var(--du-race-namekuseijin);
+    --du-item-energy: var(--du-energy-racial-green);
+    --du-item-energy-secondary: var(--du-energy-racial-green);
+  }
+
+  [data-race="raca-do-freeza"] {
+    --du-item-accent: var(--du-race-freeza);
+    --du-item-accent-secondary: var(--du-race-freeza-secondary);
+    --du-item-energy: var(--du-energy-golden);
+    --du-item-energy-secondary: var(--du-energy-golden-secondary);
+  }
+
+  [data-race="majin"] {
+    --du-item-accent: var(--du-race-majin);
+    --du-item-accent-secondary: var(--du-race-majin);
+    --du-item-energy: var(--du-energy-rose);
+    --du-item-energy-secondary: var(--du-energy-rose);
+  }
+
+  [data-race="bio-android"] {
+    --du-item-accent: var(--du-race-bio-android);
+    --du-item-accent-secondary: var(--du-race-bio-android);
+    --du-item-energy: var(--du-energy-racial-green);
+    --du-item-energy-secondary: var(--du-energy-racial-green);
+  }
+
+  [data-race="demonio"] {
+    --du-item-accent: var(--du-race-demonio);
+    --du-item-accent-secondary: var(--du-race-demonio);
+    --du-item-energy: var(--du-energy-god);
+    --du-item-energy-secondary: var(--du-energy-god);
+  }
+
+  /* Transformação prevalece quando os dois atributos coexistirem. */
+  [data-transformation] {
+    --du-item-accent: var(--du-brand);
+    --du-item-accent-secondary: var(--du-brand);
+    --du-item-energy: var(--du-energy-brand);
+    --du-item-energy-secondary: var(--du-energy-brand);
+  }
+
+  [data-transformation="super-saiyajin"] {
+    --du-item-accent: var(--du-form-ssj);
+    --du-item-accent-secondary: var(--du-form-ssj);
+    --du-item-energy: var(--du-energy-ssj);
+    --du-item-energy-secondary: var(--du-energy-ssj);
+  }
+
+  [data-transformation="god"] {
+    --du-item-accent: var(--du-form-god);
+    --du-item-accent-secondary: var(--du-form-god);
+    --du-item-energy: var(--du-energy-god);
+    --du-item-energy-secondary: var(--du-energy-god);
+  }
+
+  [data-transformation="blue"] {
+    --du-item-accent: var(--du-form-blue);
+    --du-item-accent-secondary: var(--du-form-blue);
+    --du-item-energy: var(--du-energy-blue);
+    --du-item-energy-secondary: var(--du-energy-blue);
+  }
+
+  [data-transformation="rose"] {
+    --du-item-accent: var(--du-form-rose);
+    --du-item-accent-secondary: var(--du-form-rose);
+    --du-item-energy: var(--du-energy-rose);
+    --du-item-energy-secondary: var(--du-energy-rose);
+  }
+
+  [data-transformation="instinto-superior"] {
+    --du-item-accent: var(--du-form-instinto);
+    --du-item-accent-secondary: var(--du-form-instinto);
+    --du-item-energy: var(--du-energy-instinto);
+    --du-item-energy-secondary: var(--du-energy-instinto-secondary);
+  }
+
+  [data-transformation="ultra-ego"] {
+    --du-item-accent: var(--du-form-ego);
+    --du-item-accent-secondary: var(--du-form-ego);
+    --du-item-energy: var(--du-energy-ego);
+    --du-item-energy-secondary: var(--du-energy-ego);
+  }
+
+  [data-transformation="besta"] {
+    --du-item-accent: var(--du-form-besta);
+    --du-item-accent-secondary: var(--du-form-besta-secondary);
+    --du-item-energy: var(--du-energy-besta);
+    --du-item-energy-secondary: var(--du-energy-besta-secondary);
+  }
+
+  [data-transformation="golden-freeza"] {
+    --du-item-accent: var(--du-form-golden);
+    --du-item-accent-secondary: var(--du-form-golden-secondary);
+    --du-item-energy: var(--du-energy-golden);
+    --du-item-energy-secondary: var(--du-energy-golden-secondary);
+  }
+}
+
+/*
+ * Fora de @layer deliberadamente: as utilidades de ring e shadow
+ * do Tailwind não devem substituir uma das faixas do foco.
+ * O estado de foco substitui a sombra decorativa do componente.
+ * Nunca cortar o contorno com overflow no elemento ou ancestral.
+ */
+:focus-visible {
+  outline: var(--du-focus-width) solid var(--du-focus-light);
+  outline-offset: var(--du-focus-offset);
+  box-shadow: var(--du-shadow-focus);
+}
+
+/*
+ * Esta preferência também deve ser tratada no código de WebGL.
+ * CSS não interrompe requestAnimationFrame nem libera recursos.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  .dark {
+    --du-motion-fast: 0ms;
+    --du-motion-enter: 0ms;
+    --du-motion-scene-max: 0ms;
+    --du-motion-shift: 0px;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+    box-shadow: none;
+  }
+
+  a.du-text-link {
+    color: LinkText;
+  }
+}

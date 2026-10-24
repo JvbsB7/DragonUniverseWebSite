@@ -1,0 +1,62 @@
+# Publica o site (web/out) no GitHub Pages: https://jvbsb7.github.io/DragonUniverseWebSite/
+# Só em push na main e em disparo manual. Em Settings > Pages, a origem precisa estar em "GitHub Actions".
+name: Publicar no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicação por vez; uma nova substitui a que ainda não começou.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Instalar o Node (LTS)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Configurar o Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Instalar as dependências
+        run: npm ci
+        working-directory: web
+
+      - name: Gerar o site estático
+        run: npm run build
+        working-directory: web
+        env:
+          # Subpasta do projeto no Pages. Para domínio próprio, deixe vazio e defina NEXT_PUBLIC_SITE_URL (veja web/README.md).
+          NEXT_PUBLIC_BASE_PATH: /DragonUniverseWebSite
+
+      - name: Enviar o artefato
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: web/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
