@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FALA_DO_ACENO, LOCUTOR } from "@/config/falas";
+import { useFalaStore } from "@/store/fala";
 import { asset } from "@/lib/asset";
 import { useMenu } from "@/store/menu";
 import { useLightbox } from "@/store/lightbox";
@@ -46,7 +48,6 @@ export function Nuvem() {
           modo.current = "saida";
           quadro.current = 0;
         } else {
-          anunciar("JvbsBR acenou e a nuvem seguiu viagem.");
           window.clearInterval(id);
           encerrar();
           return;
@@ -76,11 +77,30 @@ export function Nuvem() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Balão do aceno (D37): do lado oposto ao voo (esquerda), ou à direita se faltar espaço; sem espaço nos dois lados, só o anúncio.
+  const falarDoAceno = () => {
+    const faixa = raiz.current?.parentElement?.parentElement;
+    const caixa = sprite.current?.getBoundingClientRect();
+    const area = faixa?.getBoundingClientRect();
+    const id = faixa?.dataset.nuvemFaixa;
+    if (!faixa || !caixa || !area || !id) return;
+    const x = caixa.left - area.left;
+    const LARGURA = 260; // balão de uma linha com o botão de fechar de 48 px
+    const lateral =
+      x - 8 >= LARGURA ? { lado: "esquerda" as const, pos: area.width - x + 8 } : area.width - (x + caixa.width) - 8 >= LARGURA ? { lado: "direita" as const, pos: x + caixa.width + 8 } : null;
+    if (!lateral) {
+      anunciar("JvbsBR acenou e a nuvem seguiu viagem.");
+      return;
+    }
+    useFalaStore.getState().falar({ contexto: "nuvem", ...LOCUTOR.joao, texto: FALA_DO_ACENO, acao: true, lateral, faixa: id });
+  };
+
   const acenar = () => {
     if (aceno) return;
     setAceno(true);
     modo.current = "aceno";
     quadro.current = 0;
+    falarDoAceno();
   };
 
   return (

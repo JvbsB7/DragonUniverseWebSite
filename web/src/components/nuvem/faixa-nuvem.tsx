@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { FalaSlot } from "@/components/fala/balao";
 import { useNuvem } from "@/store/nuvem";
 import { faixas } from "./faixas";
 import { Nuvem } from "./nuvem";
@@ -27,8 +28,12 @@ export function FaixaNuvem({ id, className }: { id: string; className?: string }
   }, [id]);
 
   return (
-    <div ref={ref} aria-hidden="true" data-nuvem-faixa={id} className={cn("relative h-16 overflow-hidden md:h-24", className)}>
-      {ativa && <Nuvem />}
+    <div ref={ref} data-nuvem-faixa={id} className={cn("relative h-16 overflow-hidden md:h-24", className)}>
+      <div aria-hidden="true" className="absolute inset-0">
+        {ativa && <Nuvem />}
+      </div>
+      {/* Fala do aceno (D37): ao lado do sprite, dentro da faixa; fica fora do bloco aria-hidden para o anúncio chegar ao leitor de tela. */}
+      <FalaSlot contexto="nuvem" faixa={id} className="absolute top-1/2 -translate-y-1/2" />
     </div>
   );
 }

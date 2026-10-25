@@ -488,3 +488,11 @@ dialog.lightbox[open] {
 }
 .balao[data-cauda="centro"] { --cauda-x: calc(50% - 8px); }
 .balao[data-cauda="direita"] { --cauda-x: calc(100% - 44px); }
+/* Balão ao lado do sprite (aceno da nuvem): uma linha, sem margem de cima; a cauda aponta para o sprite. */
+.balao[data-lado] { margin-top: 0; width: max-content; max-width: min(16rem, 100%); white-space: nowrap; }
+.balao[data-lado] .balao-corpo p { white-space: nowrap; }
+.balao[data-lado]::before, .balao[data-lado]::after { left: auto; top: calc(50% - 8px); }
+.balao[data-lado="esquerda"]::before { right: -8px; }
+.balao[data-lado="esquerda"]::after { right: -5px; top: calc(50% - 6px); }
+.balao[data-lado="direita"]::before { left: -8px; }
+.balao[data-lado="direita"]::after { left: -5px; top: calc(50% - 6px); }

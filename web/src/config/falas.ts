@@ -25,4 +25,7 @@ export const FALAS_DO_REPOUSO: { id: IdDaPessoa; texto: string }[] = [
   { id: "luan", texto: "Vocês ainda têm muito a aprender." },
 ];
 
+/** Aceno do JvbsBR na nuvem dourada (D34/D37). */
+export const FALA_DO_ACENO = "Até a próxima, pessoal!";
+
 export const FALA_DO_DRAGAO: { locutor: string; cauda: Cauda; texto: string } = { locutor: "Dragão", cauda: "centro", texto: "Quem me despertou?" };
