@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
 import { useCinemaStore, VAGA_CINEMA } from "@/store/cinema";
 import { hasWebGL, use3dAllowed } from "@/components/skin-viewer/use-live-canvas";
@@ -23,6 +23,21 @@ export function CinemaHost() {
   const quantas = useCinemaStore((s) => s.visiveis.length);
   const vivo = useCinemaAoVivo();
   const falhar = useCinemaStore((s) => s.falhar);
+  // Aba oculta por mais de 5 s: libera o canvas (e a GPU) como se nenhuma vista estivesse na tela; ao voltar, ele é pedido de novo.
+  const [oculta, setOculta] = useState(false);
+  useEffect(() => {
+    let t = 0;
+    const aba = () => {
+      clearTimeout(t);
+      if (document.hidden) t = window.setTimeout(() => setOculta(true), 5000);
+      else setOculta(false);
+    };
+    document.addEventListener("visibilitychange", aba);
+    return () => {
+      document.removeEventListener("visibilitychange", aba);
+      clearTimeout(t);
+    };
+  }, []);
 
   useEffect(() => {
     if (permitido) armFirstInteraction();
@@ -30,13 +45,13 @@ export function CinemaHost() {
 
   useEffect(() => {
     const { request, release } = useSkinViewerStore.getState();
-    if (permitido && interagiu && quantas > 0 && hasWebGL()) {
+    if (permitido && interagiu && quantas > 0 && !oculta && hasWebGL()) {
       request(VAGA_CINEMA);
       return;
     }
-    const espera = window.setTimeout(() => release(VAGA_CINEMA), quantas === 0 ? 3000 : 0);
+    const espera = window.setTimeout(() => release(VAGA_CINEMA), quantas === 0 && !oculta ? 3000 : 0);
     return () => clearTimeout(espera);
-  }, [permitido, interagiu, quantas]);
+  }, [permitido, interagiu, quantas, oculta]);
 
   return vivo ? <CinemaCanvas aoFalhar={falhar} /> : null;
 }

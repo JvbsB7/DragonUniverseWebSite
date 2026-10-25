@@ -280,6 +280,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
   // Monitor de quadros (v4-03 §12.1): média acima de 100 ms por 3 s seguidos desce um nível de qualidade (nunca sobe na ação).
   const janela = useRef({ soma: 0, n: 0, ruins: 0 });
   function vigiarQuadros(dt: number) {
+    // Quadro depois de aba oculta ou rolagem longa não conta como lentidão.
+    if (dt > 1) return;
     const j = janela.current;
     j.soma += dt;
     j.n += 1;
