@@ -46,9 +46,11 @@ function Animacao({ onFim }: { onFim: () => void }) {
 }
 
 /** `tocando` vira true uma vez por exibição; ao terminar, o quadro parado (pôster) volta a aparecer. */
-export function Dragao({ tocando, onFim }: { tocando: boolean; onFim: () => void }) {
+export function Dragao({ tocando, onFim, reservaTopo = false }: { tocando: boolean; onFim: () => void; reservaTopo?: boolean }) {
+  // `reservaTopo`: 64 px no alto da própria moldura para o balão do dragão (que fica dentro dela, sem faixa vazia entre a figura e o aro).
   return (
-    <div role="img" aria-label={ALT_DRAGAO} className="relative mx-auto aspect-[4/3] w-full max-w-[400px] overflow-hidden rounded-md bg-[#122344]">
+    <div role="img" aria-label={ALT_DRAGAO} className={`relative mx-auto w-full max-w-[400px] overflow-hidden rounded-md bg-[#122344] ${reservaTopo ? "aspect-[400/364]" : "aspect-[4/3]"}`}>
+      <div className="absolute inset-x-0 bottom-0 aspect-[4/3]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={asset("/img/dragao/dragao-estatico-1x.webp")}
@@ -60,6 +62,7 @@ export function Dragao({ tocando, onFim }: { tocando: boolean; onFim: () => void
         className="absolute inset-0 h-full w-full"
       />
       {tocando && <Animacao onFim={onFim} />}
+      </div>
     </div>
   );
 }

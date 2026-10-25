@@ -84,8 +84,10 @@ export function ColecaoEsferas() {
 
         {completa && aberto && (
           <div className="grid max-w-md gap-3 rounded-xl border-2 border-[#f6b943] bg-bg p-5">
-            <Dragao tocando={tocando && !movimentoReduzido} onFim={terminou} />
-            {!movimentoReduzido && <FalaSlot contexto="dragao" className="min-h-[4.75rem]" />}
+            <div className="relative">
+              <Dragao tocando={tocando && !movimentoReduzido} onFim={terminou} reservaTopo={!movimentoReduzido} />
+              {!movimentoReduzido && <FalaSlot contexto="dragao" apontar="baixo" className="absolute inset-x-0 top-0 z-10" />}
+            </div>
             <div aria-hidden="true" className="esferas-aro relative mx-auto h-24 w-24" data-tocando={tocando || undefined}>
               {ESFERAS.map((_, i) => (
                 <i key={i} style={{ ["--i" as string]: i }} />
