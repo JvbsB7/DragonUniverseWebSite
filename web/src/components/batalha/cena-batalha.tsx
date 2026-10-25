@@ -80,7 +80,7 @@ function Campo() {
     }
     if (chao.current) chao.current.instanceMatrix.needsUpdate = true;
     if (chao.current?.instanceColor) chao.current.instanceColor.needsUpdate = true;
-    const tons = ["#1b3260", "#213a6e", "#162a52", "#27437c"];
+    const tons = ["#172b55", "#1c3361", "#13244a", "#21396b"];
     let m = 0;
     const aglomerado = (cx: number, cz: number, qtd: number, grande: number) => {
       for (let i = 0; i < qtd; i++) {
@@ -367,7 +367,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
         <spriteMaterial map={brilho} color={CORES.violeta} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
-      <sprite ref={nucleo} position={[0, 4.5, 5]} visible={false}>
+      <sprite ref={nucleo} position={[0, 7, 5]} visible={false}>
         <spriteMaterial map={brilho} color={CORES.ciano} transparent opacity={0.8} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
@@ -378,9 +378,10 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
         </mesh>
       ))}
 
-      <instancedMesh ref={parts} args={[undefined, undefined, PARTICULAS.length]} frustumCulled={false}>
+      <instancedMesh ref={parts} args={[undefined, undefined, PARTICULAS.length]} frustumCulled={false} renderOrder={10}>
         <boxGeometry />
-        <meshBasicMaterial toneMapped={false} />
+        {/* Desenhadas depois dos brilhos aditivos: a mistura do núcleo ciano com o carmesim clareava as partículas para rosa. */}
+        <meshBasicMaterial toneMapped={false} transparent depthWrite={false} />
       </instancedMesh>
     </>
   );

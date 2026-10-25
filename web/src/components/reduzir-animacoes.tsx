@@ -26,7 +26,7 @@ export function ReduzirAnimacoes({ id = "reduzir" }: { id?: string }) {
     pronto && sistema
       ? "Seu aparelho pede menos movimento, então as animações estão reduzidas."
       : pronto && dados
-        ? "Seu aparelho está em economia de dados, então as animações estão reduzidas."
+        ? "O modo de economia de dados está ativo, então as animações estão reduzidas."
         : "Deixa o site mais leve e sem movimento forte. O conteúdo é o mesmo.";
 
   return (
