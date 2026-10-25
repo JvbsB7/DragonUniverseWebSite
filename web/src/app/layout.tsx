@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { TestWarning } from "@/components/test-warning";
 import { MenuHost } from "@/components/menu-host";
+import { CinemaHost } from "@/components/cinema/cinema-host";
 import { siteConfig } from "@/config/site";
 import { defaultImage } from "@/lib/seo";
 import { asset } from "@/lib/asset";
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter />
         <MenuHost />
+        <CinemaHost />
       </body>
     </html>
   );
