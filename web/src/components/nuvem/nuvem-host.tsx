@@ -6,12 +6,13 @@ import { useLightbox } from "@/store/lightbox";
 import { useMenu } from "@/store/menu";
 import { gravarContagem, lerContagem, ocupacao, useNuvem } from "@/store/nuvem";
 import { qualidadeAtual } from "@/lib/perfil";
+import { temParametroQA } from "@/lib/qa";
 import { useQualidade } from "@/lib/use-qualidade";
 import { faixas, rolagem } from "./faixas";
 
 // Agenda a nuvem dourada (v4-03 §8.3): 1ª elegibilidade após 20 s de visita, com a faixa inteira à vista e a rolagem parada
 // por 2 s; a 2ª só 90 s depois e em outra faixa; no máximo 2 por visita (1 no nível baixo); nunca com movimento reduzido.
-// Teste: `?nuvem=1` ignora as esperas e solta a nuvem na primeira faixa visível.
+// Teste (só em build de QA, NEXT_PUBLIC_DU_QA=1): `?nuvem=1` ignora as esperas e solta a nuvem na primeira faixa visível.
 const INICIO = typeof performance !== "undefined" ? Date.now() - performance.now() : 0;
 
 export function NuvemHost() {
@@ -20,7 +21,7 @@ export function NuvemHost() {
 
   useEffect(() => {
     if (nivel === "estatico") return;
-    const forcado = new URLSearchParams(window.location.search).has("nuvem");
+    const forcado = temParametroQA("nuvem");
     const rolou = () => (rolagem.ultima = Date.now());
     window.addEventListener("scroll", rolou, { passive: true });
     const tick = window.setInterval(() => {

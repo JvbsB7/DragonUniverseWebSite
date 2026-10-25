@@ -20,6 +20,7 @@ import { novoPlayer, texturaDaSkin, vestirPlayer } from "@/components/cinema/per
 import { SKINS } from "@/lib/personagens";
 import { useQualidade } from "@/lib/use-qualidade";
 import { degradar } from "@/lib/perfil";
+import { parametroQA } from "@/lib/qa";
 import { DURACAO_BATALHA, relogioBatalha, useBatalhaStore } from "@/store/batalha";
 import {
   CORES,
@@ -42,8 +43,8 @@ import {
   suave,
 } from "./batalha-linha";
 
-// Quadro de teste: `?batalha-quadro=4.5` congela a cena nesse instante (pôster, QA e revisão de efeitos).
-const quadroDeTeste = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("batalha-quadro") : null;
+// Quadro de teste (só em build de QA, NEXT_PUBLIC_DU_QA=1): `?batalha-quadro=4.5` congela a cena nesse instante (pôster, QA e revisão de efeitos).
+const quadroDeTeste = parametroQA("batalha-quadro");
 
 function prng(seed: number) {
   let a = seed;
