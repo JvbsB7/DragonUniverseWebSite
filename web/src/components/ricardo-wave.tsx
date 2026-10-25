@@ -2,7 +2,7 @@
 
 import { SkinViewer } from "@/components/skin-viewer/skin-viewer";
 
-// Imagens de reserva: render do próprio modelo (skinview3d, pose frontal, sem editar a textura) com fundo transparente.
+// Imagens de reserva: render do próprio modelo (pose frontal, sem editar a textura) com fundo transparente.
 // Ricardo nas categorias da wiki: um aceno de até 1.800 ms depois da primeira interação e enquanto estiver visível,
 // mediante vaga no gerenciador global (máximo de 2 canvases). Sem vaga, sem WebGL ou com movimento reduzido,
 // fica a imagem estática real, sem baixar o 3D. Decorativo: sem foco nem eventos.
