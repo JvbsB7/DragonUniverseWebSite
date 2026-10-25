@@ -65,7 +65,7 @@ function Campo() {
     const r = prng(11);
     const o = new Object3D();
     const cor = new Color();
-    const paleta = ["#0d1a36", "#122344", "#16294d", "#0f1f3d"];
+    const paleta = ["#0a1530", "#0c1833", "#0b1630", "#0d1a36"];
     let n = 0;
     for (let x = -14; x <= 13; x++) {
       for (let z = -7; z <= 4; z++) {
@@ -80,7 +80,7 @@ function Campo() {
     }
     if (chao.current) chao.current.instanceMatrix.needsUpdate = true;
     if (chao.current?.instanceColor) chao.current.instanceColor.needsUpdate = true;
-    const tons = ["#122344", "#1a3160", "#0b1730", "#16294d"];
+    const tons = ["#1b3260", "#213a6e", "#162a52", "#27437c"];
     let m = 0;
     const aglomerado = (cx: number, cz: number, qtd: number, grande: number) => {
       for (let i = 0; i < qtd; i++) {
@@ -96,6 +96,8 @@ function Campo() {
     };
     aglomerado(-82, -16, 9, 9);
     aglomerado(82, -16, 9, 9);
+    aglomerado(-58, -22, 4, 15);
+    aglomerado(58, -22, 4, 15);
     aglomerado(-40, -40, 6, 12);
     aglomerado(42, -40, 6, 12);
     aglomerado(0, -46, 5, 14);
@@ -132,6 +134,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
   const brilho = useMemo(() => texturaDeBrilho(), []);
   const auras = useRef<(Sprite | null)[]>([null, null]);
   const nucleo = useRef<Sprite>(null);
+  const haloLuan = useRef<Sprite>(null);
   const linhas = useRef<(Mesh | null)[]>([]);
   const aneis = useRef<(Mesh | null)[]>([null, null]);
   const parts = useRef<InstancedMesh>(null);
@@ -183,6 +186,11 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     // Cabeça de Luan desce de leve ao observar (6,65–7,45 s), mantendo os braços cruzados do clipe.
     pl.rot.head[0] += 0.22 * suave((t - 6.65) / 0.8);
     adaptadores.current[2]?.aplicar(pl);
+    if (haloLuan.current) {
+      haloLuan.current.visible = luanVisivel(t);
+      haloLuan.current.position.set(0, luanY(t) + 1, -6);
+      (haloLuan.current.material as SpriteMaterial).opacity = 0.24 * suave((t - 6.0) / 1.4);
+    }
     if (gl) {
       gl.visible = luanVisivel(t);
       gl.position.set(0, luanY(t), 0);
@@ -220,7 +228,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       m.visible = !!a && (i === 0 || nv === "alto");
       if (a) {
         m.scale.setScalar(a.raio);
-        (m.material as SpriteMaterial).opacity = a.opacidade * (i ? 0.5 : 1);
+        (m.material as SpriteMaterial).opacity = a.opacidade * (i ? 0.45 : 1);
       }
     });
 
@@ -247,7 +255,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       PARTICULAS.forEach((pt, i) => {
         const tau = t - pt.nasce;
         let ativa = tau >= 0 && tau <= pt.vida;
-        if (pt.tipo === "ambiente") ativa = nv === "alto" || i < 18 + 4;
+        if (pt.tipo === "ambiente") ativa = nv === "alto" || i < 22 + 4;
+        if (pt.tipo === "energia" && nv !== "alto" && i >= 20) ativa = false;
         if (pt.tipo === "impacto" && nv !== "alto" && i >= 8) ativa = false;
         if (pt.tipo === "fragmento" && nv !== "alto" && i >= 12 + 3) ativa = false;
         if (!ativa) {
@@ -256,7 +265,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
           dummy.position.set(pt.p0[0] + Math.sin(t * 0.3 + i) * 3, pt.p0[1] + Math.sin(t * 0.5 + i * 2) * 2, pt.p0[2]);
           dummy.scale.setScalar(pt.escala);
         } else {
-          const y = Math.max(pt.p0[1] + pt.v[1] * tau - 0.5 * GRAVIDADE * tau * tau, -15.5);
+          const g = pt.tipo === "energia" ? 0 : GRAVIDADE;
+          const y = Math.max(pt.p0[1] + pt.v[1] * tau - 0.5 * g * tau * tau, -15.5);
           dummy.position.set(pt.p0[0] + pt.v[0] * tau, y, pt.p0[2] + pt.v[2] * tau);
           dummy.scale.setScalar(pt.escala * (1 - 0.6 * (tau / pt.vida)));
         }
@@ -323,6 +333,9 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       <directionalLight position={[-60, 20, 30]} intensity={1.0} color={CORES.azul} />
       <directionalLight position={[60, 20, 30]} intensity={0.9} color={CORES.carmesim} />
       <directionalLight position={[0, 60, -40]} intensity={0.7} color={CORES.violeta} />
+      {/* Luz de recorte só nas bordas (v4-10 M2): ciano atrás do JvbsBR, carmesim-brilho atrás do rvmm255. */}
+      <directionalLight position={[-45, 18, -55]} intensity={1.3} color={CORES.ciano} />
+      <directionalLight position={[45, 18, -55]} intensity={0.9} color={CORES.brilhoCarmesim} />
       <Campo />
 
       {[0, 1].map((i) => (
@@ -348,20 +361,24 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
         </mesh>
       ))}
 
-      <sprite ref={nucleo} position={[0, 2, 5]} visible={false}>
+      <sprite ref={haloLuan} scale={[36, 56, 1]} visible={false}>
+        <spriteMaterial map={brilho} color={CORES.violeta} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
+      </sprite>
+
+      <sprite ref={nucleo} position={[0, 4.5, 5]} visible={false}>
         <spriteMaterial map={brilho} color={CORES.ciano} transparent opacity={0.8} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
       {[0, 1].map((i) => (
         <mesh key={`r${i}`} ref={(m) => void (aneis.current[i] = m)} rotation={[-Math.PI / 2, 0, 0]} position={[0, -15.7 + i * 0.05, -2]} visible={false}>
-          <ringGeometry args={[0.93, 1, 64]} />
-          <meshBasicMaterial color={i ? CORES.violeta : CORES.ciano} transparent opacity={0.6} side={DoubleSide} blending={AdditiveBlending} depthWrite={false} />
+          <ringGeometry args={[0.965, 1, 64]} />
+          <meshBasicMaterial color={CORES.ciano} transparent opacity={0.3} side={DoubleSide} blending={AdditiveBlending} depthWrite={false} />
         </mesh>
       ))}
 
       <instancedMesh ref={parts} args={[undefined, undefined, PARTICULAS.length]} frustumCulled={false}>
         <boxGeometry />
-        <meshBasicMaterial />
+        <meshBasicMaterial toneMapped={false} />
       </instancedMesh>
     </>
   );

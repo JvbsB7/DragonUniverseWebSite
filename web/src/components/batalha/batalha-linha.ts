@@ -37,14 +37,16 @@ const J = CLIPES.jvbsbr;
 const R = CLIPES.rvmm255;
 // O impacto do soco cai em 2,00 s: JvbsBR (impacto em 0,36 s) começa em 1,64; rvmm255 (0,32 s) em 1,68.
 const trechosJoao: Trecho[] = [
-  { a: 0, clipe: J.guarda },
+  { a: 0, clipe: J.investida },
+  { a: 0.45, clipe: J.guarda },
   { a: 1.2, clipe: J.investida },
   { a: 1.64, clipe: J.soco },
   { a: 2.7, clipe: J.guarda },
   { a: 6.0, clipe: J.idle },
 ];
 const trechosRicardo: Trecho[] = [
-  { a: 0, clipe: R.guarda },
+  { a: 0, clipe: R.investida },
+  { a: 0.45, clipe: R.guarda },
   { a: 1.26, clipe: R.investida },
   { a: 1.68, clipe: R.soco },
   { a: 2.58, clipe: R.guarda },
@@ -56,18 +58,18 @@ export const poseRicardo = (t: number) => poseDe(trechosRicardo, t);
 export const poseLuan = (t: number) => amostrar(CLIPES.luan.flutuar, t);
 
 // Posição (x, y) e giro (rad; + olha para +x) de cada combatente. Esquerda/direita são do visitante (v4-03 §4).
-export const joaoX = (t: number) => curva(t, [[0, -48], [1.2, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
-export const ricardoX = (t: number) => -curva(t, [[0, -48], [1.26, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
-export const combatenteY = (t: number) => curva(t, [[0, 0], [1.2, 0], [1.6, 3], [2.6, 3], [3.2, 0]]);
-export const combatenteGiro = (t: number) => curva(t, [[0, 0.9], [1.2, 0.9], [1.5, 1.45], [2.4, 1.45], [3.0, 1.2], [4.8, 0.9]]);
-export const luanY = (t: number) => curva(t, [[0, 80], [6.0, 80], [6.65, 30], [7.45, 32], [8, 32]]);
+export const joaoX = (t: number) => curva(t, [[0, -86], [0.45, -50], [1.2, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
+export const ricardoX = (t: number) => -curva(t, [[0, -86], [0.45, -50], [1.26, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
+export const combatenteY = (t: number) => curva(t, [[0, 2], [0.45, 2], [0.8, 0], [1.2, 0], [1.6, 3], [2.6, 3], [3.2, 0]]);
+export const combatenteGiro = (t: number) => curva(t, [[0, 1.45], [0.45, 1.45], [0.85, 0.9], [1.2, 0.9], [1.5, 1.45], [2.4, 1.45], [3.0, 1.2], [4.8, 0.9]]);
+export const luanY = (t: number) => curva(t, [[0, 80], [6.0, 80], [6.55, 30], [7.45, 32], [8, 32]]);
 export const luanVisivel = (t: number) => t >= 5.9;
 
 // Câmera: plano geral, aproximação de 6% até o choque, retorno, órbita curta de 8°, recuo e inclinação para cima na revelação.
 export function camera(t: number, comTremor = true) {
   const z = curva(t, [[0, 80], [2.0, 75], [2.6, 75], [4.0, 80], [6.0, 90], [7.45, 96], [8, 96]]);
-  const y = curva(t, [[0, 6], [6.0, 6], [7.45, 16], [8, 16]]);
-  const olhaY = curva(t, [[0, 2], [6.0, 2], [7.45, 17], [8, 17]]);
+  const y = curva(t, [[0, 6], [6.0, 6], [6.4, 13], [7.45, 17], [8, 17]]);
+  const olhaY = curva(t, [[0, 2], [6.0, 2], [6.4, 13], [7.45, 17], [8, 17]]);
   const az = (curva(t, [[0, 0], [4.0, 0], [4.8, 8], [6.0, 8], [7.45, 2], [8, 2]]) * Math.PI) / 180;
   const fov = curva(t, [[0, 45], [2.0, 45], [2.35, 42], [2.6, 42], [4.0, 45]]);
   // Único tremor amortecido: 2,35–2,60 s, até ~0,2 unidade (≈1,5 px na referência de 1152 px).
@@ -82,22 +84,23 @@ export function camera(t: number, comTremor = true) {
 
 // Intensidade da aura: contorno nasce em 0,45–1,20 s, cresce na investida e no choque e volta ao repouso (0,16–0,22).
 export function aura(t: number, ator: 0 | 1): number {
-  const repouso = 0.19 + 0.03 * Math.sin(t * 1.15 + ator * 1.7);
+  const repouso = 0.26 + 0.04 * Math.sin(t * 1.15 + ator * 1.7);
   if (t >= 8) return repouso;
-  const boost = curva(t, [[0, 0.1], [0.45, 0.12], [1.2, 0.19], [2.0, 0.36], [2.6, 0.3], [4.0, 0.24], [6.0, 0.19], [8, 0.19]]);
+  const boost = curva(t, [[0, 0.3], [0.45, 0.24], [1.2, 0.19], [2.0, 0.36], [2.6, 0.3], [4.0, 0.24], [6.0, 0.19], [8, 0.19]]);
   return boost + (repouso - 0.19) * suave((t - 6) / 2);
 }
 
 // Efeitos pontuais.
 export const nucleoDeImpacto = (t: number) => (t < 2.0 || t > 2.7 ? 0 : t < 2.2 ? suave((t - 2.0) / 0.2) : 1 - suave((t - 2.2) / 0.5));
+// Um anel pelo chão (v4-03 §4): nasce no choque (2,6 s), alcança as rochas entre 4,0 e 4,8 s e se dissipa até ~5,8 s.
 export const anel = (t: number, atraso: number) => {
-  const p = (t - 2.1 - atraso) / 1.9;
-  return p < 0 || p > 1 ? null : { raio: 4 + 62 * saida(p), opacidade: 0.7 * (1 - p) };
+  const p = (t - 2.6 - atraso) / 3.2;
+  return p < 0 || p > 1 ? null : { raio: 4 + 52 * saida(p), opacidade: 0.32 * (1 - p) ** 1.3 };
 };
-export const linhasDeVelocidade = (t: number) => (t < 1.2 || t > 2.05 ? null : (t - 1.2) / 0.85);
+export const linhasDeVelocidade = (t: number) => (t < 0.5 ? 0.3 + t : t >= 1.2 && t <= 2.05 ? (t - 1.2) / 0.85 : null);
 
 // Partículas determinísticas: posição em função do tempo (sem estado), para poder pausar e pular.
-export type Particula = { tipo: "impacto" | "fragmento" | "ambiente"; nasce: number; vida: number; p0: [number, number, number]; v: [number, number, number]; escala: number; cor: string };
+export type Particula = { tipo: "impacto" | "fragmento" | "energia" | "ambiente"; nasce: number; vida: number; p0: [number, number, number]; v: [number, number, number]; escala: number; cor: string };
 function prng(seed: number) {
   let a = seed;
   return () => {
@@ -108,7 +111,7 @@ function prng(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-export const CORES = { azul: "#1674FF", ciano: "#23D7FF", carmesim: "#E62E52", brilhoCarmesim: "#FF7185", violeta: "#A57BFA", rocha: "#1a3160" };
+export const CORES = { azul: "#1674FF", ciano: "#23D7FF", carmesim: "#E62E52", brilhoCarmesim: "#FF7185", violeta: "#A57BFA", rocha: "#1a3160", rochaClara: "#4a72c4" };
 export function criarParticulas(): Particula[] {
   const r = prng(7);
   const lista: Particula[] = [];
@@ -120,7 +123,11 @@ export function criarParticulas(): Particula[] {
   }
   for (let i = 0; i < 6; i++) {
     const lado = i % 2 ? 1 : -1;
-    lista.push({ tipo: "fragmento", nasce: 3.3 + i * 0.07, vida: 1.3, p0: [lado * (38 + r() * 14), -15, -14 + r() * 8], v: [lado * (3 + r() * 4), 14 + r() * 7, -3 - r() * 3], escala: 1.4, cor: CORES.rocha });
+    lista.push({ tipo: "fragmento", nasce: 4.0 + i * 0.12, vida: 1.7, p0: [lado * (38 + r() * 14), -15, -14 + r() * 8], v: [lado * (3 + r() * 4), 14 + r() * 7, -3 - r() * 3], escala: 2.0, cor: CORES.rochaClara });
+  }
+  // Energia que se dissipa depois da onda (4,8–6,8 s): poucas faíscas lentas subindo.
+  for (let i = 0; i < 4; i++) {
+    lista.push({ tipo: "energia", nasce: 4.4 + i * 0.25, vida: 1.8, p0: [(i - 1.5) * 10, -2, 4], v: [(r() - 0.5) * 4, 5 + r() * 3, (r() - 0.5) * 3], escala: 0.9, cor: i % 2 ? CORES.azul : CORES.carmesim });
   }
   for (let i = 0; i < 8; i++) {
     lista.push({ tipo: "ambiente", nasce: 0, vida: 1e9, p0: [-70 + r() * 140, -4 + r() * 40, -20 + r() * 20], v: [0, 0, 0], escala: 0.55, cor: CORES.ciano });
