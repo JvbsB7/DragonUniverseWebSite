@@ -28,7 +28,7 @@ export function Esfera({ id }: { id: IdEsfera }) {
       )}
       <button
         type="button"
-        aria-label={coletada ? "Esfera de energia coletada." : "Esfera de energia escondida. Ative para coletar."}
+        aria-label={coletada ? `Esfera ${coluna + 1} de 7: esfera de energia coletada.` : `Esfera ${coluna + 1} de 7: esfera de energia escondida. Ative para coletar.`}
         onClick={() => {
           coletar(id);
           if (!coletada) {

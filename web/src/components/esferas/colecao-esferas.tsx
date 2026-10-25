@@ -60,7 +60,7 @@ export function ColecaoEsferas() {
   return (
     <section id="colecao-esferas" aria-labelledby="titulo-esferas" className="bg-surface py-12 md:py-16">
       <div className="du-container grid gap-4" ref={painel}>
-        <h2 id="titulo-esferas" className="text-2xl">
+        <h2 id="titulo-esferas" tabIndex={-1} className="text-2xl">
           Esferas de energia
         </h2>
         <p aria-label={`Esferas de energia: ${total} de 7 coletadas`} className="font-display text-xl font-semibold">
@@ -80,7 +80,15 @@ export function ColecaoEsferas() {
             <p>As esferas brilharam juntas.</p>
             <p className="text-sm text-muted-foreground">É só uma surpresa do site. Não vale nada no jogo e não tem relação com o apoio.</p>
             <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={() => setAberto(false)} className={buttonClass("secondary")}>
+              <button
+                type="button"
+                onClick={() => {
+                  setAberto(false);
+                  // O painel some: o foco vai para o título da coleção (e não para o início da página).
+                  requestAnimationFrame(() => document.getElementById("titulo-esferas")?.focus());
+                }}
+                className={buttonClass("secondary")}
+              >
                 Fechar
               </button>
               {!movimentoReduzido && (pendente || !tocando) && (
