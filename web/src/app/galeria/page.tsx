@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import { Gallery } from "@/components/gallery";
+import { GalleryFilter } from "@/components/gallery-filter";
 import { LinkButton } from "@/components/button";
 import { galeria } from "@/config/galeria";
 import { links } from "@/config/links";
@@ -17,13 +17,13 @@ export default function GaleriaPage() {
       <header className="flex flex-col gap-3">
         <h1>Galeria</h1>
         <p className="max-w-prose text-lg text-muted-foreground">Imagens das construções da equipe. Cada legenda diz o que ainda está em desenvolvimento.</p>
-        <p className="max-w-prose rounded-md bg-alert-bg p-3 text-sm text-text">
+        <p className="max-w-prose rounded-xl border border-gold bg-alert-bg p-3 text-sm text-alert-fg">
           Todas estas imagens são <strong>prévias de construções novas</strong> que <strong>ainda não estão no add-on</strong>.
         </p>
         <p className="text-sm text-muted-foreground">Clique em uma imagem para ampliar. Use Esc para fechar.</p>
       </header>
 
-      <Gallery items={galeria} />
+      <GalleryFilter items={galeria} />
 
       <div>
         <LinkButton href={links.discord} variant="primary" external>Ver mais na comunidade</LinkButton>

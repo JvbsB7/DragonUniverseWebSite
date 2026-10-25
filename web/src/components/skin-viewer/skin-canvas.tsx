@@ -12,6 +12,9 @@ import {
 import { asset } from "@/lib/asset";
 import { dragonBallFlight } from "./animations";
 import { DURACAO_APRESENTADOR, apresentadas, type SkinAnimation } from "@/store/skin-viewer";
+import { liberarViewer, silenciarAvisoDoClock } from "@/lib/three-compat";
+
+silenciarAvisoDoClock();
 
 const animations: Record<SkinAnimation, () => PlayerAnimation> = {
   idle: () => new IdleAnimation(),
@@ -98,7 +101,7 @@ export default function SkinCanvas({ skin, animation, autoRotate, zoom, duracao 
       ro.disconnect();
       viewer.current = null;
       v.renderer.forceContextLoss();
-      v.dispose();
+      liberarViewer(v);
       canvas.remove();
     };
     // O viewer é criado uma vez por montagem; animação e rotação têm efeitos próprios.

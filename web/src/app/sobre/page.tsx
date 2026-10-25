@@ -53,7 +53,7 @@ export default function SobrePage() {
         </p>
       </section>
 
-      <section aria-labelledby="requisitos" className="flex flex-col gap-4 rounded-lg border-2 border-border bg-alert-bg p-6">
+      <section aria-labelledby="requisitos" className="flex flex-col gap-4 rounded-lg rounded-xl border border-edge bg-alert-bg p-6">
         <h2 id="requisitos">Requisitos</h2>
         <ul className="list-disc space-y-2 pl-6">
           <li><strong>Minecraft Bedrock 26.52</strong></li>

@@ -35,13 +35,13 @@ export function Presenter({
     >
       <blockquote
         className={cn(
-          "relative min-w-0 border-2 border-bg bg-text p-5 text-bg shadow-[4px_4px_0_var(--du-shadow)] md:order-2 md:p-6",
+          "relative min-w-0 rounded-xl bg-text p-5 text-bg shadow-block-card md:order-2 md:p-6",
           // Cauda quadrada decorativa: embaixo, à esquerda, quando o personagem fica abaixo; à esquerda do balão quando fica ao lado.
           "after:pointer-events-none after:absolute after:size-4 after:rotate-45 after:bg-text after:content-['']",
-          "after:-bottom-[0.65rem] after:left-7 after:border-r-2 after:border-b-2 after:border-bg",
-          "md:after:-left-[0.65rem] md:after:bottom-6 md:after:border-r-0 md:after:border-b-2 md:after:border-l-2",
+          "after:-bottom-[0.65rem] after:left-7  ",
+          "md:after:-left-[0.65rem] md:after:bottom-6  ",
           narrow &&
-            "nav:order-none nav:after:-bottom-[0.65rem] nav:after:left-7 nav:after:border-r-2 nav:after:border-b-2 nav:after:border-l-0",
+            "nav:order-none nav:after:-bottom-[0.65rem] nav:after:left-7  ",
         )}
       >
         <p>
@@ -58,7 +58,7 @@ export function Presenter({
         skin={src}
         alt={alt}
         animation={animation}
-        className={cn("h-56 w-32 shrink-0 md:order-1", narrow && "nav:order-none")}
+        className={cn("h-56 w-32 max-w-full shrink-0 md:order-1", narrow && "nav:order-none")}
       />
     </div>
   );

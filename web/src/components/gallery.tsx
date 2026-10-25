@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 type Mode = "fit" | "natural";
 
 const control =
-  "inline-flex min-h-12 min-w-12 items-center justify-center border-2 border-border bg-surface px-4 py-2 font-display text-base font-semibold text-text hover:bg-raised disabled:cursor-not-allowed disabled:border-disabled disabled:bg-disabled disabled:text-muted-foreground disabled:shadow-none";
+  "inline-flex min-h-12 min-w-12 items-center justify-center rounded-xl border border-edge bg-surface px-4 py-2 font-display text-base font-semibold text-text hover:bg-raised disabled:cursor-not-allowed disabled:border-disabled disabled:bg-disabled disabled:text-muted-foreground disabled:shadow-none";
 const controlOn = "border-brand bg-brand text-bg hover:bg-brand";
 
 // Imagem do diálogo. Reserva a área enquanto carrega e, se falhar, mostra "Imagem indisponível" com "Tentar novamente".
@@ -137,16 +137,16 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
     <>
       <ul className="grid gap-4 md:grid-cols-2 nav:grid-cols-3 nav:gap-6">
         {items.map((item, i) => (
-          <li key={item.src} className="min-w-0 border-2 border-border bg-surface shadow-block-card">
+          <li key={item.src} className="min-w-0 rounded-xl border border-edge bg-surface shadow-block-card">
             <button
               type="button"
               onClick={() => open(i)}
               aria-label={`Ampliar imagem: ${item.caption}`}
-              className="group block w-full bg-bg"
+              className="group block aspect-[4/3] w-full bg-bg"
             >
-              <img src={item.src} alt="" width={item.width} height={item.height} loading="lazy" className="h-auto w-full" />
+              <img src={item.src} alt="" width={item.width} height={item.height} loading="lazy" className="h-full w-full object-contain" />
             </button>
-            <div className="grid gap-2 border-t-2 border-border p-4">
+            <div className="grid gap-2 border-t border-edge p-4">
               <StatusBadge status="preview" />
               <span className="text-sm text-muted-foreground">{item.caption}</span>
               {/* Sem JavaScript, o acesso ao arquivo original continua disponível. */}
@@ -172,7 +172,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
           if (fora) close();
         }}
         aria-label={current ? `Imagem ampliada: ${current.caption}` : "Imagem ampliada"}
-        className="m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
+        className="m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden rounded-xl border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
       >
         {current && index !== null && (
           <div className="flex max-h-[96dvh] flex-col">
@@ -180,7 +180,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
               Imagem {index + 1} de {items.length}. {current.caption} Use as setas para trocar e Esc para fechar.
             </p>
 
-            <div className="flex shrink-0 flex-wrap items-start justify-between gap-3 border-b-2 border-border p-4">
+            <div className="flex shrink-0 flex-wrap items-start justify-between gap-3 border-b border-edge p-4">
               <div className="grid min-w-0 gap-2">
                 <h2 className="text-xl [overflow-wrap:anywhere]">{current.caption}</h2>
                 <StatusBadge status="preview" />
@@ -193,7 +193,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
               </button>
             </div>
 
-            <div role="group" aria-label="Tamanho da imagem" className="flex shrink-0 flex-wrap gap-2 border-b-2 border-border p-3">
+            <div role="group" aria-label="Tamanho da imagem" className="flex shrink-0 flex-wrap gap-2 border-b border-edge p-3">
               <button type="button" aria-pressed={mode === "fit"} onClick={() => setMode("fit")} className={cn(control, mode === "fit" && controlOn)}>
                 Ajustar à tela
               </button>
@@ -220,7 +220,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center justify-between gap-4 border-t-2 border-border p-3">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-t border-edge p-3">
               <button ref={prevRef} type="button" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Imagem anterior" className={control}>
                 Anterior
               </button>

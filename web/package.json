@@ -10,12 +10,16 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cn": "^0.5.0",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
+    "gsap": "3.15.0",
     "lucide-react": "^1.61.0",
+    "motion": "14.6.0",
     "next": "16.4.3",
     "next-mdx-remote": "^6.0.0",
     "react": "19.3.0",
@@ -24,7 +28,7 @@
     "skinview-utils": "0.7.1",
     "skinview3d": "^3.4.2",
     "tailwind-merge": "^3.7.0",
-    "three": "0.156.1",
+    "three": "0.186.1",
     "zustand": "^5.0.16"
   },
   "devDependencies": {
@@ -32,9 +36,16 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "skinview3d": {
+      "three": "$three",
+      "@types/three": "0.186.0"
+    }
   }
 }

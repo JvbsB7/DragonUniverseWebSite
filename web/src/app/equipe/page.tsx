@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import { LinkButton } from "@/components/button";
 import { SkinFace } from "@/components/skin-viewer/skin-face";
 import { asset, assetSet } from "@/lib/asset";
 import { CompactPresenter } from "@/components/compact-presenter";
 import { TeamScene } from "@/components/team-scene/team-scene";
 import { equipe } from "@/config/equipe";
 import { links } from "@/config/links";
+import Link from "next/link";
+import { Community } from "@/components/community";
+import { GithubMark } from "@/components/github-mark";
 
 export const metadata: Metadata = pageMetadata({
   title: "Equipe e créditos | Dragon Universe",
@@ -40,7 +42,7 @@ export default function EquipePage() {
 
       <ul className="grid gap-6 md:grid-cols-3">
         {equipe.map((p, i) => (
-          <li key={p.discord} className="min-w-0 border-2 border-border bg-surface shadow-block-card">
+          <li key={p.discord} className="min-w-0 rounded-xl border border-edge bg-surface shadow-block-card">
             <div aria-hidden="true" className="h-12" style={{ background: energias[i] }} />
             <div className="flex items-start gap-4 p-5 md:p-6">
               <SkinFace src={p.skin} alt={p.alt} className="size-16" />
@@ -48,22 +50,34 @@ export default function EquipePage() {
                 <h2 className="text-2xl [overflow-wrap:anywhere]">{p.nome}</h2>
                 <p className="font-display text-brand">Discord {p.discord}</p>
                 <p className="text-muted-foreground">{p.texto}</p>
+                {/* Link independente (design r1 §4): o card inteiro não é link e a skin continua decorativa. */}
+                <a
+                  href={p.github.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`GitHub de ${p.nome}, abre em nova aba`}
+                  className="mt-1 inline-flex min-h-12 w-fit max-w-full items-center gap-2 text-brand underline underline-offset-4 [overflow-wrap:anywhere]"
+                >
+                  <GithubMark />
+                  <span>GitHub · {p.github.rotulo}</span>
+                </a>
               </div>
             </div>
           </li>
         ))}
       </ul>
 
-      <section aria-labelledby="credito" className="flex flex-col gap-4 border-2 border-border border-s-[6px] border-s-brand bg-surface p-6">
+      <Community headingId="comunidade-equipe" />
+
+      <section aria-labelledby="credito" className="flex flex-col gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6">
         <h2 id="credito">Crédito ao autor original</h2>
         <p className="font-display text-xl font-semibold text-brand">Inspirado no Dragon Evolution, de About04.</p>
         <p className="text-muted-foreground">
           O Dragon Universe é um projeto de fãs com nome e identidade próprios, inspirado no trabalho de About04.
         </p>
-        <div className="flex flex-wrap gap-4">
-          <LinkButton href={links.discord} variant="primary" external>Entrar no Discord</LinkButton>
-          <LinkButton href={links.github} external>Ver no GitHub</LinkButton>
-        </div>
+        <p>
+          <Link href="/apoie" className="du-text-link">Conheça o apoio ao projeto</Link>
+        </p>
       </section>
     </div>
   );

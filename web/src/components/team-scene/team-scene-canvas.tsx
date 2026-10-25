@@ -7,6 +7,9 @@ import { FunctionAnimation, IdleAnimation, PlayerObject, SkinViewer, WaveAnimati
 import { asset } from "@/lib/asset";
 import { dragonBallFlight } from "@/components/skin-viewer/animations";
 import { DURACAO_CENA, apresentadas } from "@/store/skin-viewer";
+import { liberarViewer, silenciarAvisoDoClock } from "@/lib/three-compat";
+
+silenciarAvisoDoClock();
 
 type Actor = { skin: string; x: number; y: number; turn: number; animation: () => PlayerAnimation };
 
@@ -124,7 +127,7 @@ export default function TeamSceneCanvas({ onFail, onReadyChange }: Props) {
       ro.disconnect();
       textures.forEach((t) => t.dispose());
       viewer.renderer.forceContextLoss();
-      viewer.dispose();
+      liberarViewer(viewer);
       canvas.remove();
     };
     // A cena é criada uma vez por montagem.

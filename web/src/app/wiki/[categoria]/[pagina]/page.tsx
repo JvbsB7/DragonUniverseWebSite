@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps<"/wiki/[categoria]/
 }
 
 const vizinho =
-  "flex min-h-12 min-w-0 flex-col justify-center border-2 border-border bg-surface px-4 py-3 text-text hover:bg-raised";
+  "flex min-h-12 min-w-0 flex-col justify-center rounded-xl border border-edge bg-surface px-4 py-3 text-text hover:bg-raised";
 
 export default async function WikiArticlePage({ params }: PageProps<"/wiki/[categoria]/[pagina]">) {
   const { categoria, pagina } = await params;
@@ -66,7 +66,7 @@ export default async function WikiArticlePage({ params }: PageProps<"/wiki/[cate
             <h1 className="[overflow-wrap:anywhere]">{page.title}</h1>
             <p className="max-w-[65ch] text-lg text-muted-foreground">{page.description}</p>
             {page.status !== "no-jogo" && (
-              <p role="note" className="max-w-[65ch] border-2 border-border bg-alert-bg p-3 text-sm text-alert-fg">
+              <p role="note" className="max-w-[65ch] rounded-xl border border-edge bg-alert-bg p-3 text-sm text-alert-fg">
                 {page.status === "em-desenvolvimento"
                   ? "Prévia. Ainda não está no add-on e não tem data."
                   : "Planejado. Sem data e sem promessa de entrega."}
@@ -78,7 +78,7 @@ export default async function WikiArticlePage({ params }: PageProps<"/wiki/[cate
           {page.image ? (
             <img src={asset(page.image)} alt="" className="mt-6 h-auto w-full max-w-2xl border-2 border-border" />
           ) : (
-            <div className="mt-6 aspect-video w-full min-w-0 max-w-2xl border-2 border-border bg-bg">
+            <div className="mt-6 aspect-video w-full min-w-0 max-w-2xl rounded-xl border border-edge bg-bg">
               <div aria-hidden="true" className="h-3 border-b-2 border-bg" style={{ background: "var(--du-item-energy)" }} />
               <div className="flex h-[calc(100%-0.75rem)] items-center justify-center p-4 text-center font-display font-semibold text-muted-foreground">
                 <span role="img" aria-label="Espaço reservado: imagem em breve.">Imagem em breve</span>
@@ -89,7 +89,7 @@ export default async function WikiArticlePage({ params }: PageProps<"/wiki/[cate
           {/* Conteúdo integral do MDX, na ordem do arquivo. */}
           <div className="mt-4"><WikiMdx source={page.body} /></div>
 
-          <aside aria-labelledby="cta-wiki" className="mt-12 flex flex-col gap-3 border-2 border-border border-s-[6px] border-s-brand bg-surface p-6">
+          <aside aria-labelledby="cta-wiki" className="mt-12 flex flex-col gap-3 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6">
             <h2 id="cta-wiki">Faltou alguma informação?</h2>
             <p className="max-w-[65ch] text-muted-foreground">Conte para a gente no Discord.</p>
             <div className="flex flex-wrap gap-4">
