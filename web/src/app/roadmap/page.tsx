@@ -21,7 +21,7 @@ export const metadata: Metadata = pageMetadata({
 const emDesenvolvimento: { nome: string; texto: string; href: string; status: Extract<Status, "dev"> }[] = [
   { nome: "Glind", texto: "A raça já existe no add-on e está sendo melhorada antes de ser liberada.", href: "/wiki/racas/glind", status: "dev" },
   { nome: "Cerealianos", texto: "Raça nova, junto com o Planeta Cereal.", href: "/wiki/racas/cerealianos", status: "dev" },
-  { nome: "Nova raça (estilo Moro)", texto: "Nova raça com habilidades inspiradas no Moro. Nome a definir.", href: "/wiki/racas/nova-raca-estilo-moro", status: "dev" },
+  { nome: "Kaijin", texto: "Raça nova com habilidades inspiradas no Moro.", href: "/wiki/racas/kaijin", status: "dev" },
   { nome: "Habilidades estilo Moro", texto: "Habilidades mágicas inspiradas no Moro.", href: "/wiki/tecnicas/habilidades-estilo-moro", status: "dev" },
 ];
 

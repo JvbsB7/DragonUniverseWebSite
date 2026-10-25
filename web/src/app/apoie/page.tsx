@@ -110,7 +110,7 @@ export default function ApoiePage() {
       </section>
 
       <p className="max-w-[65ch] text-sm text-muted-foreground">
-        Dragon Ball é propriedade de Akira Toriyama, Shueisha e Toei Animation. Minecraft é marca da Mojang/Microsoft. Projeto de fãs, sem vínculo oficial.
+        Dragon Ball é propriedade de Akira Toriyama, Shueisha e Toei Animation. Minecraft é marca da Mojang/Microsoft. Projeto de fãs, sem vínculo oficial. O apoio ajuda a manter a comunidade e o desenvolvimento do projeto; não compra personagens, formas, roupas ou habilidades de Dragon Ball.
       </p>
     </div>
   );

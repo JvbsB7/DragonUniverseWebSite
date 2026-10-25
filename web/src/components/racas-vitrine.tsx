@@ -6,7 +6,7 @@ import { links } from "@/config/links";
 import { habilidadesMoro, racasEmDesenvolvimento, racasNoJogo, racasPlanejadas, textoTestes } from "@/config/racas";
 
 // Página de raças v3 (v3-04-design.md §9.2, design r1 §2; copy v3 §3, §5 e A.5): 6 raças já no jogo, "Raças em
-// Desenvolvimento" (Glind, Cerealianos e a nova raça estilo Moro, sempre com texto, status e fundo opacos) e as planejadas.
+// Desenvolvimento" (Glind, Cerealianos e Kaijin, sempre com texto, status e fundo opacos) e as planejadas.
 // Os filtros não apagam a distinção entre grupos. Nada aqui liga raças a níveis de apoio.
 export function RacasVitrine() {
   return (

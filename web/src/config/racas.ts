@@ -1,5 +1,5 @@
 // Raças (copy v3 §3.3, §4.2 e §5, texto exato). Estado e grupos seguem as decisões do João (v3.2): 6 raças já no jogo,
-// 3 em desenvolvimento (Glind, Cerealianos e a nova raça estilo Moro, cujo nome ainda não existe) e Tsufurujins planejada.
+// 3 em desenvolvimento (Glind, Cerealianos e Kaijin, a raça com habilidades inspiradas no Moro) e Tsufurujins planejada.
 // "Pontos fortes" só entram quando a wiki os afirma; quando não há dado, o campo é omitido (nunca "a confirmar" na tela).
 export type RacaStatus = "live" | "dev" | "planned";
 
@@ -41,11 +41,11 @@ export const racasEmDesenvolvimento: Raca[] = [
     direcao: ["Precisão aprimorada", "Percepção de energia", "Combate especializado de longa distância", "Habilidades táticas", "Progressão de habilidades própria"],
   },
   {
-    slug: "nova-raca-estilo-moro",
-    nome: "Nova raça (estilo Moro)",
+    slug: "kaijin",
+    nome: "Kaijin",
     status: "dev",
-    wiki: "nova-raca-estilo-moro",
-    descricao: "Uma nova raça que a equipe está construindo, com habilidades inspiradas no Moro, de Dragon Ball. O nome ainda não foi definido. Não está no add-on e não tem data de chegada.",
+    wiki: "kaijin",
+    descricao: "A raça Kaijin é uma raça nova que a equipe está construindo, com habilidades inspiradas no Moro, de Dragon Ball. Ainda não está no add-on e não tem data de chegada.",
   },
 ];
 
