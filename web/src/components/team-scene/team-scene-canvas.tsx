@@ -7,6 +7,9 @@ import { FunctionAnimation, IdleAnimation, PlayerObject, SkinViewer, WaveAnimati
 import { asset } from "@/lib/asset";
 import { dragonBallFlight } from "@/components/skin-viewer/animations";
 import { DURACAO_CENA, apresentadas } from "@/store/skin-viewer";
+import { silenciarAvisoDoClock } from "@/lib/three-compat";
+
+silenciarAvisoDoClock();
 
 type Actor = { skin: string; x: number; y: number; turn: number; animation: () => PlayerAnimation };
 

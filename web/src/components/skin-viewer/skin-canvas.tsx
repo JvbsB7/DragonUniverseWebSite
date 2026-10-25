@@ -12,6 +12,9 @@ import {
 import { asset } from "@/lib/asset";
 import { dragonBallFlight } from "./animations";
 import { DURACAO_APRESENTADOR, apresentadas, type SkinAnimation } from "@/store/skin-viewer";
+import { silenciarAvisoDoClock } from "@/lib/three-compat";
+
+silenciarAvisoDoClock();
 
 const animations: Record<SkinAnimation, () => PlayerAnimation> = {
   idle: () => new IdleAnimation(),

@@ -55,3 +55,100 @@ html[data-perfil="leve"] .glass-panel {
     border-block-end: 4px solid Highlight;
   }
 }
+
+/* ---------- Hero v3 (design §8): composição 2.5D estática com camadas decorativas ---------- */
+.hero-cosmos {
+  background:
+    radial-gradient(55% 38% at 50% 14%, var(--du-glow-primary), transparent 72%),
+    linear-gradient(180deg, var(--du-bg) 0%, var(--du-surface) 100%);
+}
+/* Estrelas: 12 pontos no celular e 24 a partir de 768 px, estáticos. */
+.stars-a {
+  background-image:
+    radial-gradient(1.5px 1.5px at 2.0% 44.9%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 31.9% 6.3%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 84.6% 41.2%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 51.7% 46.9%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 47.3% 29.0%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 23.0% 70.5%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 15.5% 38.5%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 58.5% 81.4%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 38.7% 10.1%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 22.9% 72.6%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 58.9% 55.2%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 48.0% 24.5%, #f6b943, transparent);
+}
+.stars-b {
+  background-image:
+    radial-gradient(1.5px 1.5px at 31.6% 78.4%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 3.1% 20.5%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 57.3% 70.5%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 3.3% 38.9%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 87.2% 52.1%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 11.3% 60.6%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 94.1% 32.8%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 88.5% 3.8%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 70.9% 79.6%, #f6b943, transparent),
+    radial-gradient(1.5px 1.5px at 93.1% 29.5%, #f8fafc, transparent),
+    radial-gradient(1.5px 1.5px at 18.0% 78.8%, #23d7ff, transparent),
+    radial-gradient(1.5px 1.5px at 93.0% 72.3%, #f6b943, transparent);
+}
+/* Partículas de ki: só no perfil completo (desktop), 12 pontos, 3 s uma única vez, depois ficam parados. */
+.ki-particle {
+  position: absolute;
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 9999px;
+  background: var(--du-brand);
+  opacity: 0;
+  display: none;
+}
+html[data-perfil="completo"] .ki-particle {
+  display: block;
+  animation: ki-subir 3s var(--du-ease-out) 1 both;
+}
+@keyframes ki-subir {
+  0% { opacity: 0; transform: translateY(10px); }
+  25% { opacity: 0.95; }
+  100% { opacity: 0.55; transform: translateY(-16px); }
+}
+/* Entrada única da área visual (só camadas decorativas; o H1 e os botões não animam). */
+.hero-in {
+  animation: hero-in 360ms var(--du-ease-out) 1 both;
+}
+@keyframes hero-in {
+  from { opacity: 0.85; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-depth-print {
+  transform: translate3d(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 4px), 0);
+  transition: transform 120ms linear;
+}
+
+/* Card de raça: inclinação e luz (TiltCard); só com ponteiro fino. */
+@media (hover: hover) and (pointer: fine) {
+  .tilt-card {
+    perspective: 800px;
+  }
+  .tilt-face {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 180ms var(--du-ease-out), border-color 140ms linear;
+  }
+  .tilt-face:hover {
+    border-color: var(--du-border-hover);
+    background-image: radial-gradient(circle at var(--lx, 50%) var(--ly, 40%), rgba(35, 215, 255, 0.07), transparent 55%);
+  }
+}
+
+/* Cartão que expande (Expandable): grid-template-rows 0fr → 1fr em até 220 ms. */
+.expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms var(--du-ease-out);
+}
+.expandable[data-aberto="true"] {
+  grid-template-rows: 1fr;
+}
+.expandable > div {
+  min-block-size: 0;
+}

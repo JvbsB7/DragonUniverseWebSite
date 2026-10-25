@@ -8,7 +8,8 @@ import { buttonClass } from "@/components/button";
 
 // Cabeçalho v3 (v3-04-design.md §6 e design r1 §1). Desktop (≥ 1100 px): cartão flutuante de vidro com duas linhas
 // (logo + Discord; sete destinos + Mais). Abaixo disso: barra opaca com a assinatura compacta (D + nome), Discord e
-// "Abrir menu". Sem hotbar. A casca (HeaderShell) mede a ocupação e publica --du-header-offset para o foco.
+// "Abrir menu"; abaixo de 432 px o Discord sai do cabeçalho e fica no topo do menu (a marca e o botão do menu não estouram a
+// largura com texto ampliado). A casca (HeaderShell) mede a ocupação e publica --du-header-offset para o foco.
 export function SiteHeader() {
   return (
     <HeaderShell>
@@ -47,7 +48,7 @@ export function SiteHeader() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Discord, abre em nova aba"
-                className={buttonClass("primary") + " min-w-21"}
+                className={buttonClass("primary") + " min-w-21 max-[27rem]:hidden"}
               >
                 Discord
               </a>

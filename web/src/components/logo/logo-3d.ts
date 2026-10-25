@@ -1,5 +1,5 @@
 /**
- * Logo 3D do hero, adaptado de entregas/v2-04-design/logo/logo-3d-referencia.ts (R5), three 0.156.1.
+ * Logo 3D do hero, adaptado de entregas/v2-04-design/logo/logo-3d-referencia.ts (R5), three 0.186.1.
  *
  * Mudanças em relação à referência (QA de design, rodada 2):
  * - R2-B3b: a vaga do canvas só é reservada depois de o SVG ter sido baixado e interpretado (e o componente só
@@ -504,9 +504,9 @@ function criarHalo(recursos: Recursos): THREE.Sprite {
   if (!contexto) throw new Error("Não foi possível preparar o halo decorativo.");
 
   const gradiente = contexto.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gradiente.addColorStop(0, "rgba(40,103,214,0.8)");
-  gradiente.addColorStop(0.4, "rgba(40,103,214,0.35)");
-  gradiente.addColorStop(1, "rgba(40,103,214,0)");
+  gradiente.addColorStop(0, "rgba(22,116,255,0.8)");
+  gradiente.addColorStop(0.4, "rgba(22,116,255,0.35)");
+  gradiente.addColorStop(1, "rgba(22,116,255,0)");
   contexto.fillStyle = gradiente;
   contexto.fillRect(0, 0, 128, 128);
 
@@ -596,7 +596,7 @@ function construirLogo(
       throw new Error("As camadas precisam ser opacas nesta referência.");
     }
 
-    const formas = SVGLoader.createShapes(caminho);
+    const formas = caminho.toShapes();
     if (!formas.length) throw new Error(`Camada vazia: ${camada}.`);
 
     const config = CONFIG[camada];
@@ -1128,6 +1128,48 @@ export function montarLogo3D(opcoes: OpcoesLogo3D): ControleLogo3D {
 
       if (altAnterior === null) fallback.removeAttribute("alt");
       else fallback.setAttribute("alt", altAnterior);
+    },
+  };
+}
+
+/**
+ * Cena do logo para o hero em React Three Fiber (v3): reaproveita a montagem aprovada (extrusão do SVG, materiais,
+ * halo e luzes) sem criar renderer nem câmera. A cena devolvida entra como filha da cena do R3F. Altura do logo = 2
+ * unidades; `largura` é a largura correspondente. `liberar()` descarta geometrias, materiais e texturas.
+ */
+export type CenaDoLogo = {
+  cena: THREE.Scene;
+  grupo: THREE.Group;
+  halo: THREE.Sprite | null;
+  largura: number;
+  liberar: () => void;
+};
+
+export async function carregarCenaDoLogo(svgUrl: string, sinal?: AbortSignal): Promise<CenaDoLogo> {
+  const resposta = await fetch(svgUrl, { signal: sinal });
+  if (!resposta.ok) throw new Error(`Não foi possível carregar o logo (${resposta.status}).`);
+  const texto = await resposta.text();
+  const tentativa = {
+    geometrias: new Set<THREE.BufferGeometry>(),
+    materiais: new Set<THREE.Material>(),
+    texturas: new Set<THREE.Texture>(),
+    cena: new THREE.Scene(),
+    grupo: new THREE.Group(),
+    viewBox: null,
+    halo: null,
+  } as unknown as Tentativa;
+  construirLogo(texto, tentativa);
+  const vb = tentativa.viewBox as ViewBox | null;
+  if (!vb) throw new Error("O logo não tem viewBox.");
+  return {
+    cena: tentativa.cena,
+    grupo: tentativa.grupo,
+    halo: tentativa.halo,
+    largura: vb.width * (2 / vb.height),
+    liberar: () => {
+      tentativa.geometrias.forEach((g) => g.dispose());
+      tentativa.materiais.forEach((m) => m.dispose());
+      tentativa.texturas.forEach((t) => t.dispose());
     },
   };
 }

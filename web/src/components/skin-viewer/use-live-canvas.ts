@@ -2,13 +2,15 @@
 
 import { useEffect, useId, useSyncExternalStore, type RefObject } from "react";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
+import { perfilLeve } from "@/lib/perfil";
 
 function subscribeMotion(cb: () => void) {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   mq.addEventListener("change", cb);
   return () => mq.removeEventListener("change", cb);
 }
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Perfil completo (decisão M7): sem movimento reduzido, sem economia de dados, > 4 núcleos, ≥ 768 px e ponteiro fino.
+const perfilCompleto = () => !perfilLeve();
 
 let webglSupport: boolean | undefined;
 
@@ -27,9 +29,9 @@ export function hasWebGL(): boolean {
   return webglSupport;
 }
 
-/** 3D só sem prefers-reduced-motion. No servidor vale false (imagem estática). O WebGL é testado depois, ao pedir a vaga. */
+/** 3D só no perfil completo (celular, movimento reduzido e aparelho fraco ficam em 2D). No servidor vale false (imagem estática). O WebGL é testado depois, ao pedir a vaga. */
 export function use3dAllowed(): boolean {
-  return !useSyncExternalStore(subscribeMotion, reducedMotion, () => true);
+  return useSyncExternalStore(subscribeMotion, perfilCompleto, () => false);
 }
 
 /** Pede uma vaga de canvas enquanto o elemento está na tela e a libera quando sai. */

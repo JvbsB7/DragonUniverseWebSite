@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 export type CategoryCard = { slug: string; title: string; description: string; count: number };
 
 export const chip =
-  "inline-flex min-h-12 items-center rounded-md border px-3 text-base font-semibold transition-colors duration-(--du-motion-fast)";
+  "inline-flex min-h-12 max-w-full items-center rounded-md border px-3 py-1 text-start text-base font-semibold [overflow-wrap:anywhere] transition-colors duration-(--du-motion-fast)";
 export const chipOff = "border-border bg-surface text-text hover:bg-raised";
 export const chipOn = "border-brand bg-brand text-bg";
 

@@ -60,7 +60,7 @@ export function SoonButton({ label, note, ariaLabel }: { label: string; note: st
         type="button"
         aria-disabled="true"
         aria-label={ariaLabel ?? `${label}: indisponível, em breve`}
-        className="inline-flex min-h-12 max-w-full cursor-not-allowed items-center justify-center gap-2 rounded-md border border-dashed border-border bg-surface px-5 py-2.5 text-center text-base leading-6 font-semibold text-muted-foreground [overflow-wrap:anywhere]"
+        className="inline-flex min-h-12 max-w-full cursor-not-allowed items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-surface px-5 py-2.5 text-center text-base leading-6 font-semibold text-muted-foreground [overflow-wrap:anywhere]"
       >
         {label}
       </button>

@@ -176,7 +176,7 @@
 
   /* Sombras duras */
   --du-shadow-button: 0 6px 16px rgba(0, 0, 0, 0.28);
-  --du-shadow-button-hover: 0 8px 22px rgba(0, 0, 0, 0.3), 0 0 18px var(--du-glow-primary);
+  --du-shadow-button-hover: 0 0 0 2px var(--du-border-hover), 0 8px 22px rgba(0, 0, 0, 0.3), 0 0 18px var(--du-glow-energy);
   --du-shadow-button-pressed: 0 2px 6px rgba(0, 0, 0, 0.3);
   --du-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.24);
   --du-shadow-media: 0 14px 32px rgba(0, 0, 0, 0.3);

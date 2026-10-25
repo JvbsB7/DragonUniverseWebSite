@@ -10,7 +10,7 @@ const destino = "/wiki/racas/glind";
 
 export const metadata: Metadata = {
   title: { absolute: "Esta página mudou: Glind | Dragon Universe" },
-  description: "O Demônio agora se chama Glind. Esta página mudou de endereço.",
+  description: "Esta página mudou de endereço. A raça agora está em Glind.",
   alternates: { canonical: urlPath(destino) },
   robots: { index: false, follow: true },
 };
