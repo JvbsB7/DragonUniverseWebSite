@@ -177,9 +177,9 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const xj = joaoX(t);
     const xr = ricardoX(t);
     gj?.position.set(xj, yc, 0);
-    gj && (gj.rotation.y = giro);
+    if (gj) gj.rotation.y = giro;
     gr?.position.set(xr, yc, 0);
-    gr && (gr.rotation.y = -giro);
+    if (gr) gr.rotation.y = -giro;
     adaptadores.current[0]?.aplicar(poseJoao(t));
     adaptadores.current[1]?.aplicar(poseRicardo(t));
     const pl = poseLuan(t);

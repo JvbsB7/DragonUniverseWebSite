@@ -128,7 +128,6 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
     const esc = (e: KeyboardEvent) => e.key === "Escape" && pularViagem();
     document.addEventListener("keydown", esc);
     return () => document.removeEventListener("keydown", esc);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viagem]);
 
   const lista = destinos.filter((d) => filtro === "todos" || d.status === filtro);
