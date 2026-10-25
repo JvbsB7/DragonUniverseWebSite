@@ -437,8 +437,8 @@ dialog.lightbox[open] {
   --balao-tinta: #060a16;
   position: relative;
   margin-top: 10px;
-  width: 100%;
-  max-width: 320px;
+  width: fit-content;
+  max-width: min(320px, 100%);
   filter: drop-shadow(4px 4px 0 var(--balao-tinta));
   color: var(--balao-tinta);
   font-size: 1rem;

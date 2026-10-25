@@ -144,10 +144,11 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               contexto="vitrine"
               apontar={selecionada === "luan" ? "direita" : "baixo"}
               className={cn(
-                "pointer-events-none absolute z-10 w-[min(20rem,calc(100%-1.5rem))] [&>div]:pointer-events-auto",
-                selecionada === "joao" && "bottom-[62%] left-[28%]",
-                selecionada === "ricardo" && "bottom-[62%] right-[6%]",
-                selecionada === "luan" && "right-[52%] top-[8%]",
+                "pointer-events-none absolute z-10 [&>div]:pointer-events-auto",
+                // Larguras que mantêm o balão longe do Luan (centro do palco): quebra em duas ou três linhas se preciso.
+                selecionada === "joao" && "bottom-[62%] left-[14%] w-[17rem] [--cauda-x:134px]",
+                selecionada === "ricardo" && "bottom-[62%] right-[18%] w-[13rem] [--cauda-x:85px]",
+                selecionada === "luan" && "right-[58%] top-[8%]",
               )}
             />
             {pessoas.map((p) => (
