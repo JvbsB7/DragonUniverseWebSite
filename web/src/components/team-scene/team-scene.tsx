@@ -6,7 +6,6 @@ import { CinemaView } from "@/components/cinema/cinema-view";
 import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
-import { SkinFace } from "@/components/skin-viewer/skin-face";
 import { buttonClass } from "@/components/button";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
 import { asset, assetSet } from "@/lib/asset";
@@ -116,12 +115,20 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               mundo={{ largura: 744, altura: 420 }}
               cameraPropria
               fallback={
-                <div className="absolute inset-0 flex items-center justify-center gap-6 md:gap-12">
+                // Sem 3D: os corpos inteiros (os mesmos pôsteres do celular), lado a lado; a seleção só realça o contorno.
+                <div className="absolute inset-0 flex items-center justify-center gap-3 md:gap-6">
                   {pessoas.map((m) => (
-                    <SkinFace
-                      key={m.skin}
-                      src={m.skin}
-                      className={cn("aspect-square w-1/4 max-w-28 transition-transform", selecionada === m.id && "scale-110 outline-2 outline-offset-4 outline-brand")}
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={m.id}
+                      src={asset(`${m.preview.base}-corpo-1x-fundo.webp`)}
+                      srcSet={assetSet(`${m.preview.base}-corpo-1x-fundo.webp 296w, ${m.preview.base}-corpo-2x-fundo.webp 592w`)}
+                      sizes="(min-width: 768px) 240px, 30vw"
+                      width={m.preview.width}
+                      height={m.preview.height}
+                      alt=""
+                      loading="lazy"
+                      className={cn("aspect-[3/4] h-[78%] w-auto rounded-md transition-transform", selecionada === m.id && "scale-105 outline-2 outline-offset-4 outline-brand")}
                     />
                   ))}
                 </div>
