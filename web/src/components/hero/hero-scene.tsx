@@ -5,7 +5,7 @@ import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { AdaptiveDpr, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { carregarCenaDoLogo, type CenaDoLogo } from "@/components/logo/logo-3d";
+import { carregarCenaDoLogo, PROPORCAO_LOGO, type CenaDoLogo } from "@/components/logo/logo-3d";
 import { asset } from "@/lib/asset";
 import { silenciarAvisoDoClock } from "@/lib/three-compat";
 
@@ -22,7 +22,7 @@ const ENTRADA = 1800;
 const PARTICULAS_MS = 3000;
 const GIRO_MS = 4000;
 const GRAUS = THREE.MathUtils.degToRad(3);
-const LARGURA_LOGO = (1934 * 2) / 187; // largura do logo em unidades da cena (altura = 2), do viewBox do SVG
+const LARGURA_LOGO = PROPORCAO_LOGO * 2; // largura do logo em unidades da cena (altura = 2), do viewBox do SVG
 const URL_PLANETA = "/models/planeta-do-bills-medio.glb";
 
 // Composição do pôster (ativos-addon/bills): câmera em azimute 238° e elevação 24°; o conteúdo ocupa x 138–588 e y 28–530
@@ -193,7 +193,7 @@ function Logo({ aoPronto, aoFalhar, ponteiro }: { aoPronto: () => void; aoFalhar
   useEffect(() => {
     const abort = new AbortController();
     let atual: CenaDoLogo | null = null;
-    carregarCenaDoLogo(asset("/img/logo/logo-dragon-universe.svg"), abort.signal)
+    carregarCenaDoLogo()
       .then((l) => {
         if (abort.signal.aborted) return l.liberar();
         atual = l;

@@ -23,16 +23,16 @@ export function SiteHeader() {
               className="inline-flex min-h-12 min-w-0 items-center text-text"
             >
               <span className="inline-flex items-center gap-2">
-                {/* Um único logo por largura (<picture>), com proporção reservada: D original 184×187 abaixo de 768 px
-                    e wordmark 1934×187 a partir dele. O logo não é recolorido nem redesenhado. */}
+                {/* Um único logo por largura (<picture>), com proporção reservada: emblema C (64×64) abaixo de 768 px e
+                    wordmark B horizontal (154×26) a partir dele. O logo não é recolorido nem redesenhado. */}
                 <picture className="shrink-0">
-                  <source media="(min-width: 48rem)" srcSet={asset("/img/logo/logo-dragon-universe.svg")} width={1934} height={187} />
+                  <source media="(min-width: 48rem)" srcSet={asset("/img/logo/dragon-universe-b-horizontal.svg")} width={154} height={26} />
                   <img
-                    src={asset("/img/logo/logo-monograma-d.svg")}
+                    src={asset("/img/logo/dragon-universe-c-simbolo.svg")}
                     alt=""
-                    width={184}
-                    height={187}
-                    className="block aspect-[184/187] h-auto w-11 md:aspect-[1934/187] md:w-80"
+                    width={64}
+                    height={64}
+                    className="block aspect-square h-auto w-11 md:aspect-[154/26] md:w-44"
                   />
                 </picture>
                 <span aria-hidden="true" className="font-display text-lg leading-[1.1112] font-bold md:hidden">

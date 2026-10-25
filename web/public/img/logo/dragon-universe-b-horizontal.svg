@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 26" role="img" aria-labelledby="duB-h-title">
+  <title id="duB-h-title">Dragon Universe — direção B, composição horizontal</title>
+  <defs>
+    <linearGradient id="duB-h-face" x1="0" y1="0" x2="0" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1674ff"/>
+      <stop offset=".45" stop-color="#2d86eb"/>
+      <stop offset="1" stop-color="#3fbbfe"/>
+    </linearGradient>
+    <linearGradient id="duB-h-depth" x1="0" y1="0" x2="0" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22358a"/>
+      <stop offset="1" stop-color="#122344"/>
+    </linearGradient>
+    <filter id="duB-h-ki" x="-5%" y="-25%" width="110%" height="150%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation=".7"/>
+    </filter>
+
+    <path id="duB-h-D" fill-rule="evenodd" d="M0 0H6V1H7V2H8V10H7V11H6V12H0ZM2 2V10H5V9H6V3H5V2Z"/>
+    <path id="duB-h-R" fill-rule="evenodd" d="M0 0H6V1H8V6H6V8H7V10H8V12H5V10H4V8H2V12H0ZM2 2V5H6V2Z"/>
+    <path id="duB-h-A" fill-rule="evenodd" d="M2 0H6V1H7V3H8V12H6V8H2V12H0V3H1V1H2ZM2 3V6H6V3H5V2H3V3Z"/>
+    <path id="duB-h-G" d="M1 0H8V2H2V10H6V7H4V5H8V12H1V11H0V1H1Z"/>
+    <path id="duB-h-O" fill-rule="evenodd" d="M1 0H7V1H8V11H7V12H1V11H0V1H1ZM2 2V10H6V2Z"/>
+    <path id="duB-h-N" d="M0 0H4V4H5V6H6V0H8V12H5V8H4V6H3V4H2V12H0Z"/>
+    <path id="duB-h-U" d="M0 0H2V9H3V10H5V9H6V0H8V10H7V11H6V12H2V11H1V10H0Z"/>
+    <path id="duB-h-I" d="M1 0H7V2H5V10H7V12H1V10H3V2H1Z"/>
+    <path id="duB-h-V" d="M0 0H2V4H3V7H4V9H5V7H6V4V0H8V5H7V8H6V10H5V12H3V10H2V8H1V5H0Z"/>
+    <path id="duB-h-E" d="M0 0H8V2H2V5H7V7H2V10H8V12H0Z"/>
+    <path id="duB-h-S" d="M1 0H8V2H2V5H7V6H8V11H7V12H0V10H6V7H1V6H0V1H1Z"/>
+
+    <g id="duB-h-dragon">
+      <use href="#duB-h-D"/>
+      <use href="#duB-h-R" x="10"/>
+      <use href="#duB-h-A" x="20"/>
+      <use href="#duB-h-G" x="30"/>
+      <use href="#duB-h-O" x="40"/>
+      <use href="#duB-h-N" x="50"/>
+    </g>
+    <g id="duB-h-universe">
+      <use href="#duB-h-U"/>
+      <use href="#duB-h-N" x="10"/>
+      <use href="#duB-h-I" x="20"/>
+      <use href="#duB-h-V" x="30"/>
+      <use href="#duB-h-E" x="40"/>
+      <use href="#duB-h-R" x="50"/>
+      <use href="#duB-h-S" x="60"/>
+      <use href="#duB-h-E" x="70"/>
+    </g>
+    <g id="duB-h-words" transform="translate(4 6) matrix(1 0 .12 1 0 0)">
+      <use href="#duB-h-dragon"/>
+      <use href="#duB-h-universe" x="66"/>
+    </g>
+  </defs>
+
+  <use href="#duB-h-words" fill="#23d7ff" stroke="#23d7ff" stroke-width="1" opacity=".20" filter="url(#duB-h-ki)"/>
+  <g fill="url(#duB-h-depth)" stroke="#060a16" stroke-width="1.1" stroke-linejoin="miter" paint-order="stroke fill">
+    <use href="#duB-h-words" transform="translate(2 2)"/>
+    <use href="#duB-h-words" transform="translate(1.5 1.5)"/>
+    <use href="#duB-h-words" transform="translate(1 1)"/>
+    <use href="#duB-h-words" transform="translate(.5 .5)"/>
+  </g>
+  <use href="#duB-h-words" fill="url(#duB-h-face)" stroke="#060a16" stroke-width="1.1" stroke-linejoin="miter" paint-order="stroke fill"/>
+  <use href="#duB-h-words" fill="none" stroke="#aaecff" stroke-width=".18" stroke-linejoin="miter" opacity=".85"/>
+
+  <path fill="#f6b943" d="M28 1H43L40 2H54L48 4H33L36 3H22Z"/>
+</svg>

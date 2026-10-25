@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="duC-i-title">
+  <title id="duC-i-title">Dragon Universe — emblema DU</title>
+  <defs>
+    <linearGradient id="duC-i-face" x1="0" y1="0" x2="0" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1674ff"/>
+      <stop offset=".45" stop-color="#2d86eb"/>
+      <stop offset="1" stop-color="#3fbbfe"/>
+    </linearGradient>
+    <linearGradient id="duC-i-plate" x1="0" y1="8" x2="0" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22358a"/>
+      <stop offset=".5" stop-color="#122344"/>
+      <stop offset="1" stop-color="#060a16"/>
+    </linearGradient>
+    <path id="duC-i-D" fill-rule="evenodd" d="M0 0H6V1H7V2H8V10H7V11H6V12H0ZM2 2V10H5V9H6V3H5V2Z"/>
+    <path id="duC-i-U" d="M0 0H2V9H3V10H5V9H6V0H8V10H7V11H6V12H2V11H1V10H0Z"/>
+  </defs>
+
+  <path fill="#060a16" stroke="#23d7ff" stroke-width="2" stroke-linejoin="miter"
+        d="M18 2H46V6H54V10H58V18H62V46H58V54H50V58H42V62H22V58H14V54H6V46H2V18H6V10H10V6H18Z"/>
+  <path fill="url(#duC-i-plate)"
+        d="M20 8H44V12H52V20H56V44H52V50H44V54H40V56H24V54H20V50H12V44H8V20H12V12H20Z"/>
+  <path fill="#23d7ff" d="M20 8H44V10H20ZM8 20H10V34H8ZM54 20H56V34H54Z"/>
+
+  <g transform="translate(14 18) scale(2)">
+    <g fill="#122344" stroke="#060a16" stroke-width=".8" stroke-linejoin="miter" paint-order="stroke fill">
+      <use href="#duC-i-D" x="1" y="1"/>
+      <use href="#duC-i-U" x="11" y="1"/>
+    </g>
+    <g fill="url(#duC-i-face)" stroke="#060a16" stroke-width=".6" stroke-linejoin="miter" paint-order="stroke fill">
+      <use href="#duC-i-D"/>
+      <use href="#duC-i-U" x="10"/>
+    </g>
+  </g>
+
+  <path fill="#f6b943" d="M20 48H34L31 50H44L36 54H25L28 52H18Z"/>
+</svg>

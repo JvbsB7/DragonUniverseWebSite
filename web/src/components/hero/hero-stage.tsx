@@ -65,11 +65,11 @@ export function HeroStage({ children }: { children: ReactNode }) {
         <div
           data-hero-logo
           role="img"
-          aria-label="Logo do Dragon Universe, em letras azuis blocadas."
-          className="relative grid aspect-[1934/420] place-items-center"
+          aria-label="Dragon Universe"
+          className="relative grid aspect-[90/36] place-items-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset("/img/logo/logo-dragon-universe.svg")} width={1934} height={187} alt="" fetchPriority="low" className="hero-2d-logo h-auto w-[90%]" />
+          <img src={asset("/img/logo/dragon-universe-b-empilhado.svg")} width={900} height={400} alt="" fetchPriority="low" className="hero-2d-logo h-auto w-[90%]" />
         </div>
       </div>
       <div data-hero-print className="px-4 pb-4 md:px-6 md:pb-6">

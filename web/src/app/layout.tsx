@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  // Ícones do D original (logo/export/). Favicon transparente; atalho Apple com fundo #101D34 e margem de 12%.
+  // Ícones do emblema C (favicon 16 em grade de pixels). Favicon transparente; apple-touch e manifest com fundo #060A16 e margem de 12%.
   icons: {
     icon: [
       { url: asset("/img/logo/favicon-16.png"), sizes: "16x16", type: "image/png" },
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [{ url: defaultImage, width: 1200, height: 630, alt: "Logo do Dragon Universe, em letras azuis blocadas." }],
+    images: [{ url: defaultImage, width: 1200, height: 630, alt: "Dragon Universe" }],
     locale: "pt_BR",
     type: "website",
   },
