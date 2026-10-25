@@ -11,14 +11,13 @@ import { DestinoCard } from "@/components/destino-card";
 import { ConteudoFuturo } from "@/components/conteudo-futuro";
 import { Community } from "@/components/community";
 import { HomeReveal } from "@/components/home-reveal";
-import { HeroLogoBand } from "@/components/hero/hero-logo-band";
-import { HeroParallax } from "@/components/hero/hero-parallax";
+import { HeroStage } from "@/components/hero/hero-stage";
 import { TransformacoesShowcase } from "@/components/showcase/transformacoes-showcase";
 import { racasEmDesenvolvimento, racasNoJogo } from "@/config/racas";
 import { destinos } from "@/config/universo";
 import { galeria } from "@/config/galeria";
 import { getTransformacoes } from "@/lib/transformacoes-data";
-import { assetSet } from "@/lib/asset";
+import { asset, assetSet } from "@/lib/asset";
 
 export const metadata: Metadata = pageMetadata({
   title: "Dragon Universe: seu universo, sua história, seu poder",
@@ -73,26 +72,23 @@ export default function HomePage() {
                 style={{ left: `${8 + ((i * 37) % 84)}%`, top: `${10 + ((i * 53) % 70)}%`, animationDelay: `${(i % 4) * 90}ms` }}
               />
             ))}
-            <div className="px-4 pt-4 md:px-6 md:pt-6">
-              <HeroLogoBand />
-            </div>
-            <HeroParallax className="px-4 pb-4 md:px-6 md:pb-6">
+            <HeroStage>
               <figure className="hero-depth-print mx-auto max-w-[20rem] md:max-w-none">
-                <div className="overflow-hidden rounded-md border border-edge bg-bg">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={hero.src}
-                    srcSet={assetSet("/img/planeta-do-bills-360.webp 360w, /img/planeta-do-bills-859.webp 859w")}
-                    sizes="(min-width: 1100px) 640px, calc(100vw - 4rem)"
-                    fetchPriority="high"
-                    alt={hero.alt}
-                    width={hero.width}
-                    height={hero.height}
-                    className="h-auto w-full object-contain"
-                  />
-                </div>
+                {/* Pôster com alfa do Planeta do Bills (renderizado do .glb completo, mesma vista do print do João): é o LCP no
+                    desktop. Proporção fixa 727×559; a construção não é recortada nem alterada. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={asset("/img/bills/planeta-do-bills-727.webp")}
+                  srcSet={assetSet("/img/bills/planeta-do-bills-364.webp 364w, /img/bills/planeta-do-bills-727.webp 727w, /img/bills/planeta-do-bills-1454.webp 1454w")}
+                  sizes="(min-width: 1100px) 640px, 320px"
+                  fetchPriority="high"
+                  alt="Render do Planeta do Bills, construção do Ricardo ainda em desenvolvimento: uma ilha flutuante com árvore central, árvores de copa azul e esferas decorativas ao redor."
+                  width={727}
+                  height={559}
+                  className="hero-2d-print h-auto w-full object-contain"
+                />
               </figure>
-            </HeroParallax>
+            </HeroStage>
             <div className="grid gap-2 border-t border-edge bg-surface p-4 text-sm md:p-5">
               <StatusBadge status="preview" />
               <p>

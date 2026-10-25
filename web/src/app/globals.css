@@ -191,3 +191,13 @@ html[data-perfil="completo"] .ki-particle {
   content-visibility: auto;
   contain-intrinsic-size: auto 700px;
 }
+
+/* Hero: o 2D (logo SVG e pôster do planeta) só some depois do primeiro quadro da peça 3D correspondente. */
+.hero-2d-logo,
+.hero-2d-print {
+  transition: opacity 300ms linear;
+}
+[data-hero-stage][data-logo="3d"] .hero-2d-logo,
+[data-hero-stage][data-planeta="3d"] .hero-2d-print {
+  opacity: 0;
+}
