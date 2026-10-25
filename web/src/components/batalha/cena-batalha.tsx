@@ -350,6 +350,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     <>
       <PerspectiveCamera ref={camRef} makeDefault position={[0, 6, 80]} fov={45} near={5} far={400} />
       <fog attach="fog" args={["#0a1328", 120, 230]} />
+      {/* Só aparece com os três personagens prontos: antes disso o chão e as rochas cobriam as pernas do pôster que ainda está na tela. */}
+      <group visible={prontos}>
       <ambientLight intensity={2.2} />
       {/* Luz de borda: roxa à esquerda (JvbsBR), azul à direita (rvmm255), dourada de contraluz para o Luan (v4-03 §2.1, §4; D31). */}
       <directionalLight position={[-60, 20, 30]} intensity={1.0} color={auraDe("jvbsbr").base} />
@@ -403,6 +405,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
         {/* Desenhadas depois dos brilhos aditivos: a mistura do núcleo ciano com a aura azul clareava as partículas para rosa. */}
         <meshBasicMaterial toneMapped={false} transparent depthWrite={false} />
       </instancedMesh>
+      </group>
     </>
   );
 }

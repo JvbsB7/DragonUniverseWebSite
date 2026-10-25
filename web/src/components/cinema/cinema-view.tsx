@@ -64,6 +64,12 @@ export function CinemaView({ fallback, mundo, cena, className, alt, cameraPropri
 
   // Sem canvas, a cena some e a próxima vez recomeça do fallback.
   const ativo = permitido && habilitada && aoVivo && tamanho !== null;
+  // Se o canvas sai (vaga perdida, aba oculta, nível baixo), a cena nova recomeça do pôster: o "pronto" da anterior não vale mais.
+  const [ativoAntes, setAtivoAntes] = useState(ativo);
+  if (ativo !== ativoAntes) {
+    setAtivoAntes(ativo);
+    if (!ativo) setPronto(false);
+  }
   const zoom = tamanho ? Math.min(tamanho.largura / mundo.largura, tamanho.altura / mundo.altura) : 1;
 
   return (
