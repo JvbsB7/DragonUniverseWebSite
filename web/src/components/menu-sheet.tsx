@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useRef, type RefObject } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { buttonClass } from "@/components/button";
+import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
 import { links } from "@/config/links";
 import { siteConfig } from "@/config/site";
 import { prefetchFor } from "@/lib/prefetch";
@@ -74,6 +75,8 @@ export default function MenuSheet({ open, onOpenChange, returnFocusTo }: Props) 
                 <ul className="mt-1 grid gap-1">{siteConfig.mais.map(renderLink)}</ul>
               </div>
             </nav>
+            {/* Mesmo estado do rodapé e da batalha (v4-03 §3.3), depois dos links de "Mais". */}
+            <ReduzirAnimacoes id="reduzir-menu" />
           </div>
         </Dialog.Popup>
       </Dialog.Portal>
