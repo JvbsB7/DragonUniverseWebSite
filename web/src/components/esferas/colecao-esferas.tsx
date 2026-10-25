@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { buttonClass } from "@/components/button";
+import { Dragao } from "@/components/esferas/dragao";
 import { useReduzir } from "@/lib/use-qualidade";
 import { ESFERAS, useEsferasStore } from "@/store/esferas";
 
@@ -45,11 +46,8 @@ export function ColecaoEsferas() {
     [],
   );
 
-  useEffect(() => {
-    if (!tocando) return;
-    const t = window.setTimeout(() => setTocando(false), 2800);
-    return () => clearTimeout(t);
-  }, [tocando]);
+  // O dragão avisa quando termina (3,2 s no desktop, 2,4 s no celular); aí o quadro parado fica na tela.
+  const terminou = useCallback(() => setTocando(false), []);
 
   const rever = () => {
     setPendente(false);
@@ -71,14 +69,16 @@ export function ColecaoEsferas() {
 
         {completa && aberto && (
           <div className="grid max-w-md gap-3 rounded-xl border-2 border-[#f6b943] bg-bg p-5">
+            <Dragao tocando={tocando && !movimentoReduzido} onFim={terminou} />
             <div aria-hidden="true" className="esferas-aro relative mx-auto h-24 w-24" data-tocando={tocando || undefined}>
               {ESFERAS.map((_, i) => (
                 <i key={i} style={{ ["--i" as string]: i }} />
               ))}
             </div>
             <h3 className="text-xl">As 7 esferas se reuniram!</h3>
-            <p>As esferas brilharam juntas.</p>
+            <p>O dragão acordou, só para brilhar um pouco.</p>
             <p className="text-sm text-muted-foreground">É só uma surpresa do site. Não vale nada no jogo e não tem relação com o apoio.</p>
+            <p className="text-xs text-muted-foreground">Dragão em blocos desenhado pela equipe.</p>
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
@@ -112,7 +112,7 @@ export function ColecaoEsferas() {
         </div>
         <p role="status" aria-live="polite" className="sr-only">
           {anuncio}
-          {completa && fechamento > 0 && !movimentoReduzido ? " Você reuniu as 7 esferas. Uma animação decorativa está tocando." : ""}
+          {completa && fechamento > 0 && !movimentoReduzido ? " Você reuniu as 7 esferas. Um dragão em blocos aparece numa animação decorativa." : ""}
         </p>
       </div>
     </section>
