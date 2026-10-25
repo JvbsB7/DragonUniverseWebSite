@@ -4,6 +4,10 @@ import { useEffect, useRef } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { qualidadeAtual } from "@/lib/perfil";
+import { silenciarAvisoDoClock } from "@/lib/three-compat";
+
+// O R3F 9 ainda usa THREE.Clock por dentro (aviso de depreciação do three 0.186); silenciado de forma central, como no hero.
+silenciarAvisoDoClock();
 
 // Canvas cinema: um único contexto WebGL fixo sobre a página, com pointer-events desligados. Cada CinemaView é uma região
 // (scissor) deste canvas. Loop em demanda: as cenas pedem quadro enquanto animam; rolar e redimensionar também pedem,
