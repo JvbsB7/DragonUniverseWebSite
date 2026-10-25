@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StatusBadge, type Status } from "@/components/status-badge";
 import { MotionRoot, PainelAnimado } from "@/components/motion-lazy";
 import { asset, assetSet } from "@/lib/asset";
 import { cn } from "@/lib/utils";
+import { useQualidade } from "@/lib/use-qualidade";
 import { avisoUniverso, comoChegar, type Destino, type DestinoStatus } from "@/config/universo";
 
 const statusMap: Record<DestinoStatus, Status> = { live: "live", preview: "preview", planned: "planned" };
@@ -16,11 +17,37 @@ const filtros: { id: "todos" | DestinoStatus; rotulo: string }[] = [
   { id: "planned", rotulo: "Planejado" },
 ];
 
-function Painel({ d }: { d: Destino }) {
+// Faixa de viagem (v4-03 §11.2): área gráfica separada da imagem (nunca cobre a construção), com altura reservada (72 px no
+// desktop, 48 px no celular). A nave autoral (sprite aprovado, 4 quadros de rastro) a cruza em 650 ms / 400 ms. Decorativa.
+function Faixa({ viagem, aoPular }: { viagem: { nome: string } | null; aoPular: () => void }) {
+  return (
+    <div
+      aria-hidden={viagem ? undefined : true}
+      style={{ ["--nave-1x" as string]: `url(${asset("/img/nave/nave-1x.webp")})`, ["--nave-2x" as string]: `url(${asset("/img/nave/nave-2x.webp")})` }}
+      className="faixa-viagem relative h-12 overflow-hidden rounded-md border border-edge bg-bg nav:h-[4.5rem]">
+      {viagem && (
+        <>
+          <span aria-hidden="true" className="nave-voo absolute top-1/2 -translate-y-1/2">
+            <span className="nave-sprite block" />
+          </span>
+          <span aria-hidden="true" className="absolute start-3 top-1 text-xs text-muted-foreground">
+            A caminho de {viagem.nome}…
+          </span>
+          <button type="button" onClick={aoPular} className="absolute end-1 top-1/2 inline-flex min-h-12 -translate-y-1/2 items-center rounded-md px-3 text-sm font-semibold text-brand underline underline-offset-4">
+            Pular a viagem
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Painel({ d, viagem, aoPular }: { d: Destino; viagem: { nome: string } | null; aoPular: () => void }) {
   const wiki = `/wiki/planetas-e-dimensoes/${d.slug}`;
   return (
     <div className="grid min-w-0 content-start gap-3">
       <StatusBadge status={statusMap[d.status]} />
+      <Faixa viagem={viagem} aoPular={aoPular} />
       <h3 className="text-card-title">{d.nome}</h3>
       <p className="max-w-[65ch]">{d.texto}</p>
       {d.status === "live" && <p className="text-muted-foreground">{comoChegar}</p>}
@@ -60,6 +87,35 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
   const [filtro, setFiltro] = useState<"todos" | DestinoStatus>("todos");
   const [atual, setAtual] = useState(destinos[0].slug);
   const [trocou, setTrocou] = useState(false);
+  const [viagem, setViagem] = useState<{ nome: string } | null>(null);
+  const [avisoViagem, setAvisoViagem] = useState("");
+  const timer = useRef(0);
+  const animar = useQualidade() !== "estatico";
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  // Viagem: os dados e a seleção mudam no início; a nave só cruza a faixa. Em cliques seguidos vale só o último destino.
+  const viajar = (x: Destino) => {
+    setTrocou(true);
+    if (x.slug === atual) return;
+    setAtual(x.slug);
+    clearTimeout(timer.current);
+    if (!animar) {
+      setViagem(null);
+      return;
+    }
+    const dur = window.matchMedia("(min-width: 1100px)").matches ? 650 : 400;
+    setViagem({ nome: x.nome });
+    setAvisoViagem(`Viajando para ${x.nome}.`);
+    timer.current = window.setTimeout(() => {
+      setViagem(null);
+      setAvisoViagem(`Chegamos a ${x.nome}.`);
+    }, dur);
+  };
+  const pularViagem = () => {
+    clearTimeout(timer.current);
+    setViagem(null);
+    setAvisoViagem("Chegamos ao destino.");
+  };
 
   const lista = destinos.filter((d) => filtro === "todos" || d.status === filtro);
   const d = lista.find((x) => x.slug === atual) ?? lista[0];
@@ -87,6 +143,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
             </button>
           ))}
         </div>
+        <p className="sr-only" aria-live="polite">{avisoViagem}</p>
         <p className="sr-only" aria-live="polite">{!trocou ? "" : d ? `Mostrando ${d.nome}. ${lista.length} ${lista.length === 1 ? "destino" : "destinos"} na lista.` : "Nenhum destino neste filtro."}</p>
         <div className="grid gap-6 nav:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] nav:items-start">
           <ul aria-label="Destinos do universo" className="grid min-w-0 gap-2">
@@ -97,10 +154,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
                   <button
                     type="button"
                     aria-pressed={sel}
-                    onClick={() => {
-                      setTrocou(true);
-                      setAtual(x.slug);
-                    }}
+                    onClick={() => viajar(x)}
                     className={cn(
                       "flex min-h-12 w-full min-w-0 items-center justify-between gap-3 rounded-md border px-3 py-2 text-start text-base font-semibold",
                       sel ? "border-brand bg-raised shadow-[inset_4px_0_0_var(--du-brand)]" : "border-border bg-surface hover:bg-raised",
@@ -111,7 +165,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
                   {sel && (
                     <div className="mt-2 rounded-xl border border-edge bg-surface p-5 nav:hidden">
                       <PainelAnimado chave={x.slug} trocou={trocou}>
-                        <Painel d={x} />
+                        <Painel d={x} viagem={viagem} aoPular={pularViagem} />
                       </PainelAnimado>
                     </div>
                   )}
@@ -122,7 +176,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
           <div className="hidden min-w-0 rounded-xl border border-edge bg-surface p-6 shadow-block-card nav:block">
             {d ? (
               <PainelAnimado chave={d.slug} trocou={trocou}>
-                <Painel d={d} />
+                <Painel d={d} viagem={viagem} aoPular={pularViagem} />
               </PainelAnimado>
             ) : (
               <p>Nada aqui por enquanto.</p>

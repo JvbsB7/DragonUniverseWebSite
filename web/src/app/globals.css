@@ -336,3 +336,35 @@ dialog.lightbox[open] {
   from { opacity: 0; box-shadow: 0 0 0 3px rgba(35, 215, 255, 0.7); }
   to { opacity: 1; box-shadow: 0 0 0 0 rgba(35, 215, 255, 0); }
 }
+
+/* Nave do Universo (v4-03 §11.2): sprite autoral aprovado (4 quadros de rastro, 128 × 32). A travessia é só CSS. */
+.faixa-viagem {
+  background-image: radial-gradient(#23d7ff 1px, transparent 1.5px), radial-gradient(#a8c4ff 1px, transparent 1.5px);
+  background-size: 46px 46px, 71px 71px;
+  background-position: 6px 8px, 30px 24px;
+  background-color: #060a16;
+}
+.nave-sprite {
+  width: 128px;
+  height: 32px;
+  background-image: var(--nave-1x);
+  background-image: image-set(var(--nave-1x) 1x, var(--nave-2x) 2x);
+  background-size: 512px 32px;
+  image-rendering: pixelated;
+  animation: nave-quadros 500ms steps(4) infinite;
+}
+@keyframes nave-quadros {
+  from { background-position: 0 0; }
+  to { background-position: -512px 0; }
+}
+.nave-voo {
+  left: -128px;
+  animation: nave-cruza var(--nave-dur, 400ms) cubic-bezier(0.2, 0.8, 0.2, 1) 1 both;
+}
+@media (min-width: 1100px) {
+  .nave-voo { --nave-dur: 650ms; }
+}
+@keyframes nave-cruza {
+  from { left: -128px; }
+  to { left: 100%; }
+}
