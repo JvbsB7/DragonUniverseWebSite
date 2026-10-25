@@ -272,6 +272,7 @@ export function TeamScene({ className, titulo = "h3" }: { className?: string; ti
       useFalaStore.getState().fechar("vitrine");
       return;
     }
+    if (reduzido) return; // D39: sem balão com movimento reduzido
     const t = window.setTimeout(
       () => {
         const textos = FALAS_DA_VITRINE[selecionada];
@@ -279,7 +280,7 @@ export function TeamScene({ className, titulo = "h3" }: { className?: string; ti
         selecoes[selecionada] = n + 1;
         useFalaStore.getState().falar({ contexto: "vitrine", ...LOCUTOR[selecionada], texto: textos[n % textos.length], acao: true });
       },
-      reduzido ? 0 : 450,
+      450,
     );
     return () => clearTimeout(t);
   }, [selecionada, reduzido]);

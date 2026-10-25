@@ -13,6 +13,9 @@ type Entrada = Omit<Fala, "chave" | "semLimite"> & { semLimite?: boolean };
 
 type FalaStore = {
   atual: Fala | null;
+  /** Mouse ou foco sobre o balão: suspende a contagem dos 6 s. Fica na store porque a vitrine monta dois slots (desktop e celular) e o escondido não pode fechar a fala sozinho. */
+  pausada: boolean;
+  pausar: (valor: boolean) => void;
   ultima: Partial<Record<ContextoDeFala, Fala>>;
   falar: (f: Entrada) => void;
   fechar: (contexto?: ContextoDeFala) => void;
@@ -21,16 +24,18 @@ type FalaStore = {
 let chave = 0;
 export const useFalaStore = create<FalaStore>((set, get) => ({
   atual: null,
+  pausada: false,
+  pausar: (valor) => set({ pausada: valor }),
   ultima: {},
   falar: (f) => {
     const atual = get().atual;
     if (!f.acao && atual?.acao) return;
     const fala = { ...f, semLimite: f.semLimite ?? false, chave: ++chave };
-    set((s) => ({ atual: fala, ultima: { ...s.ultima, [f.contexto]: fala } }));
+    set((s) => ({ atual: fala, pausada: false, ultima: { ...s.ultima, [f.contexto]: fala } }));
   },
   fechar: (contexto) => {
     if (contexto && get().atual?.contexto !== contexto) return;
-    set({ atual: null });
+    set({ atual: null, pausada: false });
   },
 }));
 

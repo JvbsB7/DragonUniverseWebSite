@@ -12,7 +12,7 @@ const ALINHAR = { esquerda: "justify-start", centro: "justify-center", direita: 
 
 // Balão pixel em HTML (v4-15 §0.2): painel opaco, texto escuro, degraus de 4 px e cauda quadrada voltada à pessoa. Entra e sai por
 // opacidade (120 ms), fica 6 s, e a contagem para com o mouse ou o foco dentro. Fala por ação do visitante é anunciada uma vez;
-// a automática é decorativa (aria-hidden). Com movimento reduzido, a fala por ação aparece parada e fica até fechar.
+// a automática é decorativa (aria-hidden). Com movimento reduzido não há balão (D39): nem automático, nem por ação.
 export function FalaSlot({
   contexto,
   className = "",
@@ -30,13 +30,15 @@ export function FalaSlot({
   const { falar, fechar } = useFalaStore.getState();
   const { reduzir, sistema } = useReduzir();
   const reduzido = reduzir || sistema;
-  const mostrando = atual?.contexto === contexto && (!faixa || atual.faixa === faixa) ? atual : null;
+  // D39: com movimento reduzido não há balão nenhum, nem por ação do visitante.
+  const mostrando = !reduzido && atual?.contexto === contexto && (!faixa || atual.faixa === faixa) ? atual : null;
   const lateral = mostrando?.lateral;
-  const [pausado, setPausado] = useState(false);
+  const pausado = useFalaStore((s) => s.pausada);
+  const setPausado = useFalaStore.getState().pausar;
   const [saindo, setSaindo] = useState(false);
 
   useEffect(() => {
-    if (!mostrando || mostrando.semLimite || (reduzido && mostrando.acao) || pausado) return;
+    if (!mostrando || mostrando.semLimite || pausado) return;
     const sai = window.setTimeout(() => setSaindo(true), PERMANENCIA);
     const fim = window.setTimeout(() => {
       fechar(contexto);
@@ -86,7 +88,9 @@ export function FalaSlot({
           </div>
         </div>
       ) : (
-        contexto !== "dragao" && contexto !== "nuvem" &&
+        !reduzido &&
+        contexto !== "dragao" &&
+        contexto !== "nuvem" &&
         ultima && (
           <button
             type="button"
