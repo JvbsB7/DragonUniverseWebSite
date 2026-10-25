@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import { ocuparNuvem } from "@/store/nuvem";
 import type { DadosDaRaca } from "@/lib/dados-da-raca";
 
 // Leitor de dados (v4-03 §10; "Scouter" é nome interno): botão real, painel no próprio cartão, texto imediato e uma varredura
@@ -12,6 +13,7 @@ export function LeitorDeDados({ nome, dados }: { nome: string; dados: DadosDaRac
   const botao = useRef<HTMLButtonElement>(null);
 
   const alternar = () => {
+    ocuparNuvem(2500);
     const proximo = !aberto;
     setAberto(proximo);
     setAviso(proximo ? `Dados de ${nome} abertos.` : `Dados de ${nome} fechados.`);

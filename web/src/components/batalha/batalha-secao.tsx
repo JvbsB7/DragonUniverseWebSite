@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CinemaView } from "@/components/cinema/cinema-view";
+import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
 import { buttonClass } from "@/components/button";
@@ -128,6 +129,8 @@ export function BatalhaSecao() {
             </p>
           </figcaption>
         </figure>
+
+        <FaixaNuvem id="batalha" className="mx-auto my-6 max-w-[72rem]" />
 
         {hidratado && (
           <div role="group" aria-label="Controles da cena" className="mx-auto mt-4 flex w-full max-w-[72rem] flex-wrap items-center gap-3">

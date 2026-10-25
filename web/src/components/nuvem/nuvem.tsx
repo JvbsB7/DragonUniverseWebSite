@@ -1,0 +1,112 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { asset } from "@/lib/asset";
+import { useMenu } from "@/store/menu";
+import { useLightbox } from "@/store/lightbox";
+import { useBatalhaStore } from "@/store/batalha";
+import { qualidadeAtual } from "@/lib/perfil";
+import { ocupacao, useNuvem } from "@/store/nuvem";
+
+// Quadros do sprite aprovado (Forja, nuvem-jvbsbr.json): voo 0–11 (loop, 12 fps), aceno 12–21, saída 22–27; 7 colunas.
+const COLUNAS = 7;
+const FPS = 12;
+const ANIM = { voo: [0, 12], aceno: [12, 10], saida: [22, 6] } as const;
+type Modo = keyof typeof ANIM;
+
+// A nuvem cruza a faixa da esquerda para a direita (5 s no desktop, 4 s no celular) com leve flutuação vertical. É decorativa
+// (aria-hidden, sem foco); só o sprite aceita um clique/toque do mouse: aceno de ~0,8 s, saída e fim. Pausa com a aba oculta e
+// sai em até 150 ms se começar uma interação (menu, lightbox, batalha, viagem, seleção) ou se o movimento for reduzido.
+export function Nuvem() {
+  const encerrar = useNuvem((s) => s.encerrar);
+  const anunciar = useNuvem((s) => s.anunciar);
+  const raiz = useRef<HTMLDivElement>(null);
+  const sprite = useRef<HTMLDivElement>(null);
+  const modo = useRef<Modo>("voo");
+  const quadro = useRef(0);
+  const [saindo, setSaindo] = useState(false);
+  const [pausada, setPausada] = useState(false);
+  const [largo] = useState(() => window.matchMedia("(min-width: 48rem)").matches);
+  const [aceno, setAceno] = useState(false);
+  const L = largo ? { w: 112, h: 80, arq: "desktop", dur: 5 } : { w: 72, h: 52, arq: "celular", dur: 4 };
+
+  const sair = () => {
+    setSaindo(true);
+    window.setTimeout(encerrar, 150);
+  };
+
+  // Quadros do sprite a 12 fps, direto no DOM (sem re-render).
+  useEffect(() => {
+    if (pausada) return;
+    const id = window.setInterval(() => {
+      const [ini, n] = ANIM[modo.current];
+      const i = quadro.current;
+      if (modo.current !== "voo" && i >= n - 1) {
+        if (modo.current === "aceno") {
+          modo.current = "saida";
+          quadro.current = 0;
+        } else {
+          anunciar("JvbsBR acenou e a nuvem seguiu viagem.");
+          window.clearInterval(id);
+          encerrar();
+          return;
+        }
+      } else quadro.current = modo.current === "voo" ? (i + 1) % n : i + 1;
+      const frame = ANIM[modo.current][0] + quadro.current;
+      const el = sprite.current;
+      if (el) el.style.backgroundPosition = `${-(frame % COLUNAS) * L.w}px ${-Math.floor(frame / COLUNAS) * L.h}px`;
+      void ini;
+    }, 1000 / FPS);
+    return () => window.clearInterval(id);
+  }, [pausada, L.w, L.h, anunciar, encerrar]);
+
+  // Pausa com a aba oculta; sai se começar uma interação ou se o nível cair para estático.
+  useEffect(() => {
+    const aba = () => setPausada(document.hidden);
+    document.addEventListener("visibilitychange", aba);
+    const verificar = window.setInterval(() => {
+      const ocupada = useMenu.getState().open || useLightbox.getState().index !== null || useBatalhaStore.getState().status === "tocando" || Date.now() < ocupacao.ate;
+      if (ocupada || qualidadeAtual() === "estatico") sair();
+    }, 100);
+    return () => {
+      document.removeEventListener("visibilitychange", aba);
+      window.clearInterval(verificar);
+    };
+    // `sair` só usa estados estáveis.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const acenar = () => {
+    if (aceno) return;
+    setAceno(true);
+    modo.current = "aceno";
+    quadro.current = 0;
+  };
+
+  return (
+    <div
+      ref={raiz}
+      onAnimationEnd={(e) => {
+        if (e.animationName === "nuvem-cruza") encerrar();
+      }}
+      className="nuvem-cruza absolute top-1/2 -translate-y-1/2"
+      style={{ ["--dur" as string]: `${L.dur}s`, ["--w" as string]: `${L.w}px`, animationPlayState: pausada || aceno ? "paused" : "running", opacity: saindo ? 0 : 1, transition: "opacity 150ms linear" }}
+    >
+      <div className="nuvem-bob" style={{ animationPlayState: pausada ? "paused" : "running" }}>
+        <div
+          ref={sprite}
+          onClick={acenar}
+          className="pointer-events-auto cursor-pointer"
+          style={{
+            width: L.w,
+            height: L.h,
+            backgroundImage: `url(${asset(`/img/nuvem/nuvem-jvbsbr-${L.arq}.webp`)})`,
+            backgroundSize: `${COLUNAS * L.w}px ${4 * L.h}px`,
+            backgroundPosition: "0 0",
+            imageRendering: "pixelated",
+          }}
+        />
+      </div>
+    </div>
+  );
+}

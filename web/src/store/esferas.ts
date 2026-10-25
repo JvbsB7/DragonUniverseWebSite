@@ -4,6 +4,7 @@ import { create } from "zustand";
 // localStorage deste navegador (leitura e escrita em try/catch); sem armazenamento, vale só nesta visita.
 export const ESFERAS = ["origem", "racas", "formas", "destinos", "construcao", "pessoas", "comunidade"] as const;
 export type IdEsfera = (typeof ESFERAS)[number];
+import { ocuparNuvem } from "@/store/nuvem";
 const CHAVE = "du-esferas";
 
 type EsferasStore = {
@@ -60,6 +61,7 @@ export const useEsferasStore = create<EsferasStore>((set, get) => ({
       set({ anuncio: "Você já achou esta esfera." });
       return;
     }
+    ocuparNuvem(2500);
     const lista = [...coletadas, id];
     const ok = gravar(lista);
     const completou = lista.length === ESFERAS.length;

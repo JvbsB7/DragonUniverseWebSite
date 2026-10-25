@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { IdDaPessoa } from "@/config/equipe";
+import { ocuparNuvem } from "@/store/nuvem";
 
 // Pessoa selecionada na vitrine da equipe (v4-03 §7). Compartilhada entre a cena (desktop) e os cartões (celular).
 type EquipeStore = {
@@ -13,6 +14,12 @@ type EquipeStore = {
 export const useEquipeStore = create<EquipeStore>((set) => ({
   selecionada: null,
   anuncio: "",
-  selecionar: (id, nome) => set({ selecionada: id, anuncio: `Mostrando o perfil de ${nome}.` }),
-  fechar: () => set({ selecionada: null, anuncio: "Perfil fechado. Mostrando a equipe toda." }),
+  selecionar: (id, nome) => {
+    ocuparNuvem(2500);
+    set({ selecionada: id, anuncio: `Mostrando o perfil de ${nome}.` });
+  },
+  fechar: () => {
+    ocuparNuvem(2500);
+    set({ selecionada: null, anuncio: "Perfil fechado. Mostrando a equipe toda." });
+  },
 }));

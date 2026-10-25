@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { TestWarning } from "@/components/test-warning";
 import { MenuHost } from "@/components/menu-host";
 import { CinemaHost } from "@/components/cinema/cinema-host";
+import { NuvemHost } from "@/components/nuvem/nuvem-host";
 import { siteConfig } from "@/config/site";
 import { defaultImage } from "@/lib/seo";
 import { asset } from "@/lib/asset";
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteFooter />
         <MenuHost />
         <CinemaHost />
+        <NuvemHost />
       </body>
     </html>
   );

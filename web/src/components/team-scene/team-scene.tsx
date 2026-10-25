@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { CinemaView } from "@/components/cinema/cinema-view";
+import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
 import { SkinFace } from "@/components/skin-viewer/skin-face";
@@ -232,6 +233,7 @@ export function TeamScene({ className }: { className?: string }) {
     <div className={cn("mx-auto w-full max-w-[72rem]", className)}>
       <Desktop selecionada={selecionada} />
       <Celular selecionada={selecionada} />
+      <FaixaNuvem id="equipe" className="mt-6" />
       <p role="status" aria-live="polite" className="sr-only">
         {anuncio}
       </p>

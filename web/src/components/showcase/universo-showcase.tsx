@@ -6,6 +6,8 @@ import { StatusBadge, type Status } from "@/components/status-badge";
 import { MotionRoot, PainelAnimado } from "@/components/motion-lazy";
 import { asset, assetSet } from "@/lib/asset";
 import { cn } from "@/lib/utils";
+import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
+import { ocuparNuvem } from "@/store/nuvem";
 import { useQualidade } from "@/lib/use-qualidade";
 import { avisoUniverso, comoChegar, type Destino, type DestinoStatus } from "@/config/universo";
 
@@ -71,6 +73,7 @@ function Painel({ d, viagem, aoPular }: { d: Destino; viagem: { nome: string } |
       ) : (
         <p className="grid min-h-24 max-w-lg place-items-center rounded-md border border-dashed border-border p-4 text-center text-sm text-muted-foreground">Imagem em breve</p>
       )}
+      <FaixaNuvem id="universo" />
       <div>
         <Link href={wiki} className="inline-flex min-h-12 items-center text-base font-semibold text-brand underline underline-offset-4">
           Ver na wiki<span className="sr-only">: {d.nome}</span>
@@ -96,6 +99,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
   // Viagem: os dados e a seleção mudam no início; a nave só cruza a faixa. Em cliques seguidos vale só o último destino.
   const viajar = (x: Destino) => {
     setTrocou(true);
+    ocuparNuvem(2500);
     if (x.slug === atual) return;
     setAtual(x.slug);
     clearTimeout(timer.current);
