@@ -55,6 +55,8 @@ export function definirReduzir(valor: boolean) {
 
 /** Desce um nível de qualidade nesta visita (quadros lentos). Não passa de "baixo". */
 export function degradar() {
+  // Teste/QA: `?du-sem-degradar` mantém o nível (render por software em máquina de teste é lento por natureza).
+  if (new URLSearchParams(window.location.search).has("du-sem-degradar")) return;
   if (degradacao >= 2 || ORDEM.indexOf(qualidadeAtual()) <= 1) return;
   degradacao += 1;
   aplicarAtributos();

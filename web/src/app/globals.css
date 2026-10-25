@@ -210,3 +210,9 @@ html[data-reduzir="true"] *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+/* Aura e energia do rvmm255 (D15): só na energia do Ricardo; o ouro continua reservado. */
+:root {
+  --du-aura-carmesim: #e62e52;
+  --du-aura-carmesim-brilho: #ff7185;
+}

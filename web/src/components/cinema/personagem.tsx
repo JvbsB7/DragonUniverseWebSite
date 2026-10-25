@@ -11,7 +11,7 @@ import { amostrar, criarAdaptador, poseNeutra, type Clipe, type Pose } from "@/l
 
 // Textura de cada skin carregada uma vez e compartilhada por todas as vistas (no rig antigo, cada Presenter baixava a sua).
 const texturas = new Map<string, Promise<CanvasTexture>>();
-function texturaDaSkin(url: string): Promise<CanvasTexture> {
+export function texturaDaSkin(url: string): Promise<CanvasTexture> {
   let p = texturas.get(url);
   if (!p) {
     p = loadImage(asset(url)).then((imagem) => {
@@ -28,6 +28,22 @@ function texturaDaSkin(url: string): Promise<CanvasTexture> {
     texturas.set(url, p);
   }
   return p;
+}
+
+/** Um PlayerObject pronto para o R3F (cape, elytra e orelhas escondidos: senão aparece uma placa lisa atrás do corpo). */
+export function novoPlayer(): PlayerObject {
+  const player = new PlayerObject();
+  player.cape.visible = false;
+  player.elytra.visible = false;
+  player.ears.visible = false;
+  return player;
+}
+
+/** Aplica a skin e cria o adaptador de poses (lê o repouso do modelo: modelType e textura vêm antes). */
+export function vestirPlayer(player: PlayerObject, tex: CanvasTexture) {
+  player.skin.modelType = tex.userData.slim ? "slim" : "default";
+  player.skin.map = tex;
+  return criarAdaptador(player);
 }
 
 export type Papel = {

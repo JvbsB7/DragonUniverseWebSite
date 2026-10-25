@@ -18,6 +18,7 @@ import { destinos } from "@/config/universo";
 import { galeria } from "@/config/galeria";
 import { getTransformacoes } from "@/lib/transformacoes-data";
 import { asset, assetSet } from "@/lib/asset";
+import { BatalhaSecao } from "@/components/batalha/batalha-secao";
 
 export const metadata: Metadata = pageMetadata({
   title: "Dragon Universe: seu universo, sua história, seu poder",
@@ -98,6 +99,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <BatalhaSecao />
 
       <section aria-labelledby="o-que-e" className="bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>

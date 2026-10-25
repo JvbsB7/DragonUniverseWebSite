@@ -1,0 +1,380 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { PerspectiveCamera } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
+import {
+  AdditiveBlending,
+  CanvasTexture,
+  Color,
+  DoubleSide,
+  InstancedMesh,
+  Object3D,
+  PerspectiveCamera as CameraThree,
+  Sprite,
+  SpriteMaterial,
+  type Group,
+  type Mesh,
+} from "three";
+import { novoPlayer, texturaDaSkin, vestirPlayer } from "@/components/cinema/personagem";
+import { SKINS } from "@/lib/personagens";
+import { useQualidade } from "@/lib/use-qualidade";
+import { degradar } from "@/lib/perfil";
+import { DURACAO_BATALHA, relogioBatalha, useBatalhaStore } from "@/store/batalha";
+import {
+  CORES,
+  GRAVIDADE,
+  anel,
+  aura,
+  camera as cameraEm,
+  combatenteGiro,
+  combatenteY,
+  criarParticulas,
+  joaoX,
+  linhasDeVelocidade,
+  luanVisivel,
+  luanY,
+  nucleoDeImpacto,
+  poseJoao,
+  poseLuan,
+  poseRicardo,
+  ricardoX,
+  suave,
+} from "./batalha-linha";
+
+// Quadro de teste: `?batalha-quadro=4.5` congela a cena nesse instante (pôster, QA e revisão de efeitos).
+const quadroDeTeste = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("batalha-quadro") : null;
+
+function prng(seed: number) {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function texturaDeBrilho(): CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const g = c.getContext("2d")!;
+  const grad = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.45, "rgba(255,255,255,0.45)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 128);
+  return new CanvasTexture(c);
+}
+
+// Campo rochoso voxel procedural e original (D5): placas de chão e rochas em blocos, em azul-marinho da paleta.
+function Campo() {
+  const chao = useRef<InstancedMesh>(null);
+  const rochas = useRef<InstancedMesh>(null);
+  useEffect(() => {
+    const r = prng(11);
+    const o = new Object3D();
+    const cor = new Color();
+    const paleta = ["#0d1a36", "#122344", "#16294d", "#0f1f3d"];
+    let n = 0;
+    for (let x = -14; x <= 13; x++) {
+      for (let z = -7; z <= 4; z++) {
+        const h = 2 + (r() < 0.12 ? 1 : 0);
+        o.position.set(x * 8 + 4, -16 - h / 2, z * 8 + 4);
+        o.scale.set(8, h, 8);
+        o.updateMatrix();
+        chao.current?.setMatrixAt(n, o.matrix);
+        chao.current?.setColorAt(n, cor.set(paleta[Math.floor(r() * paleta.length)]));
+        n++;
+      }
+    }
+    if (chao.current) chao.current.instanceMatrix.needsUpdate = true;
+    if (chao.current?.instanceColor) chao.current.instanceColor.needsUpdate = true;
+    const tons = ["#122344", "#1a3160", "#0b1730", "#16294d"];
+    let m = 0;
+    const aglomerado = (cx: number, cz: number, qtd: number, grande: number) => {
+      for (let i = 0; i < qtd; i++) {
+        const w = 4 + r() * grande;
+        const h = 4 + r() * grande * 1.6;
+        o.position.set(cx + (r() - 0.5) * 22, -16 + h / 2, cz + (r() - 0.5) * 12);
+        o.scale.set(w, h, w * (0.7 + r() * 0.6));
+        o.updateMatrix();
+        rochas.current?.setMatrixAt(m, o.matrix);
+        rochas.current?.setColorAt(m, cor.set(tons[Math.floor(r() * tons.length)]));
+        m++;
+      }
+    };
+    aglomerado(-82, -16, 9, 9);
+    aglomerado(82, -16, 9, 9);
+    aglomerado(-40, -40, 6, 12);
+    aglomerado(42, -40, 6, 12);
+    aglomerado(0, -46, 5, 14);
+    aglomerado(-96, 4, 3, 6);
+    aglomerado(96, 4, 3, 6);
+    if (rochas.current) rochas.current.count = m;
+    if (rochas.current) rochas.current.instanceMatrix.needsUpdate = true;
+    if (rochas.current?.instanceColor) rochas.current.instanceColor.needsUpdate = true;
+  }, []);
+  return (
+    <>
+      <instancedMesh ref={chao} args={[undefined, undefined, 28 * 12]} frustumCulled={false}>
+        <boxGeometry />
+        <meshStandardMaterial roughness={1} />
+      </instancedMesh>
+      <instancedMesh ref={rochas} args={[undefined, undefined, 60]} frustumCulled={false}>
+        <boxGeometry />
+        <meshStandardMaterial roughness={1} />
+      </instancedMesh>
+    </>
+  );
+}
+
+const PARTICULAS = criarParticulas();
+
+export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => void; visivel: boolean }) {
+  const nivel = useQualidade();
+  const invalidate = useThree((s) => s.invalidate);
+  const camRef = useRef<CameraThree>(null);
+  const grupos = useRef<(Group | null)[]>([null, null, null]);
+  const adaptadores = useRef<ReturnType<typeof vestirPlayer>[]>([]);
+  const [prontos, setProntos] = useState(false);
+  const jogadores = useMemo(() => [novoPlayer(), novoPlayer(), novoPlayer()], []);
+  const brilho = useMemo(() => texturaDeBrilho(), []);
+  const auras = useRef<(Sprite | null)[]>([null, null]);
+  const nucleo = useRef<Sprite>(null);
+  const linhas = useRef<(Mesh | null)[]>([]);
+  const aneis = useRef<(Mesh | null)[]>([null, null]);
+  const parts = useRef<InstancedMesh>(null);
+  const dummy = useMemo(() => new Object3D(), []);
+  const acumulado = useRef(0);
+
+  useEffect(() => {
+    let vivo = true;
+    Promise.all([SKINS.jvbsbr, SKINS.rvmm255, SKINS.luan].map(texturaDaSkin)).then((ts) => {
+      if (!vivo) return;
+      adaptadores.current = ts.map((tex, i) => vestirPlayer(jogadores[i], tex));
+      if (parts.current) PARTICULAS.forEach((p, i) => parts.current!.setColorAt(i, new Color(p.cor)));
+      if (parts.current?.instanceColor) parts.current.instanceColor.needsUpdate = true;
+      setProntos(true);
+      aoPronto();
+      invalidate();
+    });
+    return () => {
+      vivo = false;
+      brilho.dispose();
+    };
+    // Montagem única.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Frame em demanda: qualquer mudança de estado (iniciar, pausar, pular) ou de visibilidade pede um novo quadro.
+  useEffect(() => {
+    invalidate();
+    return useBatalhaStore.subscribe(() => invalidate());
+  }, [visivel, invalidate]);
+
+  useEffect(() => {
+    if (quadroDeTeste !== null) relogioBatalha.t = parseFloat(quadroDeTeste) || 0;
+  }, []);
+
+  function desenhar(t: number, nv: string) {
+    const [gj, gr, gl] = grupos.current;
+    const giro = combatenteGiro(t);
+    const yc = combatenteY(t);
+    const xj = joaoX(t);
+    const xr = ricardoX(t);
+    gj?.position.set(xj, yc, 0);
+    gj && (gj.rotation.y = giro);
+    gr?.position.set(xr, yc, 0);
+    gr && (gr.rotation.y = -giro);
+    adaptadores.current[0]?.aplicar(poseJoao(t));
+    adaptadores.current[1]?.aplicar(poseRicardo(t));
+    const pl = poseLuan(t);
+    // Cabeça de Luan desce de leve ao observar (6,65–7,45 s), mantendo os braços cruzados do clipe.
+    pl.rot.head[0] += 0.22 * suave((t - 6.65) / 0.8);
+    adaptadores.current[2]?.aplicar(pl);
+    if (gl) {
+      gl.visible = luanVisivel(t);
+      gl.position.set(0, luanY(t), 0);
+      gl.rotation.y = -0.1;
+    }
+
+    // Tremor só no nível alto; médio sem tremor, borrão ou refração (v4-03 §12.1).
+    const cam = cameraEm(t, nv === "alto");
+    const c = camRef.current;
+    if (c) {
+      c.position.set(cam.pos[0], cam.pos[1], cam.pos[2]);
+      c.fov = cam.fov;
+      c.lookAt(cam.olha[0], cam.olha[1], cam.olha[2]);
+      c.updateProjectionMatrix();
+    }
+
+    // Auras (sprites aditivos atrás de cada combatente).
+    const posAura: [number, number][] = [[xj, yc], [xr, yc]];
+    auras.current.forEach((s, i) => {
+      if (!s) return;
+      s.position.set(posAura[i][0], posAura[i][1] + 1, -5);
+      (s.material as SpriteMaterial).opacity = aura(t, i as 0 | 1);
+    });
+
+    // Realce de impacto e anéis de onda no chão.
+    const k = nucleoDeImpacto(t);
+    if (nucleo.current) {
+      nucleo.current.visible = k > 0;
+      nucleo.current.scale.setScalar(2 + 20 * k);
+      (nucleo.current.material as SpriteMaterial).opacity = 0.85 * k;
+    }
+    aneis.current.forEach((m, i) => {
+      if (!m) return;
+      const a = anel(t, i * 0.12);
+      m.visible = !!a && (i === 0 || nv === "alto");
+      if (a) {
+        m.scale.setScalar(a.raio);
+        (m.material as SpriteMaterial).opacity = a.opacidade * (i ? 0.5 : 1);
+      }
+    });
+
+    // Linhas de velocidade (rastros geométricos curtos atrás dos corpos).
+    const p = linhasDeVelocidade(t);
+    linhas.current.forEach((m, i) => {
+      if (!m) return;
+      const porLado = nv === "alto" ? 3 : 1;
+      const lado = i < 3 ? 0 : 1;
+      const idx = i % 3;
+      m.visible = p !== null && idx < porLado;
+      if (p === null || !m.visible) return;
+      const sinal = lado === 0 ? -1 : 1;
+      const base = lado === 0 ? xj : xr;
+      const comp = 6 + 12 * p;
+      m.scale.set(comp, 0.35, 0.35);
+      m.position.set(base + sinal * (7 + idx * 3 + comp / 2), yc + [5, -1, -8][idx], [2, -2, 3][idx]);
+      (m.material as SpriteMaterial).opacity = 0.55 * (1 - 0.4 * p);
+    });
+
+    // Partículas (impacto e fragmentos só até o limite do nível; ambientais 8/4).
+    const im = parts.current;
+    if (im) {
+      PARTICULAS.forEach((pt, i) => {
+        const tau = t - pt.nasce;
+        let ativa = tau >= 0 && tau <= pt.vida;
+        if (pt.tipo === "ambiente") ativa = nv === "alto" || i < 18 + 4;
+        if (pt.tipo === "impacto" && nv !== "alto" && i >= 8) ativa = false;
+        if (pt.tipo === "fragmento" && nv !== "alto" && i >= 12 + 3) ativa = false;
+        if (!ativa) {
+          dummy.scale.setScalar(0);
+        } else if (pt.tipo === "ambiente") {
+          dummy.position.set(pt.p0[0] + Math.sin(t * 0.3 + i) * 3, pt.p0[1] + Math.sin(t * 0.5 + i * 2) * 2, pt.p0[2]);
+          dummy.scale.setScalar(pt.escala);
+        } else {
+          const y = Math.max(pt.p0[1] + pt.v[1] * tau - 0.5 * GRAVIDADE * tau * tau, -15.5);
+          dummy.position.set(pt.p0[0] + pt.v[0] * tau, y, pt.p0[2] + pt.v[2] * tau);
+          dummy.scale.setScalar(pt.escala * (1 - 0.6 * (tau / pt.vida)));
+        }
+        dummy.updateMatrix();
+        im.setMatrixAt(i, dummy.matrix);
+      });
+      im.instanceMatrix.needsUpdate = true;
+    }
+  }
+
+  // Monitor de quadros (v4-03 §12.1): média acima de 100 ms por 3 s seguidos desce um nível de qualidade (nunca sobe na ação).
+  const janela = useRef({ soma: 0, n: 0, ruins: 0 });
+  function vigiarQuadros(dt: number) {
+    const j = janela.current;
+    j.soma += dt;
+    j.n += 1;
+    if (j.soma < 1.5) return;
+    j.ruins = j.soma / j.n > 0.1 ? j.ruins + 1 : 0;
+    j.soma = 0;
+    j.n = 0;
+    if (j.ruins >= 2) {
+      j.ruins = 0;
+      degradar();
+    }
+  }
+
+  useFrame((_, dtBruto) => {
+    if (!prontos) return;
+    const st = useBatalhaStore.getState();
+    const rel = relogioBatalha;
+    if (quadroDeTeste === null && rel.rodada !== st.rodada) {
+      rel.rodada = st.rodada;
+      rel.t = st.status === "tocando" ? 0 : DURACAO_BATALHA;
+    }
+    // Avança só enquanto a região está na tela, a aba visível e sem pausa; o quadro nunca pula segundos acumulados.
+    const rodando = quadroDeTeste === null && visivel && !document.hidden && !st.pausada && st.status !== "parado";
+    if (rodando) {
+      const dt = Math.min(dtBruto, 0.25);
+      vigiarQuadros(dtBruto);
+      if (st.status === "repouso") {
+        // Repouso: ~30 quadros por segundo bastam para respiração e auras.
+        acumulado.current += dt;
+        if (acumulado.current < 1 / 30) {
+          invalidate();
+          return;
+        }
+        rel.t += acumulado.current;
+        acumulado.current = 0;
+      } else {
+        rel.t += dt;
+        if (rel.t >= DURACAO_BATALHA) st.terminou();
+      }
+      invalidate();
+    }
+    desenhar(rel.t, nivel);
+  });
+
+  return (
+    <>
+      <PerspectiveCamera ref={camRef} makeDefault position={[0, 6, 80]} fov={45} near={5} far={400} />
+      <fog attach="fog" args={["#0a1328", 120, 230]} />
+      <ambientLight intensity={2.2} />
+      {/* Luz de borda: azul à esquerda, carmesim à direita, violeta de contraluz para o Luan (v4-03 §2.1, §4). */}
+      <directionalLight position={[-60, 20, 30]} intensity={1.0} color={CORES.azul} />
+      <directionalLight position={[60, 20, 30]} intensity={0.9} color={CORES.carmesim} />
+      <directionalLight position={[0, 60, -40]} intensity={0.7} color={CORES.violeta} />
+      <Campo />
+
+      {[0, 1].map((i) => (
+        <sprite key={`a${i}`} ref={(s) => void (auras.current[i] = s)} scale={[34, 54, 1]} renderOrder={-1}>
+          <spriteMaterial map={brilho} color={i === 0 ? CORES.azul : CORES.carmesim} transparent opacity={0.19} depthWrite={false} blending={AdditiveBlending} />
+        </sprite>
+      ))}
+
+      <group ref={(g) => void (grupos.current[0] = g)}>
+        <primitive object={jogadores[0]} visible={prontos} />
+      </group>
+      <group ref={(g) => void (grupos.current[1] = g)}>
+        <primitive object={jogadores[1]} visible={prontos} />
+      </group>
+      <group ref={(g) => void (grupos.current[2] = g)} visible={false}>
+        <primitive object={jogadores[2]} visible={prontos} />
+      </group>
+
+      {Array.from({ length: 6 }, (_, i) => (
+        <mesh key={`l${i}`} ref={(m) => void (linhas.current[i] = m)} visible={false}>
+          <boxGeometry />
+          <meshBasicMaterial color={i < 3 ? CORES.ciano : CORES.carmesim} transparent opacity={0.5} blending={AdditiveBlending} depthWrite={false} />
+        </mesh>
+      ))}
+
+      <sprite ref={nucleo} position={[0, 2, 5]} visible={false}>
+        <spriteMaterial map={brilho} color={CORES.ciano} transparent opacity={0.8} depthWrite={false} blending={AdditiveBlending} />
+      </sprite>
+
+      {[0, 1].map((i) => (
+        <mesh key={`r${i}`} ref={(m) => void (aneis.current[i] = m)} rotation={[-Math.PI / 2, 0, 0]} position={[0, -15.7 + i * 0.05, -2]} visible={false}>
+          <ringGeometry args={[0.93, 1, 64]} />
+          <meshBasicMaterial color={i ? CORES.violeta : CORES.ciano} transparent opacity={0.6} side={DoubleSide} blending={AdditiveBlending} depthWrite={false} />
+        </mesh>
+      ))}
+
+      <instancedMesh ref={parts} args={[undefined, undefined, PARTICULAS.length]} frustumCulled={false}>
+        <boxGeometry />
+        <meshBasicMaterial />
+      </instancedMesh>
+    </>
+  );
+}
