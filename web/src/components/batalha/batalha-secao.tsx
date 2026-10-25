@@ -86,7 +86,7 @@ export function BatalhaSecao() {
             <ReflexoBorda id="batalha" />
             <CinemaView
               alt={status === "parado" || !com3d ? batalha.alt : batalha.ariaAnimada}
-              className={`ambiente-palco relative w-full overflow-hidden rounded-xl border border-edge bg-bg ${!com3d && !estatico && clipe ? "mx-auto aspect-[3/4] max-w-[26rem]" : "aspect-[2/1]"}`}
+              className={`ambiente-palco relative w-full overflow-hidden rounded-xl border border-edge bg-bg ${!com3d && !estatico && clipe ? "mx-auto aspect-[3/4] max-w-[26rem]" : estatico && batalha.videoVertical ? "mx-auto aspect-[3/4] max-w-[26rem] md:aspect-[2/1] md:max-w-none" : "aspect-[2/1]"}`}
               mundo={{ largura: 2, altura: 1 }}
               cameraPropria
               habilitada={habilitada}
@@ -113,16 +113,21 @@ export function BatalhaSecao() {
                     <source src={asset(clipe.webm)} type="video/webm" />
                   </video>
                 ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={asset(batalha.poster.src)}
-                    srcSet={assetSet(batalha.poster.srcSet)}
-                    sizes="(min-width: 1216px) 1152px, calc(100vw - 32px)"
-                    width={batalha.poster.width}
-                    height={batalha.poster.height}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  // Com animações reduzidas no celular entra o pôster VERTICAL (3:4), o mesmo quadro final do clipe; no desktop, o 2:1.
+                  <picture>
+                    {estatico && batalha.videoVertical && (
+                      <source media="(max-width: 767px)" srcSet={asset(batalha.videoVertical.poster)} />
+                    )}
+                    <img
+                      src={asset(batalha.poster.src)}
+                      srcSet={assetSet(batalha.poster.srcSet)}
+                      sizes="(min-width: 1216px) 1152px, calc(100vw - 32px)"
+                      width={batalha.poster.width}
+                      height={batalha.poster.height}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </picture>
                 )
               }
               cena={(aoPronto, visivel) => <CenaBatalha aoPronto={aoPronto} visivel={visivel} />}
