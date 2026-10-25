@@ -71,9 +71,9 @@ export function BatalhaSecao() {
   return (
     <section aria-labelledby="titulo-batalha" className="py-12 md:py-16">
       <div className="du-container">
-        {/* Título provisório (só para leitor de tela): a Pena ainda não definiu o título visível desta seção. */}
+        {/* Título aprovado pela Pena (v4-04 v4.3 §2.7): h2 só para leitor de tela, sem texto visível duplicado. */}
         <h2 id="titulo-batalha" className="sr-only">
-          Cena da equipe
+          A equipe em ação
         </h2>
         <figure className="mx-auto w-full max-w-[72rem]">
           <div ref={palco}>

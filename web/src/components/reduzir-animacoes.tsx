@@ -31,7 +31,7 @@ export function ReduzirAnimacoes({ id = "reduzir" }: { id?: string }) {
         onClick={() => {
           if (sistema) return;
           definirReduzir(!reduzir);
-          setAviso(!reduzir ? "Animações reduzidas." : "Animações completas.");
+          setAviso(!reduzir ? "Animações reduzidas. O conteúdo é o mesmo." : "Animações completas. As cenas não recomeçam sozinhas.");
         }}
         className="inline-flex min-h-12 items-center gap-3 rounded-md text-left text-text aria-disabled:cursor-not-allowed"
       >
