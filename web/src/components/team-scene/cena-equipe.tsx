@@ -24,7 +24,7 @@ const DISTANCIA = 126; // fov 30°: 67,5 unidades de altura visível, 120 de lar
 type Ator = { id: IdDaPessoa; skin: string; x: number; y: number; giro: number; cor: string };
 const ATORES: Ator[] = [
   { id: "joao", skin: "/skins/jvbs.png", x: -31, y: -10.4, giro: 0.5, cor: AZUL },
-  { id: "luan", skin: "/skins/luan.png", x: 0, y: 10, giro: -0.1, cor: VIOLETA },
+  { id: "luan", skin: "/skins/luan.png", x: 0, y: 6, giro: -0.1, cor: VIOLETA },
   { id: "ricardo", skin: "/skins/rvmm.png", x: 31, y: -10.4, giro: -0.5, cor: CARMESIM },
 ];
 

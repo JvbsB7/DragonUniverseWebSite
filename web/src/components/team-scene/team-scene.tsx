@@ -23,8 +23,18 @@ const rotuloCurto = (p: PessoaDaEquipe) => p.jogador ?? p.nome;
 const descricaoDaCena =
   "Cena da equipe: JvbsBR à esquerda, Luan Dias flutuando de braços cruzados ao centro e rvmm255 à direita. Escolha uma pessoa para ver o perfil.";
 
-function Painel({ id }: { id: IdDaPessoa | null }) {
-  const fechar = useEquipeStore((s) => s.fechar);
+type Titulo = "h2" | "h3";
+
+function Painel({ id, titulo: Titulo = "h3" }: { id: IdDaPessoa | null; titulo?: Titulo }) {
+  const fecharStore = useEquipeStore((s) => s.fechar);
+  // Ao fechar, o foco volta ao botão que seleciona a pessoa (o visível: seletor no desktop, "Ver perfil" no celular).
+  const fechar = () => {
+    fecharStore();
+    requestAnimationFrame(() => {
+      const alvo = [...document.querySelectorAll<HTMLElement>(`[data-seletor="${id}"]`)].find((el) => el.offsetParent !== null);
+      alvo?.focus();
+    });
+  };
   const pessoa = pessoas.find((p) => p.id === id);
   if (!pessoa) {
     return (
@@ -33,12 +43,11 @@ function Painel({ id }: { id: IdDaPessoa | null }) {
       </div>
     );
   }
-  const titulo = tituloDaPessoa(pessoa);
   return (
     <section aria-label={`Perfil de ${pessoa.nome}${pessoa.jogador ? `, ${pessoa.jogador}` : ""}`} className="rounded-xl border border-edge bg-surface shadow-block-card">
       <div aria-hidden="true" className="h-3 rounded-t-xl" style={{ background: energias[pessoa.id] }} />
       <div className="grid gap-3 p-5 md:p-6">
-        <h3 className="text-2xl [overflow-wrap:anywhere]">{titulo}</h3>
+        <Titulo className="text-2xl [overflow-wrap:anywhere]">{tituloDaPessoa(pessoa)}</Titulo>
         <dl className="grid gap-3">
           <div>
             <dt className="text-sm text-muted-foreground">Função na equipe</dt>
@@ -53,7 +62,7 @@ function Painel({ id }: { id: IdDaPessoa | null }) {
           href={pessoa.github.url}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`GitHub de ${pessoa.nome}, abre em nova aba`}
+          aria-label={`GitHub: ${pessoa.github.rotulo}, de ${pessoa.nome}, abre em nova aba`}
           className="inline-flex min-h-12 w-fit max-w-full items-center gap-2 text-brand underline underline-offset-4 [overflow-wrap:anywhere]"
         >
           <GithubMark />
@@ -62,9 +71,6 @@ function Painel({ id }: { id: IdDaPessoa | null }) {
         <div className="flex flex-wrap gap-3">
           <button type="button" onClick={fechar} className={buttonClass("secondary")}>
             Fechar perfil
-          </button>
-          <button type="button" onClick={fechar} className={buttonClass("secondary")}>
-            Ver a equipe toda
           </button>
         </div>
       </div>
@@ -77,6 +83,7 @@ function Seletor({ pessoa, selecionada }: { pessoa: PessoaDaEquipe; selecionada:
   return (
     <button
       type="button"
+      data-seletor={pessoa.id}
       aria-pressed={selecionada}
       aria-label={`Ver perfil de ${pessoa.nome}${pessoa.jogador ? `, ${pessoa.jogador}` : ""}`}
       onClick={() => selecionar(pessoa.id, pessoa.nome)}
@@ -95,7 +102,7 @@ function Seletor({ pessoa, selecionada }: { pessoa: PessoaDaEquipe; selecionada:
 // Zonas de clique sobre cada personagem: atalho do mouse para os mesmos seletores (os botões acima são o acesso real).
 const zonas: Record<IdDaPessoa, string> = { joao: "left-[12%]", luan: "left-[38%]", ricardo: "left-[64%]" };
 
-function Desktop({ selecionada }: { selecionada: IdDaPessoa | null }) {
+function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titulo: Titulo }) {
   const selecionar = useEquipeStore((s) => s.selecionar);
   return (
     <div className="hidden md:block">
@@ -137,13 +144,13 @@ function Desktop({ selecionada }: { selecionada: IdDaPessoa | null }) {
             ))}
           </div>
         </div>
-        <Painel id={selecionada} />
+        <Painel id={selecionada} titulo={titulo} />
       </div>
     </div>
   );
 }
 
-function Celular({ selecionada }: { selecionada: IdDaPessoa | null }) {
+function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titulo: Titulo }) {
   const selecionar = useEquipeStore((s) => s.selecionar);
   const trilho = useRef<HTMLUListElement>(null);
   const [indice, setIndice] = useState(0);
@@ -197,6 +204,7 @@ function Celular({ selecionada }: { selecionada: IdDaPessoa | null }) {
               <p className="font-display text-xl font-bold [overflow-wrap:anywhere]">{tituloDaPessoa(p)}</p>
               <button
                 type="button"
+                data-seletor={p.id}
                 aria-pressed={selecionada === p.id}
                 aria-label={`Ver perfil de ${p.nome}${p.jogador ? `, ${p.jogador}` : ""}`}
                 onClick={() => selecionar(p.id, p.nome)}
@@ -220,19 +228,20 @@ function Celular({ selecionada }: { selecionada: IdDaPessoa | null }) {
         </button>
       </div>
       <div className="mt-4">
-        <Painel id={selecionada} />
+        <Painel id={selecionada} titulo={titulo} />
       </div>
     </div>
   );
 }
 
-export function TeamScene({ className }: { className?: string }) {
+/** `titulo`: nível do título do perfil (h2 na página da equipe, onde a seção não tem título próprio; h3 na Home). */
+export function TeamScene({ className, titulo = "h3" }: { className?: string; titulo?: Titulo }) {
   const selecionada = useEquipeStore((s) => s.selecionada);
   const anuncio = useEquipeStore((s) => s.anuncio);
   return (
     <div className={cn("mx-auto w-full max-w-[72rem]", className)}>
-      <Desktop selecionada={selecionada} />
-      <Celular selecionada={selecionada} />
+      <Desktop selecionada={selecionada} titulo={titulo} />
+      <Celular selecionada={selecionada} titulo={titulo} />
       <FaixaNuvem id="equipe" className="mt-6" />
       <p role="status" aria-live="polite" className="sr-only">
         {anuncio}
