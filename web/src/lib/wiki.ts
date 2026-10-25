@@ -155,7 +155,7 @@ function plainBody(body: string): string {
     .trim();
 }
 
-// Índice de busca gerado no build: título, descrição, títulos de seção e início do texto.
+// Índice de busca gerado no build: título, descrição, títulos de seção e os primeiros 3.000 caracteres do texto (cobre as listas de formas por raça).
 export function buildSearchIndex(): WikiIndexItem[] {
   const { categories, pages } = loadWiki();
   return pages.map((p) => {
@@ -167,7 +167,7 @@ export function buildSearchIndex(): WikiIndexItem[] {
       title: p.title,
       description: p.description,
       status: p.status,
-      search: fold([p.title, p.description, ...p.headings.map((h) => h.text), plainBody(p.body).slice(0, 800)].join(" ")),
+      search: fold([p.title, p.description, ...p.headings.map((h) => h.text), plainBody(p.body).slice(0, 3000)].join(" ")),
     };
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { LinkButton } from "@/components/button";
 import { WikiStatusBadge } from "@/components/wiki/wiki-status";
@@ -47,16 +47,19 @@ export function WikiExplorer({ categories }: { categories: CategoryCard[] }) {
     if (active) load();
   }, [active, load]);
 
+  // A lista acompanha o texto com prioridade menor: o campo responde na hora e a filtragem/renderização dos cartões vem depois
+  // (INP da busca: a v2 media 624 ms na primeira tecla).
+  const consulta = useDeferredValue(query);
   const results = useMemo(() => {
     if (!index) return [];
-    const terms = fold(query).split(/\s+/).filter(Boolean);
+    const terms = fold(consulta).split(/\s+/).filter(Boolean);
     return index.filter(
       (p) =>
         (category === null || p.category === category) &&
         (status === null || p.status === status) &&
         terms.every((t) => p.search.includes(t)),
     );
-  }, [index, query, category, status]);
+  }, [index, consulta, category, status]);
 
   return (
     <div className="flex flex-col gap-8">
