@@ -1,11 +1,9 @@
-import { Check, Minus } from "lucide-react";
 import { Expandable } from "@/components/expandable";
 import { comparativo, niveis } from "@/config/plans";
 
 const Valor = ({ ok }: { ok: boolean }) => (
-  <span className="inline-flex items-center gap-1.5">
-    {ok ? <Check aria-hidden="true" className="size-4 shrink-0 text-brand" /> : <Minus aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />}
-    <span>{ok ? "Incluído" : "Não incluído"}</span>
+  <span>
+    <span aria-hidden="true" className={ok ? "text-brand" : "text-muted-foreground"}>{ok ? "✓" : "–"}</span> {ok ? "Incluído" : "Não incluído"}
   </span>
 );
 

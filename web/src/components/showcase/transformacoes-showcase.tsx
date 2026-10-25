@@ -59,7 +59,8 @@ function Detalhe({ item }: { item: TransformacaoItem }) {
 // linhas que quebram e painel abaixo no celular. A seleção é por botão (teclado e toque), sem arrastar; o foco fica no
 // seletor e um texto discreto anuncia a troca. "Comparar" admite até 2 itens e só mostra campos com dado. Sem print real,
 // o painel mostra "Imagem em breve" uma única vez; nenhuma linha de progressão é inventada.
-export function TransformacoesShowcase({ itens }: { itens: TransformacaoItem[] }) {
+export function TransformacoesShowcase({ itens, nivelTitulo = 3 }: { itens: TransformacaoItem[]; nivelTitulo?: 2 | 3 }) {
+  const Titulo = nivelTitulo === 2 ? "h2" : "h3";
   const [atual, setAtual] = useState(itens[0].slug);
   const [trocou, setTrocou] = useState(false);
   const [comparar, setComparar] = useState(false);
@@ -92,7 +93,7 @@ export function TransformacoesShowcase({ itens }: { itens: TransformacaoItem[] }
       <div className="grid gap-6 nav:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] nav:items-start">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 id="lista-transformacoes" className="text-xl">Escolha uma transformação</h3>
+            <Titulo id="lista-transformacoes" className="text-xl">Escolha uma transformação</Titulo>
             <button
               type="button"
               aria-pressed={comparar}

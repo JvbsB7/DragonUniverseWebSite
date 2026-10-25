@@ -1,4 +1,4 @@
-import { Check, Crown, Shield, Zap } from "lucide-react";
+import { Crown, Shield, Zap } from "lucide-react";
 import { SoonButton } from "@/components/button";
 import { niveis, type Nivel } from "@/config/plans";
 import { cn } from "@/lib/utils";
@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 // A identidade de cada nível vem de faixa, ícone e luz (nunca só da cor: o nome está em texto). "Destaque" é rótulo
 // editorial, não dado de assinantes. Sem hover que pareça ativar a contratação.
 const visual: Record<Nivel["id"], { icone: typeof Shield; faixa: string; sombra: string; moldura: string }> = {
-  guerreiro: { icone: Shield, faixa: "bg-primary", sombra: "shadow-[0_8px_24px_rgba(0,0,0,0.24),0_0_32px_var(--du-glow-primary)]", moldura: "border-edge" },
-  "super-guerreiro": { icone: Zap, faixa: "bg-gold", sombra: "shadow-[0_14px_32px_rgba(0,0,0,0.3),0_0_40px_var(--du-glow-gold)]", moldura: "border-2 border-gold" },
-  lendario: { icone: Crown, faixa: "bg-violet", sombra: "shadow-[0_8px_24px_rgba(0,0,0,0.24),0_0_32px_var(--du-glow-violet)]", moldura: "border-edge" },
+  guerreiro: { icone: Shield, faixa: "bg-primary", sombra: "shadow-block-card", moldura: "border-edge" },
+  "super-guerreiro": { icone: Zap, faixa: "bg-gold", sombra: "shadow-block-card", moldura: "border-2 border-gold" },
+  lendario: { icone: Crown, faixa: "bg-violet", sombra: "shadow-block-card", moldura: "border-edge" },
 };
 
 export function Niveis() {
@@ -44,12 +44,9 @@ export function Niveis() {
               </div>
               <div className="grid gap-2">
                 {n.inclui && <p className="font-semibold">{n.inclui}</p>}
-                <ul className="grid gap-2">
+                <ul className="grid list-['✓_'] gap-2 ps-5 marker:text-brand">
                   {n.beneficios.map((b) => (
-                    <li key={b} className="flex gap-2">
-                      <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-brand" />
-                      <span className="min-w-0">{b}</span>
-                    </li>
+                    <li key={b} className="min-w-0">{b}</li>
                   ))}
                 </ul>
               </div>

@@ -23,10 +23,10 @@ export function HeroStage({ children }: { children: ReactNode }) {
   const permitido = use3dAllowed();
   const leve = useSyncExternalStore(semAssinatura, perfilLeve, () => true);
   const habilitado = permitido && !leve;
-  const vivo = useLiveCanvas(box, habilitado);
+  const [falhou, setFalhou] = useState(false);
+  const vivo = useLiveCanvas(box, habilitado && !falhou);
   const [logoPronto, setLogoPronto] = useState(false);
   const [planetaPronto, setPlanetaPronto] = useState(false);
-  const [falhou, setFalhou] = useState(false);
 
   useEffect(() => {
     if (!habilitado) return;

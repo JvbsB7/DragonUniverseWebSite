@@ -1,9 +1,10 @@
 "use client";
 
-import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdaptiveDpr, Points, PointMaterial, useGLTF } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
+import { AdaptiveDpr, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { carregarCenaDoLogo, type CenaDoLogo } from "@/components/logo/logo-3d";
 import { asset } from "@/lib/asset";
 import { silenciarAvisoDoClock } from "@/lib/three-compat";
@@ -24,9 +25,9 @@ const GRAUS = THREE.MathUtils.degToRad(3);
 const LARGURA_LOGO = (1934 * 2) / 187; // largura do logo em unidades da cena (altura = 2), do viewBox do SVG
 const URL_PLANETA = "/models/planeta-do-bills-medio.glb";
 
-// Composição do pôster (ativos-addon/bills): câmera em azimute 238° e elevação 24°; o conteúdo ocupa x 153–597 e y 70–558
-// de uma imagem 727×559.
-const POSTER = { w: 727, h: 559, x0: 153, x1: 597, y0: 70, y1: 558 };
+// Composição do pôster (ativos-addon/bills): câmera em azimute 238° e elevação 24°; o conteúdo ocupa x 138–588 e y 28–530
+// de uma imagem 727×559 (5% de respiro em cima e embaixo, 19% nas laterais; margem refeita pela Forja).
+const POSTER = { w: 727, h: 559, x0: 138, x1: 588, y0: 28, y1: 530 };
 const AZIMUTE = THREE.MathUtils.degToRad(238);
 const ELEVACAO = THREE.MathUtils.degToRad(24);
 
@@ -92,7 +93,8 @@ function encaixarPlaneta(pivo: THREE.Object3D, modelo: THREE.Object3D, zoom: num
   // Centro do conteúdo no pôster exibido, em px do palco, convertido para a cena.
   const alturaPx = alvo.w * (POSTER.h / POSTER.w);
   const px = alvo.cx - alvo.w / 2 + alvo.w * ((POSTER.x0 + POSTER.x1) / 2 / POSTER.w);
-  const py = alvo.cy - alturaPx / 2 + alturaPx * ((POSTER.y0 + POSTER.y1) / 2 / POSTER.h);
+  // 0,035: a projeção real do modelo fica um pouco abaixo do centro da caixa alinhada aos eixos; calibrado contra o pôster.
+  const py = alvo.cy - alturaPx / 2 + alturaPx * ((POSTER.y0 + POSTER.y1) / 2 / POSTER.h) - alvo.w * 0.035;
   pivo.position.set((px - largura / 2) / zoom, -(py - altura / 2) / zoom, 0);
 }
 
@@ -243,26 +245,110 @@ function Logo({ aoPronto, aoFalhar, ponteiro }: { aoPronto: () => void; aoFalhar
   return logo ? <primitive object={logo.cena} /> : null;
 }
 
-// Planeta do Bills: .glb médio (KHR_mesh_quantization, sem Draco nem decoder, sem textura; useGLTF sem CDN). O nó raiz já
-// vem centrado em X/Z com a base em Y = 0. Giro lento de 4 s (oscila ±10° em torno da vista do pôster e termina nela) e
-// profundidade pelo mouse (±4°). Material lit com as luzes da cena do logo (manuais, sem Environment).
-function Planeta({ ponteiro, aoPronto }: { ponteiro: boolean; aoPronto: () => void }) {
-  const { scene } = useGLTF(asset(URL_PLANETA), false, false);
+// Luz do pôster (ativos-addon/bills/pagina-bills.html): hemisfério #dfe8ff/#4a3a66 1,35, sol branco 2,1 em (-3, 5, 4) e contraluz
+// #9fb8ff 0,6 em (4, 1, -3), SEM tone mapping. As luzes ficam no espaço do modelo (giram com ele, como a câmera orbitava no
+// render) e só iluminam a cena do planeta (cena separada), então o logo aprovado mantém a luz dele.
+function criarLuzesDoPlaneta(): THREE.Group {
+  const g = new THREE.Group();
+  g.add(new THREE.HemisphereLight(0xdfe8ff, 0x4a3a66, 1.35));
+  const sol = new THREE.DirectionalLight(0xffffff, 2.1);
+  sol.position.set(-3, 5, 4);
+  const contra = new THREE.DirectionalLight(0x9fb8ff, 0.6);
+  contra.position.set(4, 1, -3);
+  g.add(sol, sol.target, contra, contra.target);
+  return g;
+}
+
+/** As luzes ficam na raiz (sem posição nem escala: a luz hemisférica usa a posição para a direção) e só copiam a rotação do modelo. */
+function sincronizarLuzes(luzes: THREE.Object3D, pivo: THREE.Object3D, modelo: THREE.Object3D) {
+  luzes.quaternion.copy(pivo.quaternion).multiply(modelo.quaternion);
+}
+
+function prepararPlaneta(raiz: THREE.Object3D) {
+  raiz.traverse((o) => {
+    const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+    if (!m) return;
+    // Como no render do pôster: sem tone mapping, rugosidade 1 e metalicidade 0 (o padrão do glTF seria metálico).
+    (Array.isArray(m) ? m : [m]).forEach((x) => {
+      x.toneMapped = false;
+      if (x instanceof THREE.MeshStandardMaterial) {
+        x.roughness = 1;
+        x.metalness = 0;
+      }
+    });
+  });
+}
+
+function liberarPlaneta(raiz: THREE.Object3D) {
+  raiz.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    mesh.geometry?.dispose();
+    const m = mesh.material as THREE.Material | THREE.Material[] | undefined;
+    if (m) (Array.isArray(m) ? m : [m]).forEach((x) => x.dispose());
+  });
+}
+
+// Renderiza a cena principal (logo e partículas, com tone mapping) e depois a cena do planeta (sem tone mapping e com a luz
+// do pôster), sobre o mesmo canvas. Com prioridade > 0 o R3F deixa de renderizar sozinho, então os dois passos são nossos.
+function renderizarDuas(gl: THREE.WebGLRenderer, principal: THREE.Scene, planeta: THREE.Scene, cam: THREE.Camera) {
+  gl.autoClear = true;
+  gl.render(principal, cam);
+  gl.autoClear = false;
+  gl.render(planeta, cam);
+  gl.autoClear = true;
+}
+
+function Renderizador({ planeta }: { planeta: THREE.Scene }) {
+  useFrame(({ gl, scene, camera }) => renderizarDuas(gl, scene, planeta, camera), 1);
+  return null;
+}
+
+// Planeta do Bills: .glb médio (222 KB, KHR_mesh_quantization, sem Draco, sem textura), lido com o GLTFLoader do three (sem
+// CDN). O nó raiz já vem centrado em X/Z com a base em Y = 0. Falha de rede ou de arquivo é tratada aqui (aviso, sem erro
+// não capturado) e devolve o palco ao 2.5D inteiro, liberando o canvas e a vaga. Giro lento de 4 s (±10° em torno da vista
+// do pôster, terminando nela) e profundidade pelo mouse (±4°).
+function Planeta({ ponteiro, aoPronto, aoFalhar }: { ponteiro: boolean; aoPronto: () => void; aoFalhar: () => void }) {
   const { size, invalidate } = useThree();
+  const [scene, setScene] = useState<THREE.Group | null>(null);
   const pivo = useRef<THREE.Group>(null);
   const modelo = useRef<THREE.Group>(null);
+  const luzes = useMemo(() => criarLuzesDoPlaneta(), []);
   const alvo = usePonteiro(ponteiro);
   const t0 = useRef<number | null>(null);
 
   useEffect(() => {
+    let cancelado = false;
+    let atual: THREE.Group | null = null;
+    new GLTFLoader()
+      .loadAsync(asset(URL_PLANETA))
+      .then((g) => {
+        if (cancelado) return liberarPlaneta(g.scene);
+        prepararPlaneta(g.scene);
+        atual = g.scene;
+        setScene(g.scene);
+      })
+      .catch((e) => {
+        if (cancelado) return;
+        console.warn("Planeta 3D indisponível:", e instanceof Error ? e.message : e);
+        aoFalhar();
+      });
+    return () => {
+      cancelado = true;
+      if (atual) liberarPlaneta(atual);
+    };
+  }, [aoFalhar]);
+
+  useEffect(() => {
+    if (!scene) return;
     const zoom = zoomDoPalco();
     // O pôster é o <figure> dentro de [data-hero-print] (o wrapper tem o padding do palco).
     const fig = retangulo("[data-hero-print] figure");
     if (!zoom || !fig || !pivo.current || !modelo.current) return;
     encaixarPlaneta(pivo.current, modelo.current, zoom, size.width, size.height, fig);
+    sincronizarLuzes(luzes, pivo.current, modelo.current);
     invalidate();
     aoPronto();
-  }, [size, scene, invalidate, aoPronto]);
+  }, [size, scene, invalidate, aoPronto, luzes]);
 
   useFrame((_, dt) => {
     const g = pivo.current;
@@ -272,34 +358,27 @@ function Planeta({ ponteiro, aoPronto }: { ponteiro: boolean; aoPronto: () => vo
     const giro = Math.sin(Math.PI * t) * THREE.MathUtils.degToRad(10) * (1 - t);
     const px = ponteiro ? alvo.current.x : 0;
     const py = ponteiro ? alvo.current.y : 0;
-    if (girar(g, giro + px * THREE.MathUtils.degToRad(4), py * THREE.MathUtils.degToRad(2), dt) || t < 1) invalidate();
+    const movendo = girar(g, giro + px * THREE.MathUtils.degToRad(4), py * THREE.MathUtils.degToRad(2), dt);
+    if (modelo.current) sincronizarLuzes(luzes, g, modelo.current);
+    if (movendo || t < 1) invalidate();
   });
 
+  if (!scene) return null;
   return (
-    <group ref={pivo}>
-      <group ref={modelo}>
-        <primitive object={scene} />
+    <>
+      <primitive object={luzes} />
+      <group ref={pivo}>
+        <group ref={modelo}>
+          <primitive object={scene} />
+        </group>
       </group>
-    </group>
+    </>
   );
-}
-
-// Se o .glb falhar (rede, arquivo), só o planeta volta ao pôster 2D; o logo 3D e as partículas continuam.
-class FalhaDoPlaneta extends Component<{ children: ReactNode }, { falhou: boolean }> {
-  state = { falhou: false };
-  static getDerivedStateFromError() {
-    return { falhou: true };
-  }
-  componentDidCatch(e: unknown) {
-    console.warn("Planeta 3D indisponível:", e);
-  }
-  render() {
-    return this.state.falhou ? null : this.props.children;
-  }
 }
 
 export default function HeroScene({ aoLogoPronto, aoPlanetaPronto, aoFalhar }: Props) {
   const [degradado, setDegradado] = useState(false);
+  const cenaPlaneta = useMemo(() => new THREE.Scene(), []);
   return (
     <Canvas
       orthographic
@@ -311,13 +390,10 @@ export default function HeroScene({ aoLogoPronto, aoPlanetaPronto, aoFalhar }: P
       aria-hidden="true"
     >
       <AdaptiveDpr pixelated={false} />
+      <Renderizador planeta={cenaPlaneta} />
       <Monitor aoDegradar={() => setDegradado(true)} aoFalhar={aoFalhar} />
       <Logo aoPronto={aoLogoPronto} aoFalhar={aoFalhar} ponteiro={!degradado} />
-      <FalhaDoPlaneta>
-        <Suspense fallback={null}>
-          <Planeta ponteiro={!degradado} aoPronto={aoPlanetaPronto} />
-        </Suspense>
-      </FalhaDoPlaneta>
+      {createPortal(<Planeta ponteiro={!degradado} aoPronto={aoPlanetaPronto} aoFalhar={aoFalhar} />, cenaPlaneta)}
       {!degradado && <Particulas ativa />}
     </Canvas>
   );

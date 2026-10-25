@@ -1,4 +1,3 @@
-import { Diamond } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
@@ -138,12 +137,9 @@ export default function RoadmapPage() {
                   {planejado.map((g) => (
                     <div key={g.grupo} className="flex flex-col gap-3 rounded-xl border border-edge bg-surface p-5">
                       <h3 className="text-lg">{g.grupo}</h3>
-                      <ul className="flex flex-col gap-2 text-muted-foreground">
+                      <ul className="grid list-['◆_'] gap-2 ps-5 text-muted-foreground marker:text-planned-fg">
                         {g.itens.map((i) => (
-                          <li key={i} className="flex gap-2">
-                            <Diamond aria-hidden="true" className="mt-1.5 size-4 shrink-0 text-planned-fg" />
-                            <span>{i}</span>
-                          </li>
+                          <li key={i} className="min-w-0">{i}</li>
                         ))}
                       </ul>
                     </div>

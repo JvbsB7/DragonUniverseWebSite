@@ -72,8 +72,8 @@ export default async function CategoriaPage({ params }: PageProps<"/wiki/[catego
       </header>
 
       {cat.slug === "racas" && <RacasVitrine />}
-      {cat.slug === "transformacoes" && <TransformacoesShowcase itens={getTransformacoes()} />}
-      {cat.slug === "planetas-e-dimensoes" && <UniversoShowcase destinos={destinos} />}
+      {cat.slug === "transformacoes" && <TransformacoesShowcase itens={getTransformacoes()} nivelTitulo={2} />}
+      {cat.slug === "planetas-e-dimensoes" && <UniversoShowcase destinos={destinos} nivelTitulo={2} />}
 
       <section aria-labelledby="paginas" className="flex flex-col gap-4">
         <h2 id="paginas">{v ? `Todas as páginas de ${cat.title.toLowerCase()}` : "Páginas"}</h2>

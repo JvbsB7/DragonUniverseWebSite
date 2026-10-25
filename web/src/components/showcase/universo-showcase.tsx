@@ -56,7 +56,7 @@ function Painel({ d }: { d: Destino }) {
 // Explorador do universo (v3-04-design.md §9.4; copy §7): filtros por status, lista de destinos e painel do selecionado.
 // Só destinos documentados, sem planetas inventados nem mapa factual. No celular o painel abre logo abaixo do destino
 // escolhido; no desktop fica numa coluna ao lado. Seleção por botão (teclado e toque); nada exige arrastar.
-export function UniversoShowcase({ destinos }: { destinos: Destino[] }) {
+export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Destino[]; nivelTitulo?: 2 | 3 }) {
   const [filtro, setFiltro] = useState<"todos" | DestinoStatus>("todos");
   const [atual, setAtual] = useState(destinos[0].slug);
   const [trocou, setTrocou] = useState(false);
@@ -67,13 +67,17 @@ export function UniversoShowcase({ destinos }: { destinos: Destino[] }) {
   return (
     <MotionRoot>
       <div className="grid gap-4">
+        {nivelTitulo === 2 && <h2 className="sr-only">Destinos do universo</h2>}
         <div role="group" aria-label="Filtrar destinos por status" className="flex flex-wrap gap-2">
           {filtros.map((f) => (
             <button
               key={f.id}
               type="button"
               aria-pressed={filtro === f.id}
-              onClick={() => setFiltro(f.id)}
+              onClick={() => {
+                setTrocou(true);
+                setFiltro(f.id);
+              }}
               className={cn(
                 "inline-flex min-h-12 max-w-full items-center rounded-md border px-3 py-1 text-start text-base font-semibold [overflow-wrap:anywhere]",
                 filtro === f.id ? "border-brand bg-brand text-bg" : "border-border bg-surface text-text hover:bg-raised",
@@ -83,7 +87,7 @@ export function UniversoShowcase({ destinos }: { destinos: Destino[] }) {
             </button>
           ))}
         </div>
-        <p className="sr-only" aria-live="polite">{d ? `Mostrando ${d.nome}. ${lista.length} destinos na lista.` : "Nenhum destino neste filtro."}</p>
+        <p className="sr-only" aria-live="polite">{!trocou ? "" : d ? `Mostrando ${d.nome}. ${lista.length} ${lista.length === 1 ? "destino" : "destinos"} na lista.` : "Nenhum destino neste filtro."}</p>
         <div className="grid gap-6 nav:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] nav:items-start">
           <ul aria-label="Destinos do universo" className="grid min-w-0 gap-2">
             {lista.map((x) => {
