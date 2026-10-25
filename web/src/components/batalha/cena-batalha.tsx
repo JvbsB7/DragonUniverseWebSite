@@ -112,12 +112,12 @@ function Campo() {
       }
     };
     massa(-96, -70, 34, 46, 3, fundo);
-    massa(98, -66, 38, 40, 2, fundo);
+    massa(112, -66, 34, 30, 2, fundo);
     massa(-62, -48, 22, 36, 4, fundo);
-    massa(64, -52, 26, 28, 3, fundo);
+    massa(78, -52, 24, 17, 3, fundo);
     massa(-118, -30, 26, 30, 3, ["#13244a", "#172b55", "#1c3361"]);
     aglomerado(-82, -10, 5, 7);
-    aglomerado(84, -10, 5, 7);
+    aglomerado(98, -12, 4, 4);
     aglomerado(-100, 6, 3, 5);
     aglomerado(100, 6, 3, 5);
     if (rochas.current) rochas.current.count = m;
@@ -229,7 +229,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     auras.current.forEach((s, i) => {
       if (!s) return;
       s.position.set(posAura[i][0], posAura[i][1] + 1, -5);
-      (s.material as SpriteMaterial).opacity = aura(t, i as 0 | 1);
+      // O azul escuro do rvmm255 (D31) é tênue sozinho: o halo dele usa o brilho claro e ganha um reforço de 60%.
+      (s.material as SpriteMaterial).opacity = aura(t, i as 0 | 1) * (i === 1 ? 1.6 : 1);
     });
 
     // Realce de impacto e anéis de onda no chão.
@@ -341,6 +342,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       }
       invalidate();
     }
+    if (process.env.NEXT_PUBLIC_DU_QA === "1") (window as unknown as { __bt?: number }).__bt = rel.t;
     desenhar(rel.t, nivel);
   });
 
@@ -355,7 +357,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       <directionalLight position={[0, 60, -40]} intensity={0.7} color={auraDe("luan").base} />
       {/* Luz de recorte só nas bordas (v4-10 M2; D31): brilho roxo atrás do JvbsBR, brilho azul atrás do rvmm255 (o azul escuro precisa da borda clara). */}
       <directionalLight position={[-45, 18, -55]} intensity={1.3} color={auraDe("jvbsbr").brilho} />
-      <directionalLight position={[45, 18, -55]} intensity={0.9} color={auraDe("rvmm255").brilho} />
+      <directionalLight position={[45, 18, -55]} intensity={1.6} color={auraDe("rvmm255").brilho} />
       <Campo />
 
       {[0, 1].map((i) => (
