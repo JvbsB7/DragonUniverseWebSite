@@ -61,7 +61,7 @@ export default async function CategoriaPage({ params }: PageProps<"/wiki/[catego
             pages={pages.map((p) => ({ slug: p.slug, title: p.title, description: p.description, status: p.status }))}
           />
         ) : (
-          <div className="flex flex-col items-start gap-3 border-2 border-dashed border-border bg-surface p-6">
+          <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border bg-surface p-6">
             <p className="font-display text-lg font-semibold">As páginas desta categoria estão em breve.</p>
             <p className="text-muted-foreground">Quer saber quando chegarem? Acompanhe no Discord.</p>
             <LinkButton href={links.discord} variant="primary" external>Entrar no Discord</LinkButton>
@@ -71,7 +71,7 @@ export default async function CategoriaPage({ params }: PageProps<"/wiki/[catego
 
       {/* Fim da página: convite ao Discord, retorno à wiki e, havendo itens planejados, o roadmap (§8.2).
           O apresentador da categoria fica de fora: a fala aprovada é a de /wiki e fala nova depende do João (revisão de copy A5). */}
-      <nav aria-label="Continue explorando" className="flex flex-wrap gap-4 border-t-2 border-border pt-8">
+      <nav aria-label="Continue explorando" className="flex flex-wrap gap-4 border-t border-edge pt-8">
         <LinkButton href="/wiki">Voltar à wiki</LinkButton>
         {pages.some((p) => p.status !== "no-jogo") && <LinkButton href="/roadmap">Ver em desenvolvimento e planejado</LinkButton>}
         <LinkButton href={links.discord} variant="primary" external>Entrar no Discord</LinkButton>

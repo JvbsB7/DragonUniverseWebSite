@@ -109,7 +109,7 @@ export default function FaqPage() {
         <section key={g.titulo} aria-labelledby={`grupo-${i}`} className="flex flex-col gap-3">
           <h2 id={`grupo-${i}`} className="text-brand">{g.titulo}</h2>
           {g.perguntas.map((item) => (
-            <details key={item.p} className="group rounded-md border-2 border-border bg-surface p-4 open:border-brand">
+            <details key={item.p} className="group rounded-md rounded-xl border border-edge bg-surface p-4 open:border-brand">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 font-display text-lg font-semibold [&::-webkit-details-marker]:hidden">
                 {item.p}
                 <Plus aria-hidden="true" className="size-5 shrink-0 text-brand transition-transform group-open:rotate-45" />

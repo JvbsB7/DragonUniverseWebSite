@@ -28,8 +28,8 @@ export function CompactPresenter({
       </div>
       <blockquote
         className={cn(
-          "relative min-w-0 flex-[1_1_14rem] border-2 border-bg bg-text p-4 text-bg shadow-[4px_4px_0_var(--du-shadow)] md:p-6",
-          "after:pointer-events-none after:absolute after:-left-[0.65rem] after:bottom-5 after:size-4 after:rotate-45 after:border-b-2 after:border-l-2 after:border-bg after:bg-text after:content-['']",
+          "relative min-w-0 flex-[1_1_14rem] rounded-xl bg-text p-4 text-bg shadow-block-card md:p-6",
+          "after:pointer-events-none after:absolute after:-left-[0.65rem] after:bottom-5 after:size-4 after:rotate-45   after:bg-text after:content-['']",
         )}
       >
         <p className="text-[1.0625rem] leading-[1.6875rem] md:text-[1.125rem] md:leading-[1.8125rem]">

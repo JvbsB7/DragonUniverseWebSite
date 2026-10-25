@@ -47,7 +47,7 @@ export function CategoryExplorer({ category, title, pages }: { category: string;
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`Buscar em ${title}…`}
             autoComplete="off"
-            className="min-h-12 w-full min-w-0 border-2 border-border bg-surface pr-4 pl-10 text-text placeholder:text-muted-foreground"
+            className="min-h-12 w-full min-w-0 rounded-md border border-border bg-surface pr-4 pl-10 text-text placeholder:text-muted-foreground"
           />
           <p className="mt-2 text-sm text-muted-foreground">
             Nesta página, a busca considera os títulos e as descrições da categoria {title}. Escolha outra categoria para consultar outros assuntos.
@@ -94,7 +94,7 @@ export function CategoryExplorer({ category, title, pages }: { category: string;
             <li key={p.slug} className="min-w-0">
               <Link
                 href={`/wiki/${category}/${p.slug}`}
-                className="flex h-full min-w-0 flex-col gap-2 border-2 border-border bg-surface p-4 shadow-block-card hover:bg-raised md:p-5"
+                className="flex h-full min-w-0 flex-col gap-2 rounded-xl border border-edge bg-surface p-4 shadow-block-card hover:bg-raised md:p-5"
               >
                 <span className="font-display text-lg font-semibold [overflow-wrap:anywhere]">{p.title}</span>
                 <WikiStatusBadge status={p.status} />
@@ -104,7 +104,7 @@ export function CategoryExplorer({ category, title, pages }: { category: string;
           ))}
         </ul>
       ) : (
-        <div className="flex flex-col items-start gap-3 border-2 border-dashed border-border bg-surface p-6">
+        <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border bg-surface p-6">
           <p className="font-display text-lg font-semibold">Nenhuma página encontrada</p>
           <p className="text-muted-foreground [overflow-wrap:anywhere]">
             {query.trim() ? `Não achamos nada para “${query.trim()}”. ` : "Não achamos nada com esses filtros. "}

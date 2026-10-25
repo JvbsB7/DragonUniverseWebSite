@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/apoie",
 });
 
-const painel = "border-2 border-border bg-surface p-6 shadow-block-card";
+const painel = "rounded-xl border border-edge bg-surface p-6 shadow-block-card";
 
 export default function ApoiePage() {
   const { plansApproved, tiers } = plans;
@@ -53,13 +53,13 @@ export default function ApoiePage() {
         <h2 id="financiar">O que o apoio vai ajudar a financiar</h2>
         <p className="max-w-[65ch] text-muted-foreground">O que o time já tem pela frente (sem data e sem promessa):</p>
         <ul className="grid gap-4 md:grid-cols-2">
-          <li className="border-2 border-border bg-surface p-5"><strong>Estabilidade:</strong> proteção do progresso salvo, Esferas do Dragão e desejos corrigidos e um voo reformulado.</li>
-          <li className="border-2 border-border bg-surface p-5"><strong>Novos treinos e novas raças e formas.</strong></li>
-          <li className="border-2 border-border bg-surface p-5">
+          <li className="rounded-xl border border-edge bg-surface p-5"><strong>Estabilidade:</strong> proteção do progresso salvo, Esferas do Dragão e desejos corrigidos e um voo reformulado.</li>
+          <li className="rounded-xl border border-edge bg-surface p-5"><strong>Novos treinos e novas raças e formas.</strong></li>
+          <li className="rounded-xl border border-edge bg-surface p-5">
             <strong>Novos lugares e construções</strong>, como as que estão em{" "}
             <Link href="/roadmap" className="text-brand underline underline-offset-4">Em desenvolvimento</Link>.
           </li>
-          <li className="border-2 border-border bg-surface p-5"><strong>Eventos dinâmicos e um mundo mais vivo.</strong></li>
+          <li className="rounded-xl border border-edge bg-surface p-5"><strong>Eventos dinâmicos e um mundo mais vivo.</strong></li>
         </ul>
       </section>
 
@@ -74,7 +74,7 @@ export default function ApoiePage() {
 
         {!mostrarTiers && (
           // Um único card informativo, sem botão, preço, nível ou checkout (copy v2.1 §9, design §9.6).
-          <article aria-label="Apoio: em breve, sem valores definidos" className="min-w-0 border-2 border-dashed border-border bg-surface">
+          <article aria-label="Apoio: em breve, sem valores definidos" className="min-w-0 rounded-xl border border-dashed border-border bg-surface">
             <EnergyStrip variant="brand" className="h-12 border-b-2 border-bg" />
             <div className="flex flex-col items-start gap-3 p-5 md:p-6">
               <h2 className="text-2xl">Planos de apoio</h2>
@@ -104,7 +104,7 @@ export default function ApoiePage() {
         </ul>
       )}
 
-      <section aria-labelledby="cta" className="flex flex-col gap-4 border-2 border-border border-s-[6px] border-s-brand bg-surface p-6">
+      <section aria-labelledby="cta" className="flex flex-col gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6">
         <h2 id="cta">Quer ser avisado quando houver novidade?</h2>
         <p className="text-muted-foreground">Entre na comunidade.</p>
         <div className="flex flex-wrap gap-4">

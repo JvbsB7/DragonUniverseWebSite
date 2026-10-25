@@ -40,7 +40,7 @@ export default function EquipePage() {
 
       <ul className="grid gap-6 md:grid-cols-3">
         {equipe.map((p, i) => (
-          <li key={p.discord} className="min-w-0 border-2 border-border bg-surface shadow-block-card">
+          <li key={p.discord} className="min-w-0 rounded-xl border border-edge bg-surface shadow-block-card">
             <div aria-hidden="true" className="h-12" style={{ background: energias[i] }} />
             <div className="flex items-start gap-4 p-5 md:p-6">
               <SkinFace src={p.skin} alt={p.alt} className="size-16" />
@@ -54,7 +54,7 @@ export default function EquipePage() {
         ))}
       </ul>
 
-      <section aria-labelledby="credito" className="flex flex-col gap-4 border-2 border-border border-s-[6px] border-s-brand bg-surface p-6">
+      <section aria-labelledby="credito" className="flex flex-col gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6">
         <h2 id="credito">Crédito ao autor original</h2>
         <p className="font-display text-xl font-semibold text-brand">Inspirado no Dragon Evolution, de About04.</p>
         <p className="text-muted-foreground">

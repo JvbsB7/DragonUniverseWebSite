@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils";
 export type CategoryCard = { slug: string; title: string; description: string; count: number };
 
 export const chip =
-  "inline-flex min-h-12 items-center border-2 px-3 font-display text-base font-semibold transition-colors duration-(--du-motion-fast)";
+  "inline-flex min-h-12 items-center rounded-md border px-3 text-base font-semibold transition-colors duration-(--du-motion-fast)";
 export const chipOff = "border-border bg-surface text-text hover:bg-raised";
 export const chipOn = "border-brand bg-brand text-bg";
 
 const cardLink =
-  "flex h-full min-w-0 flex-col gap-2 border-2 border-border bg-surface p-4 shadow-block-card hover:bg-raised md:p-5";
+  "flex h-full min-w-0 flex-col gap-2 rounded-xl border border-edge bg-surface p-4 shadow-block-card hover:bg-raised md:p-5";
 
 // O índice fica em /wiki-index.json (gerado no build) e é baixado uma vez, no primeiro foco da busca ou uso de filtro.
 let indexCache: WikiIndexItem[] | null = null;
@@ -74,7 +74,7 @@ export function WikiExplorer({ categories }: { categories: CategoryCard[] }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Busque por raça, ataque, planeta…"
             autoComplete="off"
-            className="min-h-12 w-full min-w-0 border-2 border-border bg-surface pr-4 pl-10 text-text placeholder:text-muted-foreground"
+            className="min-h-12 w-full min-w-0 rounded-md border border-border bg-surface pr-4 pl-10 text-text placeholder:text-muted-foreground"
           />
         </div>
 
@@ -158,7 +158,7 @@ export function WikiExplorer({ categories }: { categories: CategoryCard[] }) {
               ))}
             </ul>
           ) : (
-            <div className="flex flex-col items-start gap-3 border-2 border-dashed border-border bg-surface p-6">
+            <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border bg-surface p-6">
               <p className="font-display text-lg font-semibold">Nenhuma página encontrada</p>
               <p className="text-muted-foreground [overflow-wrap:anywhere]">
                 {query.trim() ? `Não achamos nada para “${query.trim()}”. ` : "Não achamos nada com esses filtros. "}

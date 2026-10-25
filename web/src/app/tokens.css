@@ -25,21 +25,21 @@
   color-scheme: dark;
 
   /* Base */
-  --du-bg: #080f1f;
-  --du-surface: #101d34;
-  --du-raised: #192d4c;
-  --du-text: #f4f7ff;
-  --du-muted-text: #b9c7df;
-  --du-brand: #70c9ff;
-  --du-brand-decor: #2867d6;
+  --du-bg: #060a16;
+  --du-surface: #122344;
+  --du-raised: #172b4d;
+  --du-text: #f8fafc;
+  --du-muted-text: #a8b6d0;
+  --du-brand: #23d7ff;
+  --du-brand-decor: #1674ff;
 
   /* Ações */
-  --du-action: #ff9a3c;
-  --du-action-hover: #ffb366;
-  --du-action-pressed: #e47c25;
-  --du-disabled: #26344c;
-  --du-border: #7186a8;
-  --du-shadow: #02060e;
+  --du-action: #1674ff;
+  --du-action-hover: #1674ff;
+  --du-action-pressed: #1674ff;
+  --du-disabled: #122344;
+  --du-border: #a8b6d0;
+  --du-shadow: #000000;
 
   /* Foco duplo: manter as duas faixas */
   --du-focus-dark: #000000;
@@ -51,41 +51,41 @@
   --du-shadow-focus: 0 0 0 3px var(--du-focus-dark);
 
   /* Status */
-  --du-live-fg: #9fe0b8;
-  --du-live-bg: #143b2b;
-  --du-dev-fg: #a9deff;
-  --du-dev-bg: #153a58;
-  --du-planned-fg: #d5c5fa;
-  --du-planned-bg: #33284b;
-  --du-preview-fg: #ffe2ad;
-  --du-preview-bg: #503a14;
-  --du-alert-fg: #ffe2ad;
-  --du-alert-bg: #392910;
+  --du-live-fg: #23d7ff;
+  --du-live-bg: #122344;
+  --du-dev-fg: #f8fafc;
+  --du-dev-bg: #122344;
+  --du-planned-fg: #a8b6d0;
+  --du-planned-bg: #122344;
+  --du-preview-fg: #f8fafc;
+  --du-preview-bg: #122344;
+  --du-alert-fg: #f6b943;
+  --du-alert-bg: #172b4d;
 
   /*
    * Transformações: tons de TEXTO.
    * Ultra Ego deixa de compartilhar o lilás de Planejado.
    * Golden deixa de compartilhar o dourado do Super Saiyajin.
    */
-  --du-form-ssj: #ffe087;
+  --du-form-ssj: #f6b943;
   --du-form-god: #ff8888;
-  --du-form-blue: #66ddff;
+  --du-form-blue: #23d7ff;
   --du-form-rose: #ffaaff;
   --du-form-instinto: #dddddd;
-  --du-form-ego: #cc99ff;
+  --du-form-ego: #a57bfa;
   --du-form-besta: #f4f7ff;
   --du-form-besta-secondary: #ff8888;
   --du-form-golden: #ffbb66;
-  --du-form-golden-secondary: #cc99ff;
+  --du-form-golden-secondary: #a57bfa;
 
   /*
    * ENERGIA: áreas decorativas, cabeçalhos sem texto, auras e faixas.
    * A intensidade visual vem destas cores, não do texto.
    */
-  --du-energy-brand: #2867d6;
-  --du-energy-ssj: #ffcc00;
+  --du-energy-brand: #1674ff;
+  --du-energy-ssj: #f6b943;
   --du-energy-god: #ff3333;
-  --du-energy-blue: #0088ff;
+  --du-energy-blue: #23d7ff;
   --du-energy-rose: #ff3399;
   --du-energy-instinto: #ccddee;
   --du-energy-instinto-secondary: #ddeeff;
@@ -93,7 +93,7 @@
   --du-energy-besta: #ffffff;
   --du-energy-besta-secondary: #ff0033;
   --du-energy-golden: #ff8800;
-  --du-energy-golden-secondary: #7700ff;
+  --du-energy-golden-secondary: #a57bfa;
   --du-energy-racial-green: #33cc66;
 
   /* Raças: associações editoriais, sem significado de atributo */
@@ -104,7 +104,7 @@
   --du-race-freeza-secondary: var(--du-form-golden-secondary);
   --du-race-majin: var(--du-form-rose);
   --du-race-bio-android: var(--du-live-fg);
-  --du-race-demonio: var(--du-form-god);
+  --du-race-glind: var(--du-brand);
 
   /* Contexto padrão de um componente */
   --du-item-accent: var(--du-brand);
@@ -114,15 +114,20 @@
 
   /* Fontes existentes; nenhum download é feito por este arquivo */
   --du-font-display:
-    var(--next-font-display, "Chakra Petch"),
+    var(--next-font-display, "Space Grotesk"),
     "Trebuchet MS",
     ui-sans-serif,
     sans-serif;
   --du-font-body:
-    var(--next-font-body, "Barlow"),
+    var(--next-font-body, "Inter"),
     system-ui,
     -apple-system,
     "Segoe UI",
+    sans-serif;
+  --du-font-game:
+    var(--next-font-game, "Oxanium"),
+    "Trebuchet MS",
+    ui-sans-serif,
     sans-serif;
 
   /* Espaçamento */
@@ -148,23 +153,33 @@
   --du-section-space: 4rem;
   --du-card-padding: 1.25rem;
   --du-control-min: 3rem;
-  --du-border-width: 2px;
-  --du-radius: 0rem;
+  --du-border-width: 1px;
+  --du-radius: 0.75rem;
+  --du-radius-card: 1.25rem;
+  --du-radius-button: 0.75rem;
+  --du-radius-badge: 0.375rem;
+  --du-radius-slot: 0.25rem;
 
-  /*
-   * Altura real da hotbar fixa, escrita pelo componente.
-   * A medição deve incluir padding e safe area.
-   */
-  --du-hotbar-height: 0px;
+  /* v3: contornos decorativos (não identificam controles) e cores de nível */
+  --du-border-decor: rgba(35, 215, 255, 0.15);
+  --du-border-hover: rgba(35, 215, 255, 0.45);
+  --du-gold: #f6b943;
+  --du-violet: #a57bfa;
+  --du-glass: rgba(18, 35, 68, 0.9);
+  --du-glow-primary: rgba(22, 116, 255, 0.35);
+  --du-glow-energy: rgba(35, 215, 255, 0.45);
+  --du-glow-gold: rgba(246, 185, 67, 0.24);
+  --du-glow-violet: rgba(165, 123, 250, 0.24);
+
   --du-safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --du-scroll-gap: 1.5rem;
 
   /* Sombras duras */
-  --du-shadow-button: 4px 4px 0 var(--du-shadow);
-  --du-shadow-button-hover: 6px 6px 0 var(--du-shadow);
-  --du-shadow-button-pressed: 2px 2px 0 var(--du-shadow);
-  --du-shadow-card: 6px 6px 0 var(--du-shadow);
-  --du-shadow-media: 12px 12px 0 var(--du-shadow);
+  --du-shadow-button: 0 6px 16px rgba(0, 0, 0, 0.28);
+  --du-shadow-button-hover: 0 8px 22px rgba(0, 0, 0, 0.3), 0 0 18px var(--du-glow-primary);
+  --du-shadow-button-pressed: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --du-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.24);
+  --du-shadow-media: 0 14px 32px rgba(0, 0, 0, 0.3);
 
   /* Movimento: aplicação seletiva, sem transition: all */
   --du-motion-fast: 140ms;
@@ -175,7 +190,6 @@
 
   /* Camadas */
   --du-layer-content: 0;
-  --du-layer-hotbar: 20;
   --du-layer-header: 30;
   --du-layer-sheet: 40;
   --du-layer-lightbox: 60;
@@ -240,6 +254,11 @@
   --color-focus-dark: var(--du-focus-dark);
   --color-focus-light: var(--du-focus-light);
   --color-shadow: var(--du-shadow);
+  --color-edge: var(--du-border-decor);
+  --color-edge-hover: var(--du-border-hover);
+  --color-gold: var(--du-gold);
+  --color-violet: var(--du-violet);
+  --color-glass: var(--du-glass);
 
   /* Status */
   --color-live-fg: var(--du-live-fg);
@@ -288,7 +307,7 @@
   --color-race-freeza-secondary: var(--du-race-freeza-secondary);
   --color-race-majin: var(--du-race-majin);
   --color-race-bio-android: var(--du-race-bio-android);
-  --color-race-demonio: var(--du-race-demonio);
+  --color-race-glind: var(--du-race-glind);
 
   /* Contexto herdado pelo componente */
   --color-item-accent: var(--du-item-accent);
@@ -336,21 +355,22 @@
   --font-display: var(--du-font-display);
   --font-body: var(--du-font-body);
   --font-sans: var(--du-font-body);
+  --font-game: var(--du-font-game);
 
   /* Tipografia */
-  --text-hero: clamp(2rem, 1.5rem + 2vw, 3rem);
-  --text-hero--line-height: 1.18;
+  --text-hero: clamp(2.25rem, 5vw, 4rem);
+  --text-hero--line-height: 1.08;
   --text-hero--font-weight: 700;
 
-  --text-section: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  --text-section: clamp(1.75rem, 3.125vw, 2.5rem);
   --text-section--line-height: 1.22;
   --text-section--font-weight: 700;
 
-  --text-card-title: clamp(1.375rem, 1.3rem + 0.3vw, 1.5rem);
+  --text-card-title: clamp(1.25rem, 2vw, 1.5rem);
   --text-card-title--line-height: 1.27;
   --text-card-title--font-weight: 600;
 
-  --text-body-copy: clamp(1.0625rem, 1.025rem + 0.15vw, 1.125rem);
+  --text-body-copy: clamp(1.0625rem, 1.5vw, 1.125rem);
   --text-body-copy--line-height: 1.6;
   --text-body-copy--font-weight: 400;
 
@@ -361,19 +381,16 @@
   --text-caption: 0.875rem;
   --text-caption--line-height: 1.5715;
 
-  --text-hotbar: 0.875rem;
-  --text-hotbar--line-height: 1.4286;
-  --text-hotbar--font-weight: 600;
 
   /* Raios */
-  --radius-xs: var(--radius);
-  --radius-sm: var(--radius);
-  --radius-md: var(--radius);
-  --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
-  --radius-4xl: var(--radius);
+  --radius-xs: var(--du-radius-slot);
+  --radius-sm: var(--du-radius-badge);
+  --radius-md: var(--du-radius-button);
+  --radius-lg: var(--du-radius-button);
+  --radius-xl: var(--du-radius-card);
+  --radius-2xl: var(--du-radius-card);
+  --radius-3xl: var(--du-radius-card);
+  --radius-4xl: var(--du-radius-card);
 
   /* Medidas */
   --spacing-control: var(--du-control-min);
@@ -414,16 +431,15 @@
   html {
     background: var(--background);
     color: var(--foreground);
-    scroll-padding-block-start: var(--du-scroll-gap);
-    scroll-padding-block-end:
-      calc(var(--du-hotbar-height) + var(--du-scroll-gap));
+    scroll-padding-block-start: calc(var(--du-header-offset, 0px) + var(--du-scroll-gap));
+    scroll-padding-block-end: var(--du-scroll-gap);
   }
 
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--du-font-body);
-    font-size: clamp(1.0625rem, 1.025rem + 0.15vw, 1.125rem);
+    font-size: clamp(1.0625rem, 1.5vw, 1.125rem);
     line-height: 1.6;
   }
 
@@ -440,16 +456,16 @@
   }
 
   h1 {
-    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
-    line-height: 1.18;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.17;
   }
 
   h2 {
-    font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+    font-size: clamp(1.75rem, 3.125vw, 2.5rem);
   }
 
   h3 {
-    font-size: clamp(1.375rem, 1.3rem + 0.3vw, 1.5rem);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
     font-weight: 600;
     line-height: 1.27;
   }
@@ -479,7 +495,7 @@
   }
 
   :where(a, button, input, select, textarea, summary, [tabindex]) {
-    scroll-margin-block: var(--du-scroll-gap);
+    scroll-margin-block: calc(var(--du-header-offset, 0px) + var(--du-scroll-gap));
   }
 
   ::selection {
@@ -542,11 +558,11 @@
     --du-item-energy-secondary: var(--du-energy-racial-green);
   }
 
-  [data-race="demonio"] {
-    --du-item-accent: var(--du-race-demonio);
-    --du-item-accent-secondary: var(--du-race-demonio);
-    --du-item-energy: var(--du-energy-god);
-    --du-item-energy-secondary: var(--du-energy-god);
+  [data-race="glind"] {
+    --du-item-accent: var(--du-race-glind);
+    --du-item-accent-secondary: var(--du-race-glind);
+    --du-item-energy: var(--du-energy-brand);
+    --du-item-energy-secondary: var(--du-energy-brand);
   }
 
   /* Transformação prevalece quando os dois atributos coexistirem. */

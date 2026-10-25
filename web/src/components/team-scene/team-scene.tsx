@@ -27,7 +27,7 @@ export function TeamScene({ className }: { className?: string }) {
         role="img"
         aria-label="Cena 3D da equipe: João acena para Ricardo, e Luan voa ao lado."
         // 343 × 240 no celular e até 960 × 400 no desktop.
-        className="relative h-60 w-full overflow-hidden border-2 border-border bg-bg bg-[radial-gradient(ellipse_at_50%_60%,color-mix(in_srgb,var(--du-brand-decor)_45%,transparent)_0%,transparent_70%)] md:h-[25rem]"
+        className="relative h-60 w-full overflow-hidden rounded-xl border border-edge bg-bg bg-[radial-gradient(ellipse_at_50%_60%,color-mix(in_srgb,var(--du-brand-decor)_45%,transparent)_0%,transparent_70%)] md:h-[25rem]"
       >
         {!(live && ready) && (
           <div className="absolute inset-0 flex items-center justify-center gap-6 md:gap-12">

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-// Menu completo (Sheet). Acionado pelo botão do cabeçalho e pelo "Mais" da hotbar; o foco volta a quem abriu (§7.4).
+// Menu completo (Sheet). Acionado pelo botão do cabeçalho; o foco volta a quem abriu.
 type MenuState = {
   /** O Sheet (Base UI) só é baixado depois que alguém toca, foca ou abre o menu. */
   armed: boolean;

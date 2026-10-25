@@ -66,7 +66,7 @@ export default function NovidadesPage() {
             <h3 id={`grupo-${i}`} className="text-brand">{g.titulo}</h3>
             <ul className="flex flex-col gap-3">
               {g.itens.map((item) => (
-                <li key={item} className="flex items-start gap-3 rounded-md border-2 border-border bg-surface p-4">
+                <li key={item} className="flex items-start gap-3 rounded-md rounded-xl border border-edge bg-surface p-4">
                   <StatusBadge status="live" />
                   <span>{item}</span>
                 </li>

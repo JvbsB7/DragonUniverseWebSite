@@ -12,13 +12,7 @@
 }
 
 @layer base {
-  /* Reserva do fim da página: só é diferente de zero quando a hotbar está fixa (components/hotbar.tsx). */
-  body {
-    padding-block-end: var(--du-bottom-reserve, 0px);
-  }
-
-  /* Reflow com texto ampliado (§11.2): itens de flex/grid podem encolher e palavras longas quebram.
-     Os rótulos da hotbar ficam de fora (nowrap) e vivem fora do <main>. */
+  /* Reflow com texto ampliado (§11.2): itens de flex/grid podem encolher e palavras longas quebram. */
   main :where(.grid, .flex) > * {
     min-inline-size: 0;
   }
@@ -35,26 +29,29 @@
   }
 }
 
-/* Cores forçadas (§11.1): sem sombras, a hotbar mantém bordas de sistema e o item atual ganha um filete de 4 px. */
-@media (forced-colors: active) {
-  nav[aria-label="Navegação rápida"] :is(a, button) {
-    border: 1px solid ButtonText;
+/* Perfil leve (lib/perfil.ts): sem blur nem vidro; o painel fica opaco (v3-04-design.md §4.5 e §11.4). */
+html[data-perfil="leve"] .glass-panel {
+  background-color: var(--du-surface);
+  backdrop-filter: none;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-panel {
+    background-color: var(--du-surface);
   }
-  nav[aria-label="Navegação rápida"] a[aria-current="page"] {
-    border-block-start: 4px solid Highlight;
+}
+@media (min-width: 68.75rem) {
+  .glass-panel {
+    backdrop-filter: blur(var(--du-blur, 12px));
   }
 }
 
-/* Item atual da hotbar com foco: o foco global (fora de @layer) troca o box-shadow; aqui o filete de 4 px e a borda
-   interna continuam, com a faixa preta de 3 px por fora (v2-04-design.md §11.1). */
-nav[aria-label="Navegação rápida"] a[aria-current="page"]:focus-visible {
-  box-shadow:
-    inset 0 4px 0 var(--du-brand),
-    inset 0 0 0 1px var(--du-border),
-    0 0 0 3px #000000;
-}
+/* Cores forçadas (§4.7 do design): sem sombras nem vidro, o cabeçalho ganha contorno de sistema e o item atual um filete. */
 @media (forced-colors: active) {
-  nav[aria-label="Navegação rápida"] a[aria-current="page"]:focus-visible {
-    box-shadow: none;
+  .glass-panel {
+    border: 1px solid CanvasText;
+    backdrop-filter: none;
+  }
+  header nav a[aria-current="page"] {
+    border-block-end: 4px solid Highlight;
   }
 }

@@ -15,13 +15,13 @@ import { galeria } from "@/config/galeria";
 export const metadata: Metadata = pageMetadata({
   title: "Dragon Universe | Dragon Ball no Minecraft Bedrock",
   description:
-    "Add-on gratuito de fãs que leva Dragon Ball ao Minecraft Bedrock: 7 raças, transformações, ataques de ki e 47 missões. Versão de teste.",
+    "Add-on gratuito de fãs que leva Dragon Ball ao Minecraft Bedrock: 6 raças já no jogo, transformações, ataques de ki e 47 missões. Versão de teste.",
   path: "/",
 });
 
 // Destaques (copy v2 §2.3). Cada card leva à categoria da wiki.
 const metricas = [
-  ["7", "raças"],
+  ["6", "raças já no jogo"],
   ["47", "missões principais"],
   ["100+", "personagens e inimigos"],
   ["200+", "itens"],
@@ -29,7 +29,7 @@ const metricas = [
 ] as const;
 
 const recursos: { nome: string; href: string; texto: ReactNode }[] = [
-  { nome: "Raças", href: "/wiki/racas", texto: <><strong>7 raças</strong>, cada uma com bônus e transformações próprios. Terráqueo, Saiyajin, Namekuseijin, Raça do Freeza, Majin, Bio-Android e Demônio.</> },
+  { nome: "Raças", href: "/wiki/racas", texto: <><strong>6 raças já no jogo</strong>, cada uma com bônus e transformações próprios: Terráqueo, Saiyajin, Namekuseijin, Raça do Freeza, Majin e Bio-Android. Em desenvolvimento: Glind, Cerealianos e uma nova raça estilo Moro.</> },
   { nome: "Transformações", href: "/wiki/transformacoes", texto: <>Do <strong>Super Saiyajin ao Ultra Ego</strong>. Linha Saiyajin, formas da Raça do Freeza até a Golden e a Black, e formas globais.</> },
   { nome: "Ataques de ki", href: "/wiki/ataques-de-ki", texto: <><strong>Kamehameha, Galick Gun, Final Flash, Makankosappo, Genki Dama, Kienzan</strong> e disparos de ki.</> },
   { nome: "Planetas", href: "/wiki/planetas-e-dimensoes", texto: <><strong>Viaje de nave</strong> entre Terra, Namekusei, Planeta Vegeta, Planeta Freeza, Yardrat e mais.</> },
@@ -55,7 +55,7 @@ export default function HomePage() {
               Dragon Ball dentro do Minecraft Bedrock. Feito por fãs, <span className="text-brand">em evolução de verdade.</span>
             </h1>
             <p className="max-w-[48ch] text-lg">
-              O Dragon Universe é um add-on <strong>gratuito</strong>, feito por fãs, com 7 raças, transformações, ataques de ki, 47 missões principais e viagem entre planetas. Criado pela equipe Dragon Universe, com nome e identidade próprios.
+              O Dragon Universe é um add-on <strong>gratuito</strong>, feito por fãs, com 6 raças já no jogo, transformações, ataques de ki, 47 missões principais e viagem entre planetas. Criado pela equipe Dragon Universe, com nome e identidade próprios.
             </p>
             <p className="mt-4 max-w-[52ch] text-sm text-muted-foreground">Versão 1.7.1E em teste da equipe. Funciona em PC e celular. Ainda não existe versão pública.</p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -76,12 +76,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="min-w-0 border-2 border-border bg-surface shadow-block-card">
+          <div className="min-w-0 rounded-xl border border-edge bg-surface shadow-block-card">
             <EnergyStrip variant="hero" className="h-8 border-b-2 border-bg" />
             <div className="px-4 py-6 md:px-6 md:py-8">
               <HeroLogo />
             </div>
-            <figure className="border-t-2 border-border">
+            <figure className="border-t border-edge">
               <img
                 src={hero.src}
                 srcSet={assetSet("/img/planeta-do-bills-360.webp 360w, /img/planeta-do-bills-859.webp 859w")}
@@ -92,7 +92,7 @@ export default function HomePage() {
                 height={hero.height}
                 className="h-auto w-full"
               />
-              <figcaption className="grid gap-3 border-t-2 border-border bg-surface p-5 text-sm md:p-6">
+              <figcaption className="grid gap-3 border-t border-edge bg-surface p-5 text-sm md:p-6">
                 <StatusBadge status="preview" />
                 <span>
                   <strong>Planeta do Bills.</strong> Ainda não está no add-on.
@@ -136,7 +136,7 @@ export default function HomePage() {
               <li key={r.nome} className="min-w-0">
                 <Link
                   href={r.href}
-                  className="flex h-full flex-col border-2 border-border bg-surface text-text shadow-block-card hover:bg-raised"
+                  className="flex h-full flex-col rounded-xl border border-edge bg-surface text-text shadow-block-card hover:bg-raised"
                 >
                   <EnergyStrip variant="brand" className="h-14 shrink-0 border-b-2 border-bg md:h-[4.5rem]" />
                   <span className="flex flex-1 flex-col items-start gap-4 p-5 md:p-6">
@@ -151,7 +151,7 @@ export default function HomePage() {
           </ul>
           <ul aria-label="Conteúdo da versão de teste" className="mt-8 grid grid-cols-2 gap-4 md:gap-6 nav:grid-cols-5">
             {metricas.map(([n, rotulo]) => (
-              <li key={rotulo} className="grid min-w-0 content-start gap-1 border-2 border-border bg-surface p-5 last:col-span-full nav:last:col-auto">
+              <li key={rotulo} className="grid min-w-0 content-start gap-1 rounded-xl border border-edge bg-surface p-5 last:col-span-full nav:last:col-auto">
                 <strong className="font-display text-4xl leading-tight text-brand">{n}</strong>
                 <span className="text-sm text-muted-foreground">{rotulo}</span>
               </li>
@@ -162,7 +162,7 @@ export default function HomePage() {
 
       <section aria-labelledby="novidades-teaser" className="bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container">
-          <div className="border-2 border-border bg-bg shadow-block-card">
+          <div className="rounded-xl border border-edge bg-bg shadow-block-card">
             <EnergyStrip variant="news" className="h-4" />
             <div className="grid gap-6 p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-8 md:p-8">
               <div className="grid gap-3">
@@ -183,9 +183,9 @@ export default function HomePage() {
               <p className="max-w-[65ch] text-muted-foreground"><strong className="text-text">Construções novas em desenvolvimento.</strong> Planeta do Bills, Torneio do Poder, Corporação Cápsula e outras. São prévias e <strong className="text-text">não estão no add-on hoje</strong>.</p>
               <ul className="mt-6 grid gap-4 md:grid-cols-3">
                 {galeria.slice(1, 4).map((item) => (
-                  <li key={item.src} className="min-w-0 border-2 border-border bg-surface">
+                  <li key={item.src} className="min-w-0 rounded-xl border border-edge bg-surface">
                     <img src={item.src} alt="" width={item.width} height={item.height} loading="lazy" className="h-auto w-full" />
-                    <div className="grid gap-2 border-t-2 border-border p-4">
+                    <div className="grid gap-2 border-t border-edge p-4">
                       <StatusBadge status="preview" />
                       <span className="text-sm text-muted-foreground">{item.caption}</span>
                     </div>
@@ -216,7 +216,7 @@ export default function HomePage() {
 
       <section aria-labelledby="cta-final" className="py-16 md:py-20 nav:py-24">
         <div className="du-container">
-          <div className="border-2 border-border bg-surface shadow-block-card">
+          <div className="rounded-xl border border-edge bg-surface shadow-block-card">
             <EnergyStrip variant="cta" className="h-6" />
             <div className="grid gap-5 p-6 md:p-8 nav:grid-cols-[minmax(0,1fr)_auto] nav:items-center nav:gap-8">
               <div className="grid gap-3">

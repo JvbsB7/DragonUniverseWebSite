@@ -24,7 +24,7 @@
     "skinview-utils": "0.7.1",
     "skinview3d": "^3.4.2",
     "tailwind-merge": "^3.7.0",
-    "three": "0.156.1",
+    "three": "0.186.1",
     "zustand": "^5.0.16"
   },
   "devDependencies": {
@@ -32,9 +32,16 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "skinview3d": {
+      "three": "$three",
+      "@types/three": "0.186.0"
+    }
   }
 }

@@ -41,9 +41,9 @@ export default function RoadmapPage() {
         </Presenter>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {galeria.map((item) => (
-            <li key={item.src} className="min-w-0 border-2 border-border bg-surface">
+            <li key={item.src} className="min-w-0 rounded-xl border border-edge bg-surface">
               <img src={item.src} alt={item.alt} width={item.width} height={item.height} loading="lazy" className="h-auto w-full" />
-              <div className="flex flex-col gap-2 border-t-2 border-border p-4">
+              <div className="flex flex-col gap-2 border-t border-edge p-4">
                 <StatusBadge status="preview" />
                 <Link href={item.wiki} className="font-display font-semibold underline underline-offset-4 hover:text-brand">
                   {item.caption}
@@ -70,7 +70,7 @@ export default function RoadmapPage() {
         </header>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {planejado.map((g) => (
-            <div key={g.grupo} className="flex flex-col gap-3 rounded-md border-2 border-border bg-surface p-5">
+            <div key={g.grupo} className="flex flex-col gap-3 rounded-md rounded-xl border border-edge bg-surface p-5">
               <h3 className="text-lg">{g.grupo}</h3>
               <ul className="flex flex-col gap-2 text-muted-foreground">
                 {g.itens.map((i) => (

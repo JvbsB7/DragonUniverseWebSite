@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /** Faixa de energia sem texto. As cores só decoram, nunca indicam status. */
 const strips = {
-  hero: "linear-gradient(125deg, var(--du-energy-blue) 0 48%, var(--du-bg) 48% 53%, var(--du-energy-ego) 53% 79%, var(--du-energy-ssj) 79% 100%)",
+  hero: "linear-gradient(125deg, var(--du-energy-brand) 0 48%, var(--du-bg) 48% 53%, var(--du-energy-blue) 53% 79%, var(--du-energy-ssj) 79% 100%)",
   brand: "linear-gradient(125deg, var(--du-energy-brand) 0 58%, var(--du-raised) 58% 80%, var(--du-bg) 80% 100%)",
   news: "linear-gradient(90deg, var(--du-energy-blue) 0 65%, var(--du-energy-instinto) 65% 100%)",
   cta: "linear-gradient(120deg, var(--du-energy-ssj) 0 28%, var(--du-bg) 28% 32%, var(--du-energy-blue) 32% 72%, var(--du-energy-ego) 72% 100%)",
@@ -33,13 +33,13 @@ export function FourStars({ className }: { className?: string }) {
     >
       <polygon
         points="10,1.5 22,1.5 30.5,10 30.5,22 22,30.5 10,30.5 1.5,22 1.5,10"
-        fill="#FF9A3C"
-        stroke="#080F1F"
+        fill="#F6B943"
+        stroke="#060A16"
         strokeWidth="2"
         strokeLinejoin="miter"
       />
       {[estrela(11.5, 11.5), estrela(20.5, 11.5), estrela(11.5, 20.5), estrela(20.5, 20.5)].map((d) => (
-        <path key={d} d={d} fill="#080F1F" />
+        <path key={d} d={d} fill="#060A16" />
       ))}
     </svg>
   );
@@ -62,7 +62,7 @@ export function SectionHeading({
   return (
     <div className={cn("mb-8 grid gap-3", className)}>
       <div className="flex items-center gap-3">
-        <h2 id={id} className="min-w-0 border-s-[6px] border-brand ps-4 [overflow-wrap:anywhere]">
+        <h2 id={id} className="min-w-0 border-s-4 border-brand ps-4 [overflow-wrap:anywhere]">
           {children}
         </h2>
         {stars && <FourStars />}

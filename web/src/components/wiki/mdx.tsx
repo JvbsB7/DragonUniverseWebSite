@@ -16,7 +16,7 @@ const components = {
   table: (p: ComponentProps<"table">) => (
     <div className="my-4 overflow-x-auto"><table className="w-full border-collapse text-left text-sm" {...p} /></div>
   ),
-  th: (p: ComponentProps<"th">) => <th className="border-b-2 border-border px-3 py-2 font-display" {...p} />,
+  th: (p: ComponentProps<"th">) => <th className="border-b border-edge px-3 py-2 font-display" {...p} />,
   td: (p: ComponentProps<"td">) => <td className="border-b border-border px-3 py-2" {...p} />,
   a: ({ href = "", ...p }: ComponentProps<"a">) =>
     href.startsWith("/") ? (

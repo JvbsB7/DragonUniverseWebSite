@@ -24,7 +24,7 @@ export function Toc({ headings }: { headings: WikiHeading[] }) {
   if (headings.length === 0) return null;
   return (
     // Fechado no HTML (celular, sem salto de layout depois do carregamento); o efeito o abre a partir de 1100 px.
-    <details ref={ref} className="min-w-0 self-start border-2 border-border bg-surface px-4 py-1 nav:sticky nav:top-6 nav:col-start-2 nav:row-start-1">
+    <details ref={ref} className="min-w-0 self-start rounded-xl border border-edge bg-surface px-4 py-1 nav:sticky nav:top-6 nav:col-start-2 nav:row-start-1">
       <summary className="flex min-h-12 cursor-pointer items-center font-display font-semibold text-brand">Nesta página</summary>
       <nav aria-label="Sumário da página" className="max-h-[calc(100dvh-10rem)] overflow-y-auto px-3 pt-3 pb-4">
         <ul className="grid gap-1">

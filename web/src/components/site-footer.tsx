@@ -4,16 +4,19 @@ import { links } from "@/config/links";
 
 const linkClass = "inline-flex min-h-12 max-w-full items-center text-brand underline underline-offset-4 hover:decoration-[0.14em]";
 
-// Colunas de links (copy v2 §1.3).
+// Colunas de links (copy v3 A.2). Todos os destinos da v2 continuam alcançáveis.
 const colunas = [
   {
     titulo: "O site",
     links: [
       { label: "Início", href: "/" },
-      { label: "O projeto", href: "/sobre" },
+      { label: "O Projeto", href: "/sobre" },
+      { label: "Raças", href: "/wiki/racas" },
+      { label: "Transformações", href: "/wiki/transformacoes" },
+      { label: "Universo", href: "/wiki/planetas-e-dimensoes" },
+      { label: "Desenvolvimento", href: "/roadmap" },
       { label: "Wiki", href: "/wiki" },
       { label: "Novidades", href: "/novidades" },
-      { label: "Em desenvolvimento", href: "/roadmap" },
       { label: "Galeria", href: "/galeria" },
     ],
   },
@@ -22,14 +25,14 @@ const colunas = [
     links: [
       { label: "Como instalar", href: "/instalar" },
       { label: "FAQ", href: "/faq" },
-      { label: "Apoie", href: "/apoie" },
+      { label: "Apoie o Projeto", href: "/apoie" },
     ],
   },
   {
     titulo: "Comunidade",
     links: [
-      { label: "Entrar no Discord", href: links.discord, external: true },
-      { label: "Ver no GitHub", href: links.github, external: true },
+      { label: "Discord", href: links.discord, external: true },
+      { label: "GitHub", href: links.github, external: true },
       { label: "Equipe", href: "/equipe" },
     ],
   },
@@ -38,7 +41,7 @@ const colunas = [
 // Avisos legais exatos (copy §13). Não alterar sem revisão do time. Texto de 14 px ou mais, alvos de 48 px (§7.5).
 export function SiteFooter() {
   return (
-    <footer className="border-t-2 border-border bg-surface py-12 text-sm leading-[1.57] text-muted-foreground nav:py-14">
+    <footer className="border-t border-edge bg-surface py-12 text-sm leading-[1.57] text-muted-foreground nav:py-14">
       <div className="du-container">
         <div className="grid gap-4">
           <p>
@@ -72,7 +75,7 @@ export function SiteFooter() {
             </div>
           ))}
         </nav>
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-4">
           <p>Projeto de fãs Dragon Universe.</p>
           <a href="#topo" className={linkClass}>
             Voltar ao topo
