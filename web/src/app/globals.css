@@ -216,3 +216,64 @@ html[data-reduzir="true"] *::after {
   --du-aura-carmesim: #e62e52;
   --du-aura-carmesim-brilho: #ff7185;
 }
+
+/* Esferas de energia (v4-03 §9): sprite aprovado com 7 marcas (colunas) e 3 estados (linhas: normal, brilho, coletada). */
+.esfera-sprite {
+  width: 48px;
+  height: 48px;
+  background-image: var(--e1);
+  background-image: image-set(var(--e1) 1x, var(--e2) 2x);
+  background-size: 336px 144px;
+  background-position: var(--ex) 0;
+  image-rendering: pixelated;
+}
+.esfera-botao:hover .esfera-sprite,
+.esfera-botao:focus-visible .esfera-sprite {
+  background-position: var(--ex) -48px;
+}
+.esfera-botao[data-esfera="coletada"] .esfera-sprite {
+  background-position: var(--ex) -96px;
+}
+.esfera-botao[data-animando] .esfera-sprite {
+  animation: esfera-coleta 280ms var(--du-ease-out) 1;
+}
+@keyframes esfera-coleta {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+.esfera-fagulhas i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #f6b943;
+  animation: esfera-fagulha 280ms ease-out 1 forwards;
+}
+.esfera-fagulhas i:nth-child(1) { --dx: -14px; --dy: -14px; }
+.esfera-fagulhas i:nth-child(2) { --dx: 14px; --dy: -10px; }
+.esfera-fagulhas i:nth-child(3) { --dx: 0px; --dy: 16px; }
+@keyframes esfera-fagulha {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); opacity: 0; }
+}
+
+/* Fechamento: sete pontos formam um aro em até 1,8 s e ficam numa moldura dourada. */
+.esferas-aro i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #f6b943;
+  transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(-34px);
+}
+.esferas-aro[data-tocando] i {
+  animation: esfera-aro 1.8s var(--du-ease-out) 1 both;
+  animation-delay: calc(var(--i) * 120ms);
+}
+@keyframes esfera-aro {
+  from { opacity: 0; transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(-34px); }
+}

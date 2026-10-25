@@ -18,6 +18,8 @@ import { destinos } from "@/config/universo";
 import { galeria } from "@/config/galeria";
 import { getTransformacoes } from "@/lib/transformacoes-data";
 import { asset, assetSet } from "@/lib/asset";
+import { EsferaNicho } from "@/components/esferas/esfera";
+import { ColecaoEsferas } from "@/components/esferas/colecao-esferas";
 import { BatalhaSecao } from "@/components/batalha/batalha-secao";
 
 export const metadata: Metadata = pageMetadata({
@@ -128,6 +130,7 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+          <EsferaNicho id="origem" />
         </div>
       </section>
 
@@ -160,6 +163,7 @@ export default function HomePage() {
           <div className="mt-8">
             <LinkButton href="/wiki/racas">Ver todas as raças</LinkButton>
           </div>
+          <EsferaNicho id="racas" />
         </div>
       </section>
 
@@ -172,6 +176,7 @@ export default function HomePage() {
           <div className="mt-8">
             <LinkButton href="/wiki/transformacoes">Ver todas as transformações</LinkButton>
           </div>
+          <EsferaNicho id="formas" />
         </div>
       </section>
 
@@ -191,6 +196,7 @@ export default function HomePage() {
           <div className="mt-6">
             <LinkButton href="/wiki/planetas-e-dimensoes">Ver todos os destinos</LinkButton>
           </div>
+          <EsferaNicho id="destinos" />
         </div>
       </section>
 
@@ -232,6 +238,7 @@ export default function HomePage() {
               <ConteudoFuturo headingId="conteudo-futuro-home" nivel={3} compacto />
             </div>
           </div>
+          <EsferaNicho id="construcao" />
         </div>
       </section>
 
@@ -244,12 +251,14 @@ export default function HomePage() {
           <div className="mt-6">
             <LinkButton href="/equipe">Conhecer a equipe</LinkButton>
           </div>
+          <EsferaNicho id="pessoas" />
         </div>
       </section>
 
       <section aria-labelledby="comunidade" className="cv-auto bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <Community />
+          <EsferaNicho id="comunidade" />
         </div>
       </section>
 
@@ -266,6 +275,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ColecaoEsferas />
     </>
   );
 }
