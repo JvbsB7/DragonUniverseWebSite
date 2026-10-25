@@ -172,7 +172,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
           if (fora) close();
         }}
         aria-label={current ? `Imagem ampliada: ${current.caption}` : "Imagem ampliada"}
-        className="m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden rounded-xl border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
+        className="lightbox m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden rounded-xl border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
       >
         {current && index !== null && (
           <div className="flex max-h-[96dvh] flex-col">

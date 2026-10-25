@@ -18,6 +18,13 @@ export function PainelAnimado({ chave, trocou, children, className }: { chave: s
     const el = ref.current;
     if (!el || !trocou || perfilLeve()) return;
     let cancelado = false;
+    // Transição de ki (v4-03 §11.1): a borda do painel recebe energia por 220 ms; cancela a anterior em trocas rápidas.
+    const moldura = el.parentElement;
+    if (moldura) {
+      moldura.classList.remove("ki-pulso");
+      void moldura.offsetWidth;
+      moldura.classList.add("ki-pulso");
+    }
     import("motion/mini").then(({ animate }) => {
       if (cancelado) return;
       animate(el, { opacity: [0.4, 1], transform: ["translateY(6px)", "translateY(0px)"] }, { duration: 0.18, ease: "easeOut" });
