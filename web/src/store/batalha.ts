@@ -40,9 +40,10 @@ export const useBatalhaStore = create<BatalhaStore>((set, get) => ({
   retomar: () => set({ pausada: false, anuncio: "Cena retomada." }),
   pular: () => {
     if (get().status !== "tocando") return;
-    set({ status: "repouso", pausada: false, jaTocou: true, anuncio: "Cena no repouso." });
+    // `rodada` muda para a cena levar o relógio ao quadro final: sem isso o tempo seguia de onde estava e a cena "terminava" tocando.
+    set((s) => ({ status: "repouso", pausada: false, jaTocou: true, rodada: s.rodada + 1, anuncio: "Cena no repouso." }));
   },
-  terminou: () => set({ status: "repouso", anuncio: "" }),
+  terminou: () => set((s) => ({ status: "repouso", anuncio: "", rodada: s.rodada + (s.status === "tocando" && relogioBatalha.t < DURACAO_BATALHA ? 1 : 0) })),
 }));
 
 /** Relógio da cena (fora do React: lido a cada quadro). */
