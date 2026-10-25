@@ -496,3 +496,7 @@ dialog.lightbox[open] {
 .balao[data-lado="esquerda"]::after { right: -5px; top: calc(50% - 6px); }
 .balao[data-lado="direita"]::before { left: -8px; }
 .balao[data-lado="direita"]::after { left: -5px; top: calc(50% - 6px); }
+/* Cauda para baixo (balão acima de quem fala). */
+.balao[data-baixo] { margin-top: 0; margin-bottom: 10px; }
+.balao[data-baixo]::before { top: auto; bottom: -8px; }
+.balao[data-baixo]::after { top: auto; bottom: -5px; }

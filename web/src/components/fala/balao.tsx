@@ -13,7 +13,18 @@ const ALINHAR = { esquerda: "justify-start", centro: "justify-center", direita: 
 // Balão pixel em HTML (v4-15 §0.2): painel opaco, texto escuro, degraus de 4 px e cauda quadrada voltada à pessoa. Entra e sai por
 // opacidade (120 ms), fica 6 s, e a contagem para com o mouse ou o foco dentro. Fala por ação do visitante é anunciada uma vez;
 // a automática é decorativa (aria-hidden). Com movimento reduzido, a fala por ação aparece parada e fica até fechar.
-export function FalaSlot({ contexto, className = "", faixa }: { contexto: ContextoDeFala; className?: string; faixa?: string }) {
+export function FalaSlot({
+  contexto,
+  className = "",
+  faixa,
+  apontar,
+}: {
+  contexto: ContextoDeFala;
+  className?: string;
+  faixa?: string;
+  /** Onde fica a cauda: "baixo" (balão acima da pessoa), "esquerda" (balão à direita dela) ou "direita" (balão à esquerda dela); por padrão, em cima. */
+  apontar?: "baixo" | "esquerda" | "direita";
+}) {
   const atual = useFalaStore((s) => s.atual);
   const ultima = useFalaStore((s) => s.ultima[contexto]);
   const { falar, fechar } = useFalaStore.getState();
@@ -49,7 +60,8 @@ export function FalaSlot({ contexto, className = "", faixa }: { contexto: Contex
             key={mostrando.chave}
             className="balao"
             data-cauda={lateral ? undefined : mostrando.cauda}
-            data-lado={lateral?.lado}
+            data-lado={lateral?.lado ?? (apontar === "esquerda" ? "direita" : apontar === "direita" ? "esquerda" : undefined)}
+            data-baixo={apontar === "baixo" || undefined}
             data-saindo={saindo || undefined}
             data-parado={reduzido || undefined}
             aria-hidden={mostrando.acao ? undefined : true}

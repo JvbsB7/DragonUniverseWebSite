@@ -139,6 +139,17 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               }
               cena={(aoPronto, visivel) => <CenaEquipe aoPronto={aoPronto} visivel={visivel} />}
             />
+            {/* Balão da fala (D29): dentro do palco, acima da pessoa (cauda para baixo) ou ao lado do Luan; nunca sobre os seletores. */}
+            <FalaSlot
+              contexto="vitrine"
+              apontar={selecionada === "luan" ? "direita" : "baixo"}
+              className={cn(
+                "pointer-events-none absolute z-10 w-[min(20rem,calc(100%-1.5rem))] [&>div]:pointer-events-auto",
+                selecionada === "joao" && "bottom-[62%] left-[28%]",
+                selecionada === "ricardo" && "bottom-[62%] right-[6%]",
+                selecionada === "luan" && "right-[52%] top-[8%]",
+              )}
+            />
             {pessoas.map((p) => (
               <div
                 key={p.id}
@@ -154,8 +165,6 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               <Seletor key={p.id} pessoa={p} selecionada={selecionada === p.id} />
             ))}
           </div>
-          {/* Espaço da fala reservado desde o início (a página não se mexe quando o balão aparece). */}
-          <FalaSlot contexto="vitrine" className="mt-1 min-h-[7.5rem]" />
         </div>
         <Painel id={selecionada} titulo={titulo} />
       </div>
