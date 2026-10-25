@@ -37,6 +37,7 @@ import {
   luanVisivel,
   luanY,
   nucleoDeImpacto,
+  PUNHOS_DY,
   poseJoao,
   poseLuan,
   poseRicardo,
@@ -95,15 +96,30 @@ function Campo() {
         m++;
       }
     };
-    aglomerado(-82, -16, 9, 9);
-    aglomerado(82, -16, 9, 9);
-    aglomerado(-58, -22, 4, 15);
-    aglomerado(58, -22, 4, 15);
-    aglomerado(-40, -40, 6, 12);
-    aglomerado(42, -40, 6, 12);
-    aglomerado(0, -46, 5, 14);
-    aglomerado(-96, 4, 3, 6);
-    aglomerado(96, 4, 3, 6);
+    // Horizonte (D33): cinco mesas/pilares escalonados em duas profundidades, só nas laterais; o vão central fica livre para o contato e o Luan.
+    // Fundo escuro e desaturado; o plano próximo leva um recorte azul discreto no topo.
+    const fundo = ["#0b1530", "#0e1a38", "#122344"];
+    const massa = (cx: number, cz: number, larg: number, alt: number, degraus: number, tons: string[]) => {
+      for (let d = 0; d < degraus; d++) {
+        const w = larg * (1 - d * 0.22);
+        const h = (alt / degraus) * (d + 1);
+        o.position.set(cx + (d % 2 ? 1.5 : -1.5), -16 + h / 2, cz);
+        o.scale.set(w, h, w * 0.8);
+        o.updateMatrix();
+        rochas.current?.setMatrixAt(m, o.matrix);
+        rochas.current?.setColorAt(m, cor.set(tons[Math.min(d, tons.length - 1)]));
+        m++;
+      }
+    };
+    massa(-96, -70, 34, 46, 3, fundo);
+    massa(98, -66, 38, 40, 2, fundo);
+    massa(-62, -48, 22, 36, 4, fundo);
+    massa(64, -52, 26, 28, 3, fundo);
+    massa(-118, -30, 26, 30, 3, ["#13244a", "#172b55", "#1c3361"]);
+    aglomerado(-82, -10, 5, 7);
+    aglomerado(84, -10, 5, 7);
+    aglomerado(-100, 6, 3, 5);
+    aglomerado(100, 6, 3, 5);
     if (rochas.current) rochas.current.count = m;
     if (rochas.current) rochas.current.instanceMatrix.needsUpdate = true;
     if (rochas.current?.instanceColor) rochas.current.instanceColor.needsUpdate = true;
@@ -114,7 +130,7 @@ function Campo() {
         <boxGeometry />
         <meshStandardMaterial roughness={1} />
       </instancedMesh>
-      <instancedMesh ref={rochas} args={[undefined, undefined, 60]} frustumCulled={false}>
+      <instancedMesh ref={rochas} args={[undefined, undefined, 90]} frustumCulled={false}>
         <boxGeometry />
         <meshStandardMaterial roughness={1} />
       </instancedMesh>
@@ -220,7 +236,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const k = nucleoDeImpacto(t);
     if (nucleo.current) {
       nucleo.current.visible = k > 0;
-      nucleo.current.scale.setScalar(2 + 20 * k);
+      nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
+      nucleo.current.scale.setScalar(2 + 8 * k);
       (nucleo.current.material as SpriteMaterial).opacity = 0.85 * k;
     }
     aneis.current.forEach((m, i) => {

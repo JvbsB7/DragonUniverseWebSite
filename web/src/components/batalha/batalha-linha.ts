@@ -54,27 +54,44 @@ const trechosRicardo: Trecho[] = [
   { a: 6.0, clipe: R.idle },
 ];
 
-export const poseJoao = (t: number) => poseDe(trechosJoao, t);
-export const poseRicardo = (t: number) => poseDe(trechosRicardo, t);
+// Voo sustentado no contato (D33): o clipe de soco volta o corpo à vertical; aqui o tronco fica inclinado (~69°, a ~21° da horizontal)
+// da investida até o recuo, e o braço do soco acompanha o eixo do corpo (como no clipe de voo). Só desvia a pose; a linha do tempo é a mesma.
+const INCLINACAO_AEREA = 1.2;
+const pesoAereo = (t: number) => curva(t, [[1.2, 0], [1.64, 1], [3.2, 1], [4.0, 0]]);
+function aereo(p: Pose, t: number, braco: "rightArm" | "leftArm"): Pose {
+  const w = pesoAereo(t);
+  if (w <= 0) return p;
+  const rot = { ...p.rot };
+  rot.root = [p.rot.root[0] + (INCLINACAO_AEREA - p.rot.root[0]) * w, p.rot.root[1], p.rot.root[2]];
+  const a = p.rot[braco];
+  const estendido = Math.min(1, Math.max(0, -a[0] / 1.57));
+  rot[braco] = [a[0] - 1.33 * w * estendido, a[1], a[2]];
+  return { rot, pos: p.pos };
+}
+
+export const poseJoao = (t: number) => aereo(poseDe(trechosJoao, t), t, "rightArm");
+export const poseRicardo = (t: number) => aereo(poseDe(trechosRicardo, t), t, "leftArm");
 export const poseLuan = (t: number) => amostrar(CLIPES.luan.flutuar, t);
 
 // Posição (x, y) e giro (rad; + olha para +x) de cada combatente. Esquerda/direita são do visitante (v4-03 §4).
-export const joaoX = (t: number) => curva(t, [[0, -86], [0.45, -50], [1.2, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
-export const ricardoX = (t: number) => -curva(t, [[0, -86], [0.45, -50], [1.26, -48], [2.0, -17], [2.6, -17], [4.0, -19], [4.8, -31], [6.0, -26]]);
-export const combatenteY = (t: number) => curva(t, [[0, 2], [0.45, 2], [0.8, 0], [1.2, 0], [1.6, 3], [2.6, 3], [3.2, 0]]);
-export const combatenteGiro = (t: number) => curva(t, [[0, 1.45], [0.45, 1.45], [0.85, 0.9], [1.2, 0.9], [1.5, 1.45], [2.4, 1.45], [3.0, 1.2], [4.8, 0.9]]);
+export const joaoX = (t: number) => curva(t, [[0, -86], [0.45, -50], [1.2, -48], [2.0, -26], [2.12, -26], [3.2, -41], [4.0, -39], [4.8, -31], [6.0, -26]]);
+export const ricardoX = (t: number) => -curva(t, [[0, -86], [0.45, -50], [1.26, -48], [2.0, -26], [2.12, -26], [3.2, -41], [4.0, -39], [4.8, -31], [6.0, -26]]);
+export const combatenteY = (t: number) => curva(t, [[0, 2], [0.45, 2], [0.8, 0], [1.2, 0], [1.6, 4], [2.12, 4], [3.2, 6], [4.0, 0]]);
+export const combatenteGiro = (t: number) => curva(t, [[0, 1.45], [0.45, 1.45], [0.85, 0.9], [1.2, 0.9], [1.5, 1.3], [3.2, 1.3], [4.0, 1.15], [4.8, 0.9]]);
 export const luanY = (t: number) => curva(t, [[0, 80], [6.0, 80], [6.55, 30], [7.45, 32], [8, 32]]);
 export const luanVisivel = (t: number) => t >= 5.9;
 
-// Câmera: plano geral, aproximação de 6% até o choque, retorno, órbita curta de 8°, recuo e inclinação para cima na revelação.
+// Câmera (D33): plano geral, aproximação de até 3% antes do contato, lateral em leve 3/4 e baixa (olhando ~5° para cima) no choque,
+// volta ao plano de 4 s, órbita curta de 5°, recuo e inclinação para cima na revelação do Luan. FOV fixo em 45°: sem zoom de impacto.
 export function camera(t: number, comTremor = true) {
-  const z = curva(t, [[0, 80], [2.0, 75], [2.6, 75], [4.0, 80], [6.0, 90], [7.45, 96], [8, 96]]);
-  const y = curva(t, [[0, 6], [6.0, 6], [6.4, 13], [7.45, 17], [8, 17]]);
-  const olhaY = curva(t, [[0, 2], [6.0, 2], [6.4, 13], [7.45, 17], [8, 17]]);
-  const az = (curva(t, [[0, 0], [4.0, 0], [4.8, 8], [6.0, 8], [7.45, 2], [8, 2]]) * Math.PI) / 180;
-  const fov = curva(t, [[0, 45], [2.0, 45], [2.35, 42], [2.6, 42], [4.0, 45]]);
-  // Único tremor amortecido: 2,35–2,60 s, até ~0,2 unidade (≈1,5 px na referência de 1152 px).
-  const k = t > 2.35 && t < 2.6 ? 1 - (t - 2.35) / 0.25 : 0;
+  const z = curva(t, [[0, 80], [1.2, 78], [3.2, 78], [4.0, 80], [6.0, 90], [7.45, 96], [8, 96]]);
+  const baixa = curva(t, [[1.2, 0], [2.0, 1], [3.2, 1], [4.0, 0]]);
+  const y = curva(t, [[0, 6], [6.0, 6], [6.4, 13], [7.45, 17], [8, 17]]) - 9 * baixa;
+  const olhaY = curva(t, [[0, 2], [6.0, 2], [6.4, 13], [7.45, 17], [8, 17]]) + 1.5 * baixa;
+  const az = ((curva(t, [[0, 0], [1.2, 0], [2.0, 12], [3.2, 12], [4.0, 0], [4.8, 5], [6.0, 5], [7.45, 2], [8, 2]])) * Math.PI) / 180;
+  const fov = 45;
+  // Único tremor amortecido: 2,15–2,40 s, até ~0,2 unidade (≈1,5 px na referência de 1152 px).
+  const k = t > 2.15 && t < 2.4 ? 1 - (t - 2.15) / 0.25 : 0;
   const tremor = comTremor ? k * 0.2 : 0;
   return {
     pos: [Math.sin(az) * z + Math.sin(t * 90) * tremor, y + Math.cos(t * 77) * tremor, Math.cos(az) * z] as const,
@@ -92,7 +109,9 @@ export function aura(t: number, ator: 0 | 1): number {
 }
 
 // Efeitos pontuais.
+// Realce ciano ligado ao ponto médio entre os punhos (x = 0; y acompanha o voo dos combatentes), com ~6–8% da largura do quadro.
 export const nucleoDeImpacto = (t: number) => (t < 2.0 || t > 2.7 ? 0 : t < 2.2 ? suave((t - 2.0) / 0.2) : 1 - suave((t - 2.2) / 0.5));
+export const PUNHOS_DY = -1; // altura dos punhos em relação ao centro do corpo no contato (ajustada no quadro de 2,1 s)
 // Um anel pelo chão (v4-03 §4): nasce no choque (2,6 s), alcança as rochas entre 4,0 e 4,8 s e se dissipa até ~5,8 s.
 export const anel = (t: number, atraso: number) => {
   const p = (t - 2.6 - atraso) / 3.2;
