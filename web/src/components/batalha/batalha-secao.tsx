@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CinemaView } from "@/components/cinema/cinema-view";
+import { ReflexoBorda } from "@/components/reflexo-borda";
 import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
 import { buttonClass } from "@/components/button";
 import { batalha } from "@/config/batalha";
@@ -76,10 +77,11 @@ export function BatalhaSecao() {
           A equipe em ação
         </h2>
         <figure className="mx-auto w-full max-w-[72rem]">
-          <div ref={palco}>
+          <div ref={palco} className="relative overflow-hidden rounded-xl">
+            <ReflexoBorda id="batalha" />
             <CinemaView
               alt={status === "parado" ? batalha.alt : batalha.ariaAnimada}
-              className={`relative w-full overflow-hidden rounded-xl border border-edge bg-bg bg-[linear-gradient(180deg,#060a16_0%,#0d1a36_55%,#122344_100%)] ${!com3d && !estatico && clipe ? "mx-auto aspect-[3/4] max-w-[26rem]" : "aspect-[2/1]"}`}
+              className={`ambiente-palco relative w-full overflow-hidden rounded-xl border border-edge bg-bg ${!com3d && !estatico && clipe ? "mx-auto aspect-[3/4] max-w-[26rem]" : "aspect-[2/1]"}`}
               mundo={{ largura: 2, altura: 1 }}
               cameraPropria
               habilitada={habilitada}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { CinemaView } from "@/components/cinema/cinema-view";
+import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
 import { SkinFace } from "@/components/skin-viewer/skin-face";
 import { buttonClass } from "@/components/button";
@@ -100,9 +101,10 @@ function Desktop({ selecionada }: { selecionada: IdDaPessoa | null }) {
       <p className="mb-3 text-muted-foreground">Escolha uma pessoa para ver o perfil.</p>
       <div className="grid items-start gap-6 nav:grid-cols-[minmax(0,744fr)_minmax(0,384fr)]">
         <div className="min-w-0">
-          <div className="relative">
+          <div className="relative overflow-hidden rounded-xl">
+            <ReflexoBorda id="equipe" />
             <CinemaView
-              className="relative aspect-[744/420] w-full overflow-hidden rounded-xl border border-edge bg-bg bg-[radial-gradient(ellipse_at_50%_60%,color-mix(in_srgb,var(--du-brand-decor)_45%,transparent)_0%,transparent_70%)]"
+              className="ambiente-palco relative aspect-[744/420] w-full overflow-hidden rounded-xl border border-edge bg-bg"
               mundo={{ largura: 744, altura: 420 }}
               cameraPropria
               fallback={

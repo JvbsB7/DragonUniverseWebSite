@@ -381,3 +381,34 @@ dialog.lightbox[open] {
 .apoio-card:has(:focus-visible) {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--luz) 18%, transparent), 0 0 24px color-mix(in srgb, var(--luz) 18%, transparent);
 }
+
+/* Ambiente (v4-03 §11.3): estrelas quadradas estáticas e névoa azul/violeta atrás das mídias (nunca sobre texto), e um reflexo
+   de borda de 1,2 s por visita. Sem parallax e sem movimento com "Reduzir animações". */
+.ambiente-palco {
+  background-image:
+    radial-gradient(ellipse at 20% 85%, rgba(22, 116, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 15%, rgba(165, 123, 250, 0.14), transparent 50%),
+    radial-gradient(#cfe7ff 0.8px, transparent 1.2px),
+    radial-gradient(#8fb8ff 0.8px, transparent 1.2px),
+    linear-gradient(180deg, #060a16 0%, #0d1a36 55%, #122344 100%);
+  background-size: auto, auto, 97px 97px, 61px 61px, auto;
+  background-position: 0 0, 0 0, 13px 9px, 40px 31px, 0 0;
+}
+.reflexo-borda {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, #23d7ff, transparent);
+  background-size: 30% 100%;
+  background-repeat: no-repeat;
+  background-position: -40% 0;
+}
+.reflexo-borda[data-passando] {
+  animation: reflexo-passa 1.2s ease-in-out 1 both;
+}
+@keyframes reflexo-passa {
+  0% { opacity: 1; background-position: -40% 0; }
+  100% { opacity: 0; background-position: 140% 0; }
+}
