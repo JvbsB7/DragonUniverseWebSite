@@ -28,7 +28,7 @@ Para um teste rápido: `npx serve out`.
   `https://jvbsb7.github.io/DragonUniverseWebSite`) alimenta canonical, `og:url`, `og:image`, `sitemap.xml` e `robots.txt`.
   Pode ser trocada sem editar código com a variável `NEXT_PUBLIC_SITE_URL` no build.
 - `src/config/links.ts`: Discord, GitHub, download e apoio (`null` = "Em breve").
-- `src/config/plans.ts`: planos de apoio. Para ligar, preencha `tiers` (com `url`) e mude `plansApproved` para `true`.
+- `src/config/plans.ts`: níveis de apoio (nomes, preços, benefícios), comparativo e perguntas. Os controles ficam sempre desativados ("Em breve"); não há checkout nem formulário.
 
 ## Publicar no GitHub Pages (subpasta)
 

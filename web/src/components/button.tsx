@@ -53,14 +53,14 @@ export function LinkButton({
 
 // Controle indisponível (v3-06 M3, W6): aria-disabled (focável, com o foco duplo), contorno de 3:1, texto sem opacidade,
 // type="button" sem manipulador (nada acontece ao clicar) e sem href. O "Em breve" aparece em texto visível junto do botão.
-export function SoonButton({ label, note, ariaLabel }: { label: string; note: string; ariaLabel?: string }) {
+export function SoonButton({ label, note, ariaLabel, className = "" }: { label: string; note: string; ariaLabel?: string; className?: string }) {
   return (
     <div className="flex flex-col gap-2">
       <button
         type="button"
         aria-disabled="true"
         aria-label={ariaLabel ?? `${label}: indisponível, em breve`}
-        className="inline-flex min-h-12 max-w-full cursor-not-allowed items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-surface px-5 py-2.5 text-center text-base leading-6 font-semibold text-muted-foreground [overflow-wrap:anywhere]"
+        className={`inline-flex min-h-12 max-w-full cursor-not-allowed items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-surface px-5 py-2.5 text-center text-base leading-6 font-semibold text-muted-foreground [overflow-wrap:anywhere] ${className}`}
       >
         {label}
       </button>

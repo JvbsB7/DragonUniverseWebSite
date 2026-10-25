@@ -152,3 +152,36 @@ html[data-perfil="completo"] .ki-particle {
 .expandable > div {
   min-block-size: 0;
 }
+
+/* Roadmap: filtro por status (RoadmapFilter) e trilho vertical da linha do tempo. */
+[data-filtro="live"] [data-secao]:not([data-secao="live"]),
+[data-filtro="dev"] [data-secao]:not([data-secao="dev"]),
+[data-filtro="test"] [data-secao]:not([data-secao="test"]),
+[data-filtro="planned"] [data-secao]:not([data-secao="planned"]) {
+  display: none;
+}
+.trilho {
+  position: relative;
+  border-inline-start: 2px solid var(--du-border-hover);
+  margin-inline-start: 0.5rem;
+}
+.trilho > li {
+  position: relative;
+  padding-inline-start: 0.75rem;
+}
+.trilho > li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -0.5rem;
+  inset-block-start: 0.6rem;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  background: var(--du-brand);
+  transform: rotate(45deg);
+  border: 2px solid var(--du-bg);
+}
+@media (min-width: 68.75rem) {
+  .trilho > li {
+    padding-inline-start: 2rem;
+  }
+}

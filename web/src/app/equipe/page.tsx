@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import { LinkButton } from "@/components/button";
 import { SkinFace } from "@/components/skin-viewer/skin-face";
 import { asset, assetSet } from "@/lib/asset";
 import { CompactPresenter } from "@/components/compact-presenter";
 import { TeamScene } from "@/components/team-scene/team-scene";
 import { equipe } from "@/config/equipe";
 import { links } from "@/config/links";
+import Link from "next/link";
+import { Community } from "@/components/community";
+import { GithubMark } from "@/components/github-mark";
 
 export const metadata: Metadata = pageMetadata({
   title: "Equipe e créditos | Dragon Universe",
@@ -48,11 +50,24 @@ export default function EquipePage() {
                 <h2 className="text-2xl [overflow-wrap:anywhere]">{p.nome}</h2>
                 <p className="font-display text-brand">Discord {p.discord}</p>
                 <p className="text-muted-foreground">{p.texto}</p>
+                {/* Link independente (design r1 §4): o card inteiro não é link e a skin continua decorativa. */}
+                <a
+                  href={p.github.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`GitHub de ${p.nome}, abre em nova aba`}
+                  className="mt-1 inline-flex min-h-12 w-fit max-w-full items-center gap-2 text-brand underline underline-offset-4 [overflow-wrap:anywhere]"
+                >
+                  <GithubMark />
+                  <span>GitHub · {p.github.rotulo}</span>
+                </a>
               </div>
             </div>
           </li>
         ))}
       </ul>
+
+      <Community headingId="comunidade-equipe" />
 
       <section aria-labelledby="credito" className="flex flex-col gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6">
         <h2 id="credito">Crédito ao autor original</h2>
@@ -60,10 +75,9 @@ export default function EquipePage() {
         <p className="text-muted-foreground">
           O Dragon Universe é um projeto de fãs com nome e identidade próprios, inspirado no trabalho de About04.
         </p>
-        <div className="flex flex-wrap gap-4">
-          <LinkButton href={links.discord} variant="primary" external>Entrar no Discord</LinkButton>
-          <LinkButton href={links.github} external>Ver no GitHub</LinkButton>
-        </div>
+        <p>
+          <Link href="/apoie" className="du-text-link">Conheça o apoio ao projeto</Link>
+        </p>
       </section>
     </div>
   );

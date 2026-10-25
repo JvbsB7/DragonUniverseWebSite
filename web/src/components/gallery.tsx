@@ -142,9 +142,9 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
               type="button"
               onClick={() => open(i)}
               aria-label={`Ampliar imagem: ${item.caption}`}
-              className="group block w-full bg-bg"
+              className="group block aspect-[4/3] w-full bg-bg"
             >
-              <img src={item.src} alt="" width={item.width} height={item.height} loading="lazy" className="h-auto w-full" />
+              <img src={item.src} alt="" width={item.width} height={item.height} loading="lazy" className="h-full w-full object-contain" />
             </button>
             <div className="grid gap-2 border-t border-edge p-4">
               <StatusBadge status="preview" />
@@ -172,7 +172,7 @@ export function Gallery({ items }: { items: GaleriaItem[] }) {
           if (fora) close();
         }}
         aria-label={current ? `Imagem ampliada: ${current.caption}` : "Imagem ampliada"}
-        className="m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
+        className="m-auto max-h-[96dvh] w-[min(96vw,64rem)] max-w-none overflow-hidden rounded-xl border-2 border-brand bg-surface p-0 text-text backdrop:bg-black/85"
       >
         {current && index !== null && (
           <div className="flex max-h-[96dvh] flex-col">

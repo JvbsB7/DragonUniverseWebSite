@@ -58,7 +58,7 @@ export function Presenter({
         skin={src}
         alt={alt}
         animation={animation}
-        className={cn("h-56 w-32 shrink-0 md:order-1", narrow && "nav:order-none")}
+        className={cn("h-56 w-32 max-w-full shrink-0 md:order-1", narrow && "nav:order-none")}
       />
     </div>
   );
