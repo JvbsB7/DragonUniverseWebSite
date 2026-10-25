@@ -296,3 +296,22 @@ html[data-reduzir="true"] *::after {
   0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
 }
+
+/* Leitor de dados (v4-03 §10): uma varredura de 240 ms sobre a mídia do cartão; sem animação com "Reduzir animações". */
+.leitor-varredura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(35, 215, 255, 0.35) 50%, transparent 100%);
+  background-size: 100% 28%;
+  background-repeat: no-repeat;
+  background-position: 0 -30%;
+}
+[data-race][data-leitura="varrendo"] .leitor-varredura {
+  animation: leitor-varre 240ms linear 1 both;
+}
+@keyframes leitor-varre {
+  0% { opacity: 1; background-position: 0 -30%; }
+  100% { opacity: 0; background-position: 0 130%; }
+}
