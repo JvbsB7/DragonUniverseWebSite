@@ -7,7 +7,7 @@ import { GithubMark } from "@/components/github-mark";
 import { SkinFace } from "@/components/skin-viewer/skin-face";
 import { buttonClass } from "@/components/button";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
-import { asset } from "@/lib/asset";
+import { asset, assetSet } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 import { useEquipeStore } from "@/store/equipe";
 
@@ -177,13 +177,19 @@ function Celular({ selecionada }: { selecionada: IdDaPessoa | null }) {
           >
             <div aria-hidden="true" className="h-3 rounded-t-xl" style={{ background: energias[p.id] }} />
             <div className="grid justify-items-center gap-3 p-4">
-              <div className="flex h-[12.5rem] w-full items-end justify-center overflow-hidden">
-                {p.preview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={asset(p.preview.src)} width={p.preview.width} height={p.preview.height} alt={p.alt} className="h-full w-auto object-contain object-bottom" />
-                ) : (
-                  <SkinFace src={p.skin} alt={p.alt} className="size-28 self-center" />
-                )}
+              <div className="cartao-halo relative w-full overflow-hidden rounded-md bg-surface" data-selecionada={selecionada === p.id || undefined} style={{ ["--halo" as string]: energias[p.id] }}>
+                {/* Pôster de corpo inteiro da Forja (3:4, sobre a cor do cartão); o halo é só CSS e para com o movimento reduzido. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={asset(`${p.preview.base}-corpo-1x-fundo.webp`)}
+                  srcSet={assetSet(`${p.preview.base}-corpo-1x-fundo.webp 296w, ${p.preview.base}-corpo-2x-fundo.webp 592w`)}
+                  sizes="264px"
+                  width={p.preview.width}
+                  height={p.preview.height}
+                  alt={p.alt}
+                  loading="lazy"
+                  className="relative block h-auto w-full"
+                />
               </div>
               <p className="font-display text-xl font-bold [overflow-wrap:anywhere]">{tituloDaPessoa(p)}</p>
               <button

@@ -5,7 +5,8 @@ export const equipe = [
     nome: "João Vitor",
     /** Nome de jogador (BRIEF_V4, D1). */
     jogador: "JvbsBR",
-    preview: { src: "/img/apresentadores/jvbs-224.webp", width: 224, height: 392 },
+    /** Pôster de corpo inteiro 3:4 (Forja): `<base>-corpo-1x-fundo.webp` e `-2x-fundo.webp`, sobre #122344. */
+    preview: { base: "/img/equipe/jvbsbr", width: 296, height: 400 },
     discord: "@jvbs",
     github: { rotulo: "JvbsB7", url: "https://github.com/JvbsB7" },
     texto: "Desenvolvedor Full-Stack.",
@@ -16,7 +17,7 @@ export const equipe = [
     id: "ricardo",
     nome: "Ricardo Vinicius",
     jogador: "rvmm255",
-    preview: { src: "/img/apresentadores/rvmm-224.webp", width: 224, height: 392 },
+    preview: { base: "/img/equipe/rvmm255", width: 296, height: 400 },
     discord: "@rvmm",
     github: { rotulo: "RicardoViniciusMachadoMartins", url: "https://github.com/RicardoViniciusMachadoMartins" },
     texto: "Desenvolvedor e Construtor no Minecraft.",
@@ -26,9 +27,9 @@ export const equipe = [
   {
     id: "luan",
     nome: "Luan Dias",
-    // Sem nome de jogador nem prévia de corpo inteiro: o brief não dá o primeiro e a Forja ainda não gerou o segundo.
+    // Sem nome de jogador: o brief não dá.
     jogador: null,
-    preview: null,
+    preview: { base: "/img/equipe/luan", width: 296, height: 400 },
     discord: "@luan_dias",
     github: { rotulo: "LvDias", url: "https://github.com/LvDias" },
     texto: "Desenvolvedor da equipe Dragon Universe.",
