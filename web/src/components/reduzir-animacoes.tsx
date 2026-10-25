@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { definirReduzir } from "@/lib/perfil";
-import { useReduzir } from "@/lib/use-qualidade";
+import { useQualidade, useReduzir } from "@/lib/use-qualidade";
 
 // Controle "Reduzir animações" (copy v4 §9; v4-03 §3.3: no rodapé, no menu completo e junto da batalha, todos no mesmo estado).
 // O nome acessível é o próprio texto visível ("Reduzir animações" + estado). Se o sistema já pede menos movimento, o botão
@@ -10,6 +10,9 @@ import { useReduzir } from "@/lib/use-qualidade";
 // A escolha fica salva neste aparelho (localStorage, com try/catch em perfil.ts).
 export function ReduzirAnimacoes({ id = "reduzir" }: { id?: string }) {
   const { reduzir, sistema } = useReduzir();
+  const nivel = useQualidade();
+  // Economia de dados também leva ao nível estático: o controle reflete o nível realmente usado.
+  const dados = nivel === "estatico" && !reduzir && !sistema;
   // Só depois de hidratar: antes disso o servidor não sabe o estado, e o botão não pode piscar errado.
   const pronto = useSyncExternalStore(
     () => () => {},
@@ -17,8 +20,14 @@ export function ReduzirAnimacoes({ id = "reduzir" }: { id?: string }) {
     () => false,
   );
   const [aviso, setAviso] = useState("");
-  const ligado = pronto && (sistema || reduzir);
-  const apoio = pronto && sistema ? "Seu aparelho pede menos movimento, então as animações estão reduzidas." : "Deixa o site mais leve e sem movimento forte. O conteúdo é o mesmo.";
+  const ligado = pronto && (sistema || reduzir || dados);
+  const travado = pronto && (sistema || dados);
+  const apoio =
+    pronto && sistema
+      ? "Seu aparelho pede menos movimento, então as animações estão reduzidas."
+      : pronto && dados
+        ? "Seu aparelho está em economia de dados, então as animações estão reduzidas."
+        : "Deixa o site mais leve e sem movimento forte. O conteúdo é o mesmo.";
 
   return (
     <div className="grid max-w-prose gap-1">
@@ -26,10 +35,10 @@ export function ReduzirAnimacoes({ id = "reduzir" }: { id?: string }) {
         type="button"
         role="switch"
         aria-checked={ligado}
-        aria-disabled={pronto && sistema}
+        aria-disabled={travado}
         aria-describedby={`${id}-apoio`}
         onClick={() => {
-          if (sistema) return;
+          if (sistema || dados) return;
           definirReduzir(!reduzir);
           setAviso(!reduzir ? "Animações reduzidas. O conteúdo é o mesmo." : "Animações completas. As cenas não recomeçam sozinhas.");
         }}
