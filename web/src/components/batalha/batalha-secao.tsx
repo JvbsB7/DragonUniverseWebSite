@@ -10,6 +10,7 @@ import { buttonClass } from "@/components/button";
 import { batalha } from "@/config/batalha";
 import { asset, assetSet } from "@/lib/asset";
 import { useQualidade } from "@/lib/use-qualidade";
+import { reduzirAtivo } from "@/lib/perfil";
 import { useBatalhaStore } from "@/store/batalha";
 
 const CenaBatalha = dynamic(() => import("./cena-batalha"), { ssr: false });
@@ -46,12 +47,14 @@ export function BatalhaSecao() {
   useEffect(() => {
     const el = palco.current;
     if (!el || nivel !== "alto") return;
+    // O cabeçalho fixo cobre o topo da tela: os 50% de visibilidade descontam a altura dele (v4-10 B4).
+    const topo = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--du-header-offset")) || 0;
     const io = new IntersectionObserver(
       ([e]) => {
         const s = useBatalhaStore.getState();
         if (e.isIntersecting && s.status === "parado" && !s.jaTocou) s.iniciar(false);
       },
-      { threshold: 0.5 },
+      { threshold: 0.5, rootMargin: `-${Math.round(topo)}px 0px 0px 0px` },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -64,7 +67,8 @@ export function BatalhaSecao() {
     nivelAnterior.current = nivel;
     if (antes === nivel) return;
     if (!(nivel === "alto" || nivel === "medio") && useBatalhaStore.getState().status === "tocando") terminou();
-    if (nivel === "estatico" && antes !== "estatico") setAviso("Animações reduzidas. O conteúdo é o mesmo.");
+    // O botão "Reduzir animações" já anuncia a própria mudança; aqui só entra a redução vinda do sistema ou da economia de dados.
+    if (nivel === "estatico" && antes !== "estatico" && !reduzirAtivo()) setAviso("Animações reduzidas. O conteúdo é o mesmo.");
   }, [nivel, terminou]);
 
   const tocando = status === "tocando";
@@ -81,7 +85,7 @@ export function BatalhaSecao() {
           <div ref={palco} className="relative overflow-hidden rounded-xl">
             <ReflexoBorda id="batalha" />
             <CinemaView
-              alt={status === "parado" ? batalha.alt : batalha.ariaAnimada}
+              alt={status === "parado" || !com3d ? batalha.alt : batalha.ariaAnimada}
               className={`ambiente-palco relative w-full overflow-hidden rounded-xl border border-edge bg-bg ${!com3d && !estatico && clipe ? "mx-auto aspect-[3/4] max-w-[26rem]" : "aspect-[2/1]"}`}
               mundo={{ largura: 2, altura: 1 }}
               cameraPropria
@@ -104,8 +108,9 @@ export function BatalhaSecao() {
                       setVideoJaTocou(true);
                     }}
                   >
-                    <source src={asset(clipe.webm)} type="video/webm" />
+                    {/* MP4 primeiro (menor no Android/Chrome e nativo no Safari/iOS); WebM como reserva. */}
                     <source src={asset(clipe.mp4)} type="video/mp4" />
+                    <source src={asset(clipe.webm)} type="video/webm" />
                   </video>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
