@@ -92,6 +92,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
   const [trocou, setTrocou] = useState(false);
   const [viagem, setViagem] = useState<{ nome: string } | null>(null);
   const [avisoViagem, setAvisoViagem] = useState("");
+  const [ultimaAcao, setUltimaAcao] = useState<"filtro" | "destino">("filtro");
   const timer = useRef(0);
   const animar = useQualidade() !== "estatico";
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -99,6 +100,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
   // Viagem: os dados e a seleção mudam no início; a nave só cruza a faixa. Em cliques seguidos vale só o último destino.
   const viajar = (x: Destino) => {
     setTrocou(true);
+    setUltimaAcao("destino");
     ocuparNuvem(2500);
     if (x.slug === atual) return;
     setAtual(x.slug);
@@ -109,7 +111,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
     }
     const dur = window.matchMedia("(min-width: 1100px)").matches ? 650 : 400;
     setViagem({ nome: x.nome });
-    setAvisoViagem(`Viajando para ${x.nome}.`);
+    setAvisoViagem("");
     timer.current = window.setTimeout(() => {
       setViagem(null);
       setAvisoViagem(`Chegamos a ${x.nome}.`);
@@ -120,6 +122,14 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
     setViagem(null);
     setAvisoViagem("Chegamos ao destino.");
   };
+  // Esc pula a viagem (a travessia é curta demais para alcançar o botão com o teclado).
+  useEffect(() => {
+    if (!viagem) return;
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && pularViagem();
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viagem]);
 
   const lista = destinos.filter((d) => filtro === "todos" || d.status === filtro);
   const d = lista.find((x) => x.slug === atual) ?? lista[0];
@@ -136,6 +146,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
               aria-pressed={filtro === f.id}
               onClick={() => {
                 setTrocou(true);
+                setUltimaAcao("filtro");
                 setFiltro(f.id);
               }}
               className={cn(
@@ -148,7 +159,7 @@ export function UniversoShowcase({ destinos, nivelTitulo = 3 }: { destinos: Dest
           ))}
         </div>
         <p className="sr-only" aria-live="polite">{avisoViagem}</p>
-        <p className="sr-only" aria-live="polite">{!trocou ? "" : d ? `Mostrando ${d.nome}. ${lista.length} ${lista.length === 1 ? "destino" : "destinos"} na lista.` : "Nenhum destino neste filtro."}</p>
+        <p className="sr-only" aria-live="polite">{!trocou || (animar && ultimaAcao === "destino") ? "" : d ? `Mostrando ${d.nome}. ${lista.length} ${lista.length === 1 ? "destino" : "destinos"} na lista.` : "Nenhum destino neste filtro."}</p>
         <div className="grid gap-6 nav:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] nav:items-start">
           <ul aria-label="Destinos do universo" className="grid min-w-0 gap-2">
             {lista.map((x) => {
