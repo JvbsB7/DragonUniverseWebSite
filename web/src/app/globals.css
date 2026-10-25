@@ -368,3 +368,16 @@ dialog.lightbox[open] {
   from { left: -128px; }
   to { left: 100%; }
 }
+
+/* Cartões de apoio (v4-03 §11.4): luz de borda de até 180 ms, opacidade máxima 0,18. Sem rotação, inclinação, loop nem animação de preço. */
+.apoio-card {
+  transition: box-shadow 180ms ease-out;
+}
+@media (hover: hover) {
+  .apoio-card:hover {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--luz) 18%, transparent), 0 0 24px color-mix(in srgb, var(--luz) 18%, transparent);
+  }
+}
+.apoio-card:has(:focus-visible) {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--luz) 18%, transparent), 0 0 24px color-mix(in srgb, var(--luz) 18%, transparent);
+}

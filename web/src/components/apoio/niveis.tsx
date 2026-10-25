@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 
 // Cards dos três níveis (v3-04-design.md §7.5 e §10): corpo opaco, preço legível, benefícios em texto e controle indisponível.
 // A identidade de cada nível vem de faixa, ícone e luz (nunca só da cor: o nome está em texto). "Destaque" é rótulo
-// editorial, não dado de assinantes. Sem hover que pareça ativar a contratação.
-const visual: Record<Nivel["id"], { icone: typeof Shield; faixa: string; sombra: string; moldura: string }> = {
-  guerreiro: { icone: Shield, faixa: "bg-primary", sombra: "shadow-block-card", moldura: "border-edge" },
-  "super-guerreiro": { icone: Zap, faixa: "bg-gold", sombra: "shadow-block-card", moldura: "border-2 border-gold" },
-  lendario: { icone: Crown, faixa: "bg-violet", sombra: "shadow-block-card", moldura: "border-edge" },
+// editorial, não dado de assinantes. Sem hover que pareça ativar a contratação. v4 (§11.4): só uma luz de borda de até 180 ms
+// (opacidade máxima 0,18) ao passar o mouse ou focar o controle; preços, textos e o botão indisponível não mudam.
+const visual: Record<Nivel["id"], { icone: typeof Shield; faixa: string; sombra: string; moldura: string; luz: string }> = {
+  guerreiro: { icone: Shield, faixa: "bg-primary", sombra: "shadow-block-card", moldura: "border-edge", luz: "#1674ff" },
+  "super-guerreiro": { icone: Zap, faixa: "bg-gold", sombra: "shadow-block-card", moldura: "border-2 border-gold", luz: "#f6b943" },
+  lendario: { icone: Crown, faixa: "bg-violet", sombra: "shadow-block-card", moldura: "border-edge", luz: "#a57bfa" },
 };
 
 export function Niveis() {
@@ -22,7 +23,8 @@ export function Niveis() {
           <li key={n.id} className="min-w-0">
             <article
               aria-labelledby={`nivel-${n.id}`}
-              className={cn("relative flex h-full flex-col gap-4 overflow-hidden rounded-xl border bg-surface p-5 pt-7 md:p-6 md:pt-8", v.moldura, v.sombra, n.destaque && "nav:-my-2 nav:py-8")}
+              style={{ ["--luz" as string]: v.luz }}
+              className={cn("apoio-card relative flex h-full flex-col gap-4 overflow-hidden rounded-xl border bg-surface p-5 pt-7 md:p-6 md:pt-8", v.moldura, v.sombra, n.destaque && "nav:-my-2 nav:py-8")}
             >
               <span aria-hidden="true" className={cn("absolute inset-x-0 top-0 h-2", v.faixa)} />
               {n.id === "lendario" && <span aria-hidden="true" className="absolute inset-x-0 top-2 h-0.5 bg-gold" />}
