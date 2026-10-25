@@ -5,7 +5,7 @@ import { StatusBadge, type Status } from "@/components/status-badge";
 // Nunca vai ao lado dos cards de apoio. Sem arte conceitual por enquanto: "Imagem em breve" não é repetido por card.
 const itens: { titulo: string; texto: string; status: Extract<Status, "planned" | "dev"> }[] = [
   { titulo: "Conteúdo experimental estilo Moro", texto: "Habilidades mágicas inspiradas no Moro. Em desenvolvimento.", status: "dev" },
-  { titulo: "Raça Cerealiana", texto: "Uma raça nova, junto com o Planeta Cereal. Em desenvolvimento.", status: "dev" },
+  { titulo: "Cerealianos", texto: "Uma raça nova, junto com o Planeta Cereal. Em desenvolvimento.", status: "dev" },
   { titulo: "Roupas inspiradas em anime", texto: "Ideias de roupas inspiradas no anime. Ainda em fase de conceito.", status: "planned" },
   { titulo: "Itens cosméticos", texto: "Itens de visual. Ainda em fase de conceito.", status: "planned" },
   { titulo: "Equipamento inicial", texto: "Ideias de equipamento para quem começa. Ainda em fase de conceito.", status: "planned" },

@@ -21,7 +21,7 @@ export function RacasVitrine() {
         <ul className="grid gap-4 md:grid-cols-2 md:gap-6 nav:grid-cols-3">
           {racasNoJogo.map((r) => (
             <li key={r.slug} className="min-w-0">
-              <RaceCard raca={r} />
+              <RaceCard raca={r} titulo="h3" />
             </li>
           ))}
         </ul>
@@ -33,7 +33,7 @@ export function RacasVitrine() {
         <ul className="grid gap-4 md:grid-cols-2 md:gap-6 nav:grid-cols-3">
           {racasEmDesenvolvimento.map((r) => (
             <li key={r.slug} className="min-w-0">
-              <RaceCard raca={r} />
+              <RaceCard raca={r} titulo="h3" />
             </li>
           ))}
         </ul>
@@ -43,7 +43,7 @@ export function RacasVitrine() {
           <h3 className="text-card-title">{habilidadesMoro.nome}</h3>
           <p className="max-w-[65ch] text-muted-foreground">{habilidadesMoro.descricao}</p>
           <div className="grid gap-1">
-            <h4 className="font-game text-sm font-semibold">O que a equipe quer construir</h4>
+            <p className="font-game text-sm font-semibold">O que a equipe quer construir</p>
             <p className="text-sm text-muted-foreground">(pode mudar durante o desenvolvimento)</p>
             <ul className="list-disc ps-5 text-muted-foreground">
               {habilidadesMoro.direcao.map((d) => (
@@ -78,7 +78,7 @@ export function RacasVitrine() {
         <ul className="grid gap-4 md:grid-cols-2 md:gap-6 nav:grid-cols-3">
           {racasPlanejadas.map((r) => (
             <li key={r.slug} className="min-w-0">
-              <RaceCard raca={r} />
+              <RaceCard raca={r} titulo="h3" />
             </li>
           ))}
         </ul>

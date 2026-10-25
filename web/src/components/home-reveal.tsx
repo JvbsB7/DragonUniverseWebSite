@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
+import { perfilLeve } from "@/lib/perfil";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
 
 // Revelação das seções da Home com GSAP + ScrollTrigger (v3-01 §0.2, item 7). SOB DEMANDA: o pacote (~45 KB gz) só é
-// baixado depois da primeira interação e sem movimento reduzido. Só anima, uma vez, elementos [data-reveal] que estão
+// baixado depois da primeira interação e só no perfil completo (desktop). Só anima, uma vez, elementos [data-reveal] que estão
 // ABAIXO da dobra (até 8 px de deslocamento e opacidade a partir de 0,6, 320 ms): o conteúdo nunca fica invisível, o
 // H1 e a área visual do hero não participam e nenhum layout se move.
 export function HomeReveal() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Perfil leve (movimento reduzido, economia de dados, ≤ 4 núcleos, celular): nenhuma revelação e nenhum GSAP baixado.
+    if (perfilLeve()) return;
     let cancelado = false;
     let limpar = () => {};
     const iniciar = async () => {

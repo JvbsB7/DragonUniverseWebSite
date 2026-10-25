@@ -143,8 +143,8 @@ export default function HomePage() {
           <h3 className="mb-4">6 raças já no jogo</h3>
           <p className="mb-4 text-sm text-muted-foreground">Versão de teste: o add-on ainda não tem versão pública.</p>
           <ul className="grid gap-4 md:grid-cols-2 md:gap-6 nav:grid-cols-3">
-            {racasNoJogo.map((r, i) => (
-              <li key={r.slug} className={`min-w-0 ${i >= 3 ? "hidden md:block" : ""}`}>
+            {racasNoJogo.map((r) => (
+              <li key={r.slug} className="min-w-0">
                 <RaceCard raca={r} />
               </li>
             ))}

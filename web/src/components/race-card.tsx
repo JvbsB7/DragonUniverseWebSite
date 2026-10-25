@@ -4,6 +4,7 @@ import { StatusBadge, type Status } from "@/components/status-badge";
 import { TiltCard } from "@/components/tilt-card";
 import { Expandable } from "@/components/expandable";
 import { prefetchFor } from "@/lib/prefetch";
+import { asset, assetSet } from "@/lib/asset";
 
 const statusMap: Record<Raca["status"], Status> = { live: "live", dev: "dev", planned: "planned" };
 
@@ -11,7 +12,8 @@ const statusMap: Record<Raca["status"], Status> = { live: "live", dev: "dev", pl
 // raças em desenvolvimento, "O que a equipe quer construir" (direção, não recurso pronto). Sem imagem enquanto não
 // houver arte oficial da raça: card textual, sem personagem genérico. Os cards em desenvolvimento ganham filete ciano
 // e contorno tracejado, com texto e fundo iguais aos demais. Não são ligados a nenhum nível de apoio.
-export function RaceCard({ raca }: { raca: Raca }) {
+export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | "h4" }) {
+  const H = titulo;
   const dev = raca.status === "dev";
   const href = `/wiki/racas/${raca.wiki}`;
   return (
@@ -28,19 +30,36 @@ export function RaceCard({ raca }: { raca: Raca }) {
           <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5" style={{ background: "var(--du-item-energy)" }} />
         )}
         <StatusBadge status={statusMap[raca.status]} />
-        <h3 className="text-card-title">{raca.nome}</h3>
+        {raca.poster && (
+          <div className="relative h-64 overflow-hidden rounded-md bg-bg">
+            {/* Poster 2.5D do modelo e da textura do add-on (368×460 e 736×920). Dimensões fixas: sem deslocamento de layout. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={asset(`/img/racas/${raca.slug}-368.webp`)}
+              srcSet={assetSet(`/img/racas/${raca.slug}-368.webp 368w, /img/racas/${raca.slug}-736.webp 736w`)}
+              sizes="218px"
+              width={368}
+              height={460}
+              loading="lazy"
+              decoding="async"
+              alt={raca.poster.alt}
+              className="absolute top-[50%] left-1/2 h-[17rem] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
+            />
+          </div>
+        )}
+        <H className="text-card-title">{raca.nome}</H>
         <p className="max-w-[65ch] text-muted-foreground">{raca.descricao}</p>
         {raca.pontosFortes && !raca.direcao && (
           <Expandable>
             <div className="grid gap-1 pt-1">
-              <h4 className="font-game text-sm font-semibold text-text">Pontos fortes</h4>
+              <p className="font-game text-sm font-semibold text-text">Pontos fortes</p>
               <p className="text-muted-foreground">{raca.pontosFortes}</p>
             </div>
           </Expandable>
         )}
         {raca.direcao && (
           <div className="grid gap-1">
-            <h4 className="font-game text-sm font-semibold text-text">O que a equipe quer construir</h4>
+            <p className="font-game text-sm font-semibold text-text">O que a equipe quer construir</p>
             <p className="text-sm text-muted-foreground">(pode mudar durante o desenvolvimento)</p>
             <ul className="list-disc ps-5 text-muted-foreground">
               {raca.direcao.map((d) => (
