@@ -5,7 +5,7 @@
 //   alto:     desktop com folga. 3D completo.
 // `perfilLeve()` (estatico e baixo) continua valendo como na v3. Se os quadros ficarem lentos, `degradar()` desce um nível
 // na mesma visita (até "baixo"). Só roda no navegador; no servidor vale "estatico".
-import { temParametroQA } from "@/lib/qa";
+import { QA, temParametroQA } from "@/lib/qa";
 
 type NavigatorExtra = Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
 
@@ -58,7 +58,7 @@ export function definirReduzir(valor: boolean) {
 /** Desce um nível de qualidade nesta visita (quadros lentos). Não passa de "baixo". */
 export function degradar() {
   // Teste/QA: `?du-sem-degradar` (só em build de QA) mantém o nível (render por software é lento por natureza).
-  if (temParametroQA("du-sem-degradar")) return;
+  if (QA && temParametroQA("du-sem-degradar")) return;
   if (degradacao >= 2 || ORDEM.indexOf(qualidadeAtual()) <= 1) return;
   degradacao += 1;
   aplicarAtributos();

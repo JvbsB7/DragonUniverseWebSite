@@ -6,7 +6,7 @@ import { useLightbox } from "@/store/lightbox";
 import { useMenu } from "@/store/menu";
 import { gravarContagem, lerContagem, ocupacao, useNuvem } from "@/store/nuvem";
 import { qualidadeAtual } from "@/lib/perfil";
-import { temParametroQA } from "@/lib/qa";
+import { QA, temParametroQA } from "@/lib/qa";
 import { useQualidade } from "@/lib/use-qualidade";
 import { faixas, rolagem } from "./faixas";
 
@@ -21,7 +21,7 @@ export function NuvemHost() {
 
   useEffect(() => {
     if (nivel === "estatico") return;
-    const forcado = temParametroQA("nuvem");
+    const forcado = QA && temParametroQA("nuvem");
     const rolou = () => (rolagem.ultima = Date.now());
     window.addEventListener("scroll", rolou, { passive: true });
     const tick = window.setInterval(() => {
