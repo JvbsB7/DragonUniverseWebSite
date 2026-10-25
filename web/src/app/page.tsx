@@ -77,7 +77,7 @@ export default function HomePage() {
               <HeroLogoBand />
             </div>
             <HeroParallax className="px-4 pb-4 md:px-6 md:pb-6">
-              <figure className="hero-depth-print">
+              <figure className="hero-depth-print mx-auto max-w-[20rem] md:max-w-none">
                 <div className="overflow-hidden rounded-md border border-edge bg-bg">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

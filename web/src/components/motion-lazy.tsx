@@ -1,43 +1,34 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { LazyMotion, m, useReducedMotion, type MotionProps } from "motion/react";
-import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
+import { useEffect, useRef, type ReactNode } from "react";
+import { perfilLeve } from "@/lib/perfil";
 
-// Motion for React, sob demanda (v3-01 §0.2): só `LazyMotion` e `m` entram no pacote da página; os recursos de animação
-// (`domAnimation`, ~20 KB gz) só são baixados DEPOIS da primeira interação. Sem eles, `m.div` renderiza normalmente,
-// então o conteúdo nunca depende de Motion para aparecer. Com movimento reduzido nada é animado.
-const carregarRecursos = () =>
-  new Promise<(typeof import("./motion-features"))["default"]>((resolve) => {
-    const ir = () => import("./motion-features").then((r) => resolve(r.default));
-    if (useSkinViewerStore.getState().interacted) return void ir();
-    const cancelar = useSkinViewerStore.subscribe((s) => {
-      if (s.interacted) {
-        cancelar();
-        ir();
-      }
-    });
-    armFirstInteraction();
-  });
-
+// Motion for React, 100% sob demanda (v3-01 §0.2): nada do Motion entra no pacote da página. A troca de painel usa
+// `animate` de "motion/mini" (Web Animations API, ~4 KB gz), importado por `import()` só na primeira troca feita pela
+// pessoa. Medição: `LazyMotion` + `m` levavam ~30 KB gz para o caminho crítico da Home; esta forma leva 0.
+// Sem Motion o conteúdo aparece igual (a troca só perde a transição). Perfil leve e movimento reduzido: sem animação.
 export function MotionRoot({ children }: { children: ReactNode }) {
-  return (
-    <LazyMotion features={carregarRecursos} strict>
-      {children}
-    </LazyMotion>
-  );
+  return <>{children}</>;
 }
 
 /** Painel que troca de conteúdo em até 180 ms (v3-04-design.md §7.3). `trocou` evita animar o primeiro quadro. */
 export function PainelAnimado({ chave, trocou, children, className }: { chave: string; trocou: boolean; children: ReactNode; className?: string }) {
-  const reduzido = useReducedMotion();
-  const animar = trocou && !reduzido;
-  const props: MotionProps = animar
-    ? { initial: { opacity: 0.4, y: 6 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.18, ease: "easeOut" } }
-    : {};
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !trocou || perfilLeve()) return;
+    let cancelado = false;
+    import("motion/mini").then(({ animate }) => {
+      if (cancelado) return;
+      animate(el, { opacity: [0.4, 1], transform: ["translateY(6px)", "translateY(0px)"] }, { duration: 0.18, ease: "easeOut" });
+    });
+    return () => {
+      cancelado = true;
+    };
+  }, [chave, trocou]);
   return (
-    <m.div key={chave} className={className} {...props}>
+    <div ref={ref} className={className}>
       {children}
-    </m.div>
+    </div>
   );
 }

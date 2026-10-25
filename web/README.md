@@ -1,6 +1,6 @@
-# Dragon Universe: site e wiki (v2)
+# Dragon Universe: site e wiki (v3)
 
-Next.js 16 (App Router, TypeScript), Tailwind v4, shadcn/ui, Zustand, Lucide e skinview3d.
+Next.js 16 (App Router, TypeScript), Tailwind v4, Base UI, Zustand, Lucide, three 0.186.1, skinview3d, React Three Fiber + drei, Motion e GSAP (as quatro últimas só sob demanda).
 Exportação estática: o resultado do build é a pasta `out/`, só arquivos, sem Node no servidor.
 
 ## Rodar em desenvolvimento
@@ -101,6 +101,20 @@ As skins são arte, não um visualizador: não há controles nem foco de teclado
 - **Apresentadores** (`src/components/presenter.tsx`): uma skin 3D com balão de fala. Usados na home (João e Ricardo), `/wiki` (João), `/instalar` (João), `/roadmap` (Ricardo), `/apoie` (Ricardo) e no 404 (Luan voando). Uso: `<Presenter src="/skins/jvbs.png" name="João Vitor" alt="..." animation="wave">Fala.</Presenter>` (`animation`: `idle | walk | run | fly | wave`). O 404 usa `SkinViewer` direto.
 - **Como o 3D é carregado:** three.js e skinview3d ficam em chunks separados (`next/dynamic`, `ssr: false`). O canvas só nasce depois da primeira interação (rolar, tocar, mover o mouse ou usar o teclado), enquanto o elemento está visível na tela, e é descartado (`dispose` e perda do contexto WebGL) quando sai. No máximo 2 canvas vivos no site inteiro (`MAX_LIVE_CANVAS` em `src/store/skin-viewer.ts`).
 - **Fallback:** sem WebGL, com `prefers-reduced-motion` ou antes de o 3D carregar, aparece a cabeça 2D da skin (`SkinFace`). Nunca há caixa vazia.
+
+## v3: o que mudou e como mexer
+
+**Branch `v3`.** O workflow do Pages só roda em push na `main`; a v3 só vai ao ar com o ok do João (mesclar na `main`).
+
+- **Tokens:** `src/app/tokens.css` (nomes `--du-*` mantidos; valores da paleta v3, raios 20/12 px, sombras suaves). Contorno decorativo = `border-edge`; contorno de controle = `border-border` (`#A8B6D0`, 3:1). Botão primário `#1674FF` com texto `#060A16` (4,68:1): **nunca** texto claro sobre o azul.
+- **Fontes** (`src/app/fonts/`, self-hosted, subset pt-BR, ~60 KB no total): Space Grotesk 600–700 (variável), Inter 400 e 600, Oxanium 600 (`font-game`: selos, preços e rótulos curtos). Para regerar o subset use `subset-font` com ASCII + Latin-1 + pontuação tipográfica.
+- **Navegação** (`src/config/site.ts`: `nav` e `mais`): cabeçalho flutuante (`header-shell.tsx` mede a ocupação e publica `--du-header-offset`, usado por `scroll-padding`/`scroll-margin` e pelo sumário da wiki; um `focusin` rola o foco para fora da barra) e menu em tela cheia no celular (`menu-sheet.tsx`). **Não há hotbar.** As rotas da v2 não mudaram; `/wiki/racas/demonio` é uma página-ponte (meta refresh) para `/wiki/racas/glind`.
+- **Perfil leve** (`src/lib/perfil.ts`): movimento reduzido, economia de dados, ≤ 4 núcleos, ≤ 4 GB, tela < 768 px ou ponteiro grosso → sem WebGL, sem GSAP, sem blur (`<html data-perfil="leve">`). Nesse perfil o hero é o 2.5D estático.
+- **Hero** (`src/components/hero/`): H1 em texto (é ele ou o pôster que fecha o LCP; **não anime a opacidade do H1**), logo SVG, print inteiro do Planeta do Bills em camada própria com legenda fora da mídia. A cena R3F (`hero-scene.tsx`: logo 3D aprovado + `Points` + profundidade do mouse ≤ 3°, `frameloop="demand"`) só entra no desktop completo, após interação ou 8 s, com vaga no limite de **2 canvases** (`store/skin-viewer.ts`). Para trocar o print por um `.glb` do Ricardo, mantenha o mesmo espaço e use o print como pôster durante carregamento, erro e falta de vaga.
+- **Bibliotecas sob demanda** (nunca no caminho crítico): R3F/drei/three (`next/dynamic`, `ssr:false`), Motion (`motion-lazy.tsx`: `LazyMotion`; recursos só após a 1ª interação), GSAP + ScrollTrigger (`home-reveal.tsx`, só perfil completo). Com `prefers-reduced-motion` nada disso é baixado.
+- **Compatibilidade three 0.186 × skinview3d 3.4.2** (`src/lib/three-compat.ts`): `overrides` do `package.json` mantém **um** `three`; `liberarViewer()` corrige o `dispose()` do skinview3d (`fxaaPass.fsQuad` virou `_fsQuad`); o aviso `THREE.Clock` (R3F e skinview3d) é filtrado só nos módulos 3D. Ao atualizar o three, rever essas duas peças.
+- **Conteúdo:** raças em `src/config/racas.ts` (posters em `public/img/racas/`, copiados de `ativos-addon/posters/` por `backups-v2/copiar-posters.sh`), destinos em `src/config/universo.ts`, transformações lidas da wiki (`src/lib/transformacoes-data.ts`), apoio em `src/config/plans.ts`. Textos seguem `entregas/v3-03-copy.md` (Apêndice A).
+- **Testar:** `npx tsc --noEmit && npx eslint && npx next build`; subpasta com `backups-v2/build-pages.sh` + `serve-pages.js` (8093) e `NEXT_PUBLIC_BASE_PATH=/DragonUniverseWebSite`. Conferir: 0 overflow a 320/375 px com 100% e 200% de texto, máximo de 2 canvases, 0 canvas e 0 JS 3D com movimento reduzido, 0 `<form>` em `/apoie`.
 
 ## SEO
 
