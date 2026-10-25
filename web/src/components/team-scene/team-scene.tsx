@@ -7,10 +7,14 @@ import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
 import { buttonClass } from "@/components/button";
+import { FalaSlot } from "@/components/fala/balao";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
+import { FALAS_DA_VITRINE, LOCUTOR } from "@/config/falas";
 import { asset, assetSet } from "@/lib/asset";
+import { useReduzir } from "@/lib/use-qualidade";
 import { cn } from "@/lib/utils";
 import { useEquipeStore } from "@/store/equipe";
+import { selecoes, useFalaStore } from "@/store/fala";
 
 // Vitrine da equipe (v4-03 §7; copy v4-04 §3). Desktop: cena 3D no canvas cinema + seletores + painel. Celular: cartões
 // deslizáveis sem WebGL. Os dados vêm só de config/equipe.ts. Os controles são HTML e nunca ficam dentro da cena (role="img").
@@ -150,6 +154,8 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               <Seletor key={p.id} pessoa={p} selecionada={selecionada === p.id} />
             ))}
           </div>
+          {/* Espaço da fala reservado desde o início (a página não se mexe quando o balão aparece). */}
+          <FalaSlot contexto="vitrine" className="mt-1 min-h-[7.5rem]" />
         </div>
         <Painel id={selecionada} titulo={titulo} />
       </div>
@@ -234,6 +240,7 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
           Próxima<span className="sr-only"> pessoa</span>
         </button>
       </div>
+      <FalaSlot contexto="vitrine" className="mt-1 min-h-[7.5rem]" />
       <div className="mt-4">
         <Painel id={selecionada} titulo={titulo} />
       </div>
@@ -245,6 +252,28 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
 export function TeamScene({ className, titulo = "h3" }: { className?: string; titulo?: Titulo }) {
   const selecionada = useEquipeStore((s) => s.selecionada);
   const anuncio = useEquipeStore((s) => s.anuncio);
+  const { reduzir, sistema } = useReduzir();
+  const reduzido = reduzir || sistema;
+
+  // Fala da pessoa selecionada (D34): depois da pose curta (≈ 450 ms; imediata com redução), alternando o grito do golpe e a frase.
+  // Fechar o perfil encerra a fala. Fica aqui, uma só vez, e não nas duas versões (desktop e celular) da vitrine.
+  useEffect(() => {
+    if (!selecionada) {
+      useFalaStore.getState().fechar("vitrine");
+      return;
+    }
+    const t = window.setTimeout(
+      () => {
+        const textos = FALAS_DA_VITRINE[selecionada];
+        const n = selecoes[selecionada] ?? 0;
+        selecoes[selecionada] = n + 1;
+        useFalaStore.getState().falar({ contexto: "vitrine", ...LOCUTOR[selecionada], texto: textos[n % textos.length], acao: true });
+      },
+      reduzido ? 0 : 450,
+    );
+    return () => clearTimeout(t);
+  }, [selecionada, reduzido]);
+
   return (
     <div className={cn("mx-auto w-full max-w-[72rem]", className)}>
       <Desktop selecionada={selecionada} titulo={titulo} />

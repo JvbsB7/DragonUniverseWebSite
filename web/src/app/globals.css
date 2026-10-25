@@ -430,3 +430,61 @@ dialog.lightbox[open] {
   0%, 100% { transform: translateY(-2px); }
   50% { transform: translateY(2px); }
 }
+
+/* Balão de fala em pixel (v4-15 §0.2, D29): painel #F8FAFC, texto #060A16 (18,89:1), contorno de 2 px, degraus de 4 px, cauda quadrada
+   e sombra deslocada de 4 px sem glow. Entra/sai só por opacidade (120 ms); parado com "Reduzir animações". */
+.balao {
+  --balao-tinta: #060a16;
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 320px;
+  filter: drop-shadow(4px 4px 0 var(--balao-tinta));
+  color: var(--balao-tinta);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  animation: balao-entra 120ms linear both;
+}
+.balao[data-saindo] {
+  animation: balao-sai 120ms linear both;
+}
+.balao[data-parado] {
+  animation: none;
+}
+@keyframes balao-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes balao-sai { from { opacity: 1; } to { opacity: 0; } }
+.balao-borda,
+.balao-corpo {
+  clip-path: polygon(0 8px, 4px 8px, 4px 4px, 8px 4px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px));
+}
+.balao-borda {
+  background: var(--balao-tinta);
+  padding: 2px;
+}
+.balao-corpo {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+}
+.balao::before,
+.balao::after {
+  content: "";
+  position: absolute;
+  left: var(--cauda-x, 28px);
+}
+.balao::before {
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--balao-tinta);
+}
+.balao::after {
+  top: -5px;
+  left: calc(var(--cauda-x, 28px) + 2px);
+  width: 12px;
+  height: 12px;
+  background: #f8fafc;
+  z-index: 1;
+}
+.balao[data-cauda="centro"] { --cauda-x: calc(50% - 8px); }
+.balao[data-cauda="direita"] { --cauda-x: calc(100% - 44px); }

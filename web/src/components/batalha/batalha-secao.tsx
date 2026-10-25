@@ -5,11 +5,14 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CinemaView } from "@/components/cinema/cinema-view";
 import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
+import { FalaSlot } from "@/components/fala/balao";
 import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
 import { buttonClass } from "@/components/button";
 import { batalha } from "@/config/batalha";
 import { asset, assetSet } from "@/lib/asset";
 import { useQualidade } from "@/lib/use-qualidade";
+import { FALAS_DO_REPOUSO, LOCUTOR } from "@/config/falas";
+import { useFalaStore } from "@/store/fala";
 import { reduzirAtivo } from "@/lib/perfil";
 import { useBatalhaStore } from "@/store/batalha";
 
@@ -72,6 +75,17 @@ export function BatalhaSecao() {
   }, [nivel, terminou]);
 
   const tocando = status === "tocando";
+
+  // Fala do repouso (D34): uma por reprodução, em rodízio, só depois de a ação terminar (nunca no choque nem na revelação do Luan).
+  // Automática e decorativa; sai quando a cena recomeça. Sem 3D (vídeo, pôster, movimento reduzido) não há balão.
+  useEffect(() => {
+    const fala = useFalaStore.getState();
+    if (status === "tocando") fala.fechar("repouso");
+    if (status !== "repouso" || !com3d) return;
+    const { id, texto } = FALAS_DO_REPOUSO[(useBatalhaStore.getState().rodada - 1 + FALAS_DO_REPOUSO.length) % FALAS_DO_REPOUSO.length];
+    const t = window.setTimeout(() => fala.falar({ contexto: "repouso", ...LOCUTOR[id], texto, acao: false }), 400);
+    return () => clearTimeout(t);
+  }, [status, com3d]);
   const rotuloReplay = tocando ? "Batalha em andamento" : jaTocou || status === "repouso" ? "Rever a batalha" : "Ver a batalha";
 
   return (
@@ -139,6 +153,9 @@ export function BatalhaSecao() {
             </p>
           </figcaption>
         </figure>
+
+        {/* Faixa da fala: entre o palco e os controles, com a altura reservada desde o início. */}
+        {com3d && <FalaSlot contexto="repouso" className="mx-auto mt-2 min-h-[7.5rem] max-w-[72rem]" />}
 
         <FaixaNuvem id="batalha" className="mx-auto my-6 max-w-[72rem]" />
 

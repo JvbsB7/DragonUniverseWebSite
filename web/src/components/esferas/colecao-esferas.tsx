@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { buttonClass } from "@/components/button";
+import { FalaSlot } from "@/components/fala/balao";
+import { FALA_DO_DRAGAO } from "@/config/falas";
+import { useFalaStore } from "@/store/fala";
 import { Dragao } from "@/components/esferas/dragao";
 import { useReduzir } from "@/lib/use-qualidade";
 import { ESFERAS, useEsferasStore } from "@/store/esferas";
@@ -49,6 +52,18 @@ export function ColecaoEsferas() {
   // O dragão avisa quando termina (3,2 s no desktop, 2,4 s no celular); aí o quadro parado fica na tela.
   const terminou = useCallback(() => setTocando(false), []);
 
+  // Fala do dragão (D34): automática e decorativa, quando ele já apareceu; fecha com o painel. Sem animação não há balão.
+  useEffect(() => {
+    const fala = useFalaStore.getState();
+    if (!tocando || movimentoReduzido || !aberto) {
+      if (!aberto) fala.fechar("dragao");
+      return;
+    }
+    const celular = window.matchMedia("(max-width: 767px)").matches;
+    const t = window.setTimeout(() => fala.falar({ contexto: "dragao", ...FALA_DO_DRAGAO, acao: false }), celular ? 1000 : 1400);
+    return () => clearTimeout(t);
+  }, [tocando, movimentoReduzido, aberto]);
+
   const rever = () => {
     setPendente(false);
     setTocando(false);
@@ -70,6 +85,7 @@ export function ColecaoEsferas() {
         {completa && aberto && (
           <div className="grid max-w-md gap-3 rounded-xl border-2 border-[#f6b943] bg-bg p-5">
             <Dragao tocando={tocando && !movimentoReduzido} onFim={terminou} />
+            {!movimentoReduzido && <FalaSlot contexto="dragao" className="min-h-[6.25rem]" />}
             <div aria-hidden="true" className="esferas-aro relative mx-auto h-24 w-24" data-tocando={tocando || undefined}>
               {ESFERAS.map((_, i) => (
                 <i key={i} style={{ ["--i" as string]: i }} />
