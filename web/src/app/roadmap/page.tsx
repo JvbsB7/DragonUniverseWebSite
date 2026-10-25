@@ -28,7 +28,7 @@ const emDesenvolvimento: { nome: string; texto: string; href: string; status: Ex
 const planejado = [
   { grupo: "Estabilidade", itens: ["Proteção do progresso salvo", "Esferas do Dragão e desejos corrigidos", "Voo reformulado (sem peso nem tremedeira, com carga de ki enquanto voa)"] },
   { grupo: "Novos treinos", itens: ["Treino físico com flexões", "Treino mental contra réplicas de chefes", "Nova tela de concentração"] },
-  { grupo: "Raças e formas", itens: ["Namekuseijin Full Power", "Cell Max", "Tsufurujins", "Passivas raciais"] },
+  { grupo: "Raças e formas", itens: ["Cell Max", "Tsufurujins", "Passivas raciais"] },
   { grupo: "Lugares", itens: ["Planeta Cereal", "Planeta do Kaioshin Supremo e Universo 6 completos", "A história continuando depois da Saga do Futuro Trunks"] },
   { grupo: "Eventos dinâmicos", itens: ["Invasões do Exército do Freeza, com um Freeza Negro raro"] },
   { grupo: "Mundo vivo", itens: ["Títulos e facções", "NPCs úteis", "Novos conjuntos de Esferas do Dragão (Super, Daima e Cereal)"] },
