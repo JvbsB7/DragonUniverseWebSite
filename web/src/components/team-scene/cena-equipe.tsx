@@ -1,13 +1,12 @@
 "use client";
 
 import { Personagens, type Papel } from "@/components/cinema/personagem";
-import { onda, vooSuave } from "@/components/cinema/clipes-site";
+import { onda } from "@/components/cinema/clipes-site";
 import { CLIPES } from "@/lib/personagens";
 import { DURACAO_CENA, apresentadas } from "@/store/skin-viewer";
 
 // Coreografia da v3: João acena para o Ricardo, o Ricardo vira a cabeça para ele e o Luan voa ao lado.
-// `?cinema-teste=bracos-cruzados` troca o voo do Luan pela pose de teste da Fase A (braços cruzados, flutuando).
-const teste = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("cinema-teste") === "bracos-cruzados";
+// Luan na pose padrão v4 (D12): flutuando de braços cruzados.
 
 const papeis: Papel[] = [
   {
@@ -34,8 +33,8 @@ const papeis: Papel[] = [
     skin: "/skins/luan.png",
     x: 27,
     y: 6,
-    giro: -0.9,
-    clipe: teste ? CLIPES.luan.bracosCruzados : vooSuave,
+    giro: -0.3,
+    clipe: CLIPES.luan.flutuar,
     fim: "congelar",
     ajustar: (t, pose) => {
       pose.pos.root[1] += Math.sin(t * 1.8) * 1.5;
