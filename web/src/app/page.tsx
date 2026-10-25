@@ -195,7 +195,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="desenvolvimento-teaser" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="desenvolvimento-teaser" className="cv-auto bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="desenvolvimento-teaser" lead="O que a equipe construiu, o que está construindo e o que vem pela frente. Sem datas, sem percentuais e sem promessa de entrega.">
             Em desenvolvimento e planejado
@@ -236,7 +236,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="equipe-teaser" className="py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="equipe-teaser" className="cv-auto py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="equipe-teaser" lead="Três fãs, um add-on. Conheça João, Ricardo e Luan.">
             Quem faz o Dragon Universe
@@ -248,13 +248,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="comunidade" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="comunidade" className="cv-auto bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <Community />
         </div>
       </section>
 
-      <section aria-labelledby="apoio-chamada" className="py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="apoio-chamada" className="cv-auto py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <div className="grid gap-4 rounded-xl border border-edge bg-surface p-6 md:p-8 nav:grid-cols-[minmax(0,1fr)_auto] nav:items-center">
             <div className="grid gap-2">

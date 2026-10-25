@@ -125,18 +125,17 @@ html[data-perfil="completo"] .ki-particle {
   transition: transform 120ms linear;
 }
 
-/* Card de raça: inclinação e luz (TiltCard); só com ponteiro fino. */
+/* Card de raça: inclinação leve só com ponteiro fino e fora do perfil leve (CSS puro, sem JavaScript; design §7.2: até 3°). */
 @media (hover: hover) and (pointer: fine) {
   .tilt-card {
     perspective: 800px;
   }
   .tilt-face {
-    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     transition: transform 180ms var(--du-ease-out), border-color 140ms linear;
   }
-  .tilt-face:hover {
+  html:not([data-perfil="leve"]) .tilt-face:hover {
+    transform: rotateX(1.5deg) rotateY(-2deg) translateY(-2px);
     border-color: var(--du-border-hover);
-    background-image: radial-gradient(circle at var(--lx, 50%) var(--ly, 40%), rgba(35, 215, 255, 0.07), transparent 55%);
   }
 }
 
@@ -184,4 +183,11 @@ html[data-perfil="completo"] .ki-particle {
   .trilho > li {
     padding-inline-start: 2rem;
   }
+}
+
+/* Seções longas abaixo da dobra da Home (depois do #universo, para não afetar a âncora): o navegador pula estilo e layout
+   até elas se aproximarem. O tamanho estimado fica "auto" (lembra o tamanho real depois da 1ª renderização). */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
 }

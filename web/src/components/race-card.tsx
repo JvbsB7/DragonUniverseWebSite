@@ -1,14 +1,13 @@
 import Link from "next/link";
 import type { Raca } from "@/config/racas";
 import { StatusBadge, type Status } from "@/components/status-badge";
-import { TiltCard } from "@/components/tilt-card";
-import { Expandable } from "@/components/expandable";
 import { prefetchFor } from "@/lib/prefetch";
 import { asset, assetSet } from "@/lib/asset";
 
 const statusMap: Record<Raca["status"], Status> = { live: "live", dev: "dev", planned: "planned" };
 
-// Card de raça v3 (v3-04-design.md §7.2; copy §3.2): nome, selo, descrição, pontos fortes (só com dado), link e, nas
+// Card 100% de servidor (sem hidratação): a inclinação é só CSS e "Mostrar mais" é um <details> nativo, que já expõe o estado
+// aberto/fechado a leitores de tela. Card de raça v3 (v3-04-design.md §7.2; copy §3.2): nome, selo, descrição, pontos fortes (só com dado), link e, nas
 // raças em desenvolvimento, "O que a equipe quer construir" (direção, não recurso pronto). Sem imagem enquanto não
 // houver arte oficial da raça: card textual, sem personagem genérico. Os cards em desenvolvimento ganham filete ciano
 // e contorno tracejado, com texto e fundo iguais aos demais. Não são ligados a nenhum nível de apoio.
@@ -17,7 +16,7 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
   const dev = raca.status === "dev";
   const href = `/wiki/racas/${raca.wiki}`;
   return (
-    <TiltCard className="h-full">
+    <div className="tilt-card h-full">
       <article
         data-race={raca.slug}
         className={`tilt-face relative flex h-full flex-col gap-3 overflow-hidden rounded-xl bg-surface p-5 shadow-block-card md:p-6 ${
@@ -50,12 +49,16 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
         <H className="text-card-title">{raca.nome}</H>
         <p className="max-w-[65ch] text-muted-foreground">{raca.descricao}</p>
         {raca.pontosFortes && !raca.direcao && (
-          <Expandable>
+          <details className="group">
+            <summary className="inline-flex min-h-12 w-fit cursor-pointer list-none items-center rounded-md px-1 text-base font-semibold text-brand underline underline-offset-4 [&::-webkit-details-marker]:hidden">
+              <span className="group-open:hidden">Mostrar mais</span>
+              <span className="hidden group-open:inline">Mostrar menos</span>
+            </summary>
             <div className="grid gap-1 pt-1">
               <p className="font-game text-sm font-semibold text-text">Pontos fortes</p>
               <p className="text-muted-foreground">{raca.pontosFortes}</p>
             </div>
-          </Expandable>
+          </details>
         )}
         {raca.direcao && (
           <div className="grid gap-1">
@@ -79,6 +82,6 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
           </Link>
         </div>
       </article>
-    </TiltCard>
+    </div>
   );
 }
