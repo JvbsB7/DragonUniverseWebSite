@@ -77,7 +77,7 @@ export function SiteFooter() {
           ))}
         </nav>
         <div className="mt-8 border-t border-edge pt-4">
-          <ReduzirAnimacoes />
+          <ReduzirAnimacoes id="reduzir-rodape" />
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-4">
           <p>Projeto de fãs Dragon Universe.</p>

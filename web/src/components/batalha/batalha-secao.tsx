@@ -183,7 +183,7 @@ export function BatalhaSecao() {
         <p role="status" aria-live="polite" className="sr-only">
           {anuncio || aviso}
         </p>
-        <div className="mx-auto mt-2 w-full max-w-[72rem]">{hidratado && <ReduzirAnimacoes />}</div>
+        <div className="mx-auto mt-2 w-full max-w-[72rem]">{hidratado && <ReduzirAnimacoes id="reduzir-batalha" />}</div>
       </div>
     </section>
   );
