@@ -60,7 +60,7 @@ export default function ApoiePage() {
         <Niveis />
       </section>
 
-      <section aria-labelledby="compare" className="cv-auto flex flex-col gap-6">
+      <section aria-labelledby="compare" className="flex flex-col gap-6">
         <div className="grid gap-2">
           <h2 id="compare">Compare os níveis</h2>
           <p className="text-muted-foreground">Benefícios previstos para quando os planos abrirem.</p>
@@ -72,7 +72,7 @@ export default function ApoiePage() {
         </div>
       </section>
 
-      <section aria-labelledby="financiar" className="cv-auto flex flex-col gap-4">
+      <section aria-labelledby="financiar" className="flex flex-col gap-4">
         <h2 id="financiar">O que o apoio vai ajudar a financiar</h2>
         <p className="max-w-[65ch] text-muted-foreground">O que o time já tem pela frente (sem data e sem promessa):</p>
         <ul className="grid gap-4 md:grid-cols-2">
@@ -89,7 +89,7 @@ export default function ApoiePage() {
         </p>
       </section>
 
-      <section aria-labelledby="perguntas" className="cv-auto flex flex-col gap-4">
+      <section aria-labelledby="perguntas" className="flex flex-col gap-4">
         <h2 id="perguntas">Perguntas frequentes sobre o apoio</h2>
         <div className="grid gap-3">
           {perguntas.map((q) => (
@@ -101,7 +101,7 @@ export default function ApoiePage() {
         </div>
       </section>
 
-      <section aria-labelledby="cta" className="cv-auto grid gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6 md:p-8">
+      <section aria-labelledby="cta" className="grid gap-4 rounded-xl border border-edge border-s-4 border-s-brand bg-surface p-6 md:p-8">
         <h2 id="cta" className="text-2xl">Quer ser avisado quando os planos abrirem?</h2>
         <p className="text-muted-foreground">Entre na comunidade.</p>
         <div>
