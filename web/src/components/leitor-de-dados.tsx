@@ -43,20 +43,20 @@ export function LeitorDeDados({ nome, dados }: { nome: string; dados: DadosDaRac
       </button>
       <div id={id} hidden={!aberto} className="leitor-painel grid gap-3 rounded-md border border-brand/60 bg-bg p-4">
         <p className="font-game text-sm font-semibold">Dados de {nome}</p>
-        <section className="grid gap-1" aria-label="Status">
+        <div className="grid gap-1">
           <p className="font-game text-xs font-semibold text-muted-foreground">Status</p>
           <p>Já no jogo</p>
-        </section>
+        </div>
         {dados.bonus.length > 0 && (
-          <section className="grid gap-1" aria-label="Bônus da raça">
+          <div className="grid gap-1">
             <p className="font-game text-xs font-semibold text-muted-foreground">Bônus da raça</p>
             {dados.bonus.map((b) => (
               <p key={b}>{b}</p>
             ))}
-          </section>
+          </div>
         )}
         {dados.formas.length > 0 && (
-          <section className="grid gap-1" aria-label="Formas">
+          <div className="grid gap-1">
             <p className="font-game text-xs font-semibold text-muted-foreground">Formas</p>
             <p>{dados.formas.length} formas, em ordem de nível mínimo.</p>
             <ul className="grid gap-0.5 text-sm">
@@ -67,13 +67,13 @@ export function LeitorDeDados({ nome, dados }: { nome: string; dados: DadosDaRac
                 </li>
               ))}
             </ul>
-          </section>
+          </div>
         )}
         {dados.habilidades && (
-          <section className="grid gap-1" aria-label="Habilidades iniciais">
+          <div className="grid gap-1">
             <p className="font-game text-xs font-semibold text-muted-foreground">Habilidades iniciais</p>
             <p>{dados.habilidades}.</p>
-          </section>
+          </div>
         )}
         <p className="text-sm text-muted-foreground">Dados da versão de teste 1.7.1E. Podem mudar entre versões.</p>
       </div>
