@@ -18,6 +18,26 @@ export function LeitorDeDados({ nome, dados }: { nome: string; dados: DadosDaRac
     setAberto(proximo);
     setAviso(proximo ? `Dados de ${nome} abertos.` : `Dados de ${nome} fechados.`);
     const cartao = botao.current?.closest<HTMLElement>("[data-race]");
+    // Os cartões vizinhos não esticam quando este abre: cada um segura a altura que já tinha e a linha cresce só para o cartão aberto.
+    const lista = botao.current?.closest("ul");
+    const item = botao.current?.closest("li");
+    if (lista && item) {
+      const itens = Array.from(lista.children) as HTMLElement[];
+      if (proximo) {
+        const alturas = itens.map((li) => li.offsetHeight);
+        itens.forEach((li, i) => {
+          li.style.alignSelf = "start";
+          if (li !== item) li.style.height = `${alturas[i]}px`;
+          else li.style.minHeight = `${alturas[i]}px`;
+        });
+      } else if (!lista.querySelector('button[aria-expanded="true"]:not([aria-controls="' + id + '"])')) {
+        itens.forEach((li) => {
+          li.style.alignSelf = "";
+          li.style.height = "";
+          li.style.minHeight = "";
+        });
+      }
+    }
     if (cartao) {
       if (proximo) {
         // Reinicia a varredura mesmo em aberturas seguidas.

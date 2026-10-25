@@ -82,7 +82,7 @@ function Campo() {
     }
     if (chao.current) chao.current.instanceMatrix.needsUpdate = true;
     if (chao.current?.instanceColor) chao.current.instanceColor.needsUpdate = true;
-    const tons = ["#172b55", "#1c3361", "#13244a", "#21396b"];
+    const tons = ["#152850", "#182d58", "#13244a", "#1a3160"];
     let m = 0;
     const aglomerado = (cx: number, cz: number, qtd: number, grande: number) => {
       for (let i = 0; i < qtd; i++) {
