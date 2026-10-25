@@ -1,5 +1,6 @@
 // Linha do tempo da batalha (v4-03 §4): tudo é função pura do tempo `t` (s), então pausar, pular, rever e quadro de teste
 // (`?batalha-quadro=4.5`) são só questão de qual `t` desenhar. Unidades: 1 = 1 px de skin; personagem com ~32 de altura.
+import { aura as auraDe } from "@/lib/auras";
 import { CLIPES, amostrar, misturar, type Clipe, type Pose } from "@/lib/personagens";
 
 export const suave = (k: number) => {
@@ -111,11 +112,11 @@ function prng(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-export const CORES = { azul: "#1674FF", ciano: "#23D7FF", carmesim: "#E62E52", brilhoCarmesim: "#FF7185", violeta: "#A57BFA", rocha: "#1a3160", rochaClara: "#4a72c4" };
+export const CORES = { ciano: "#23D7FF", rocha: "#1a3160", rochaClara: "#4a72c4" };
 export function criarParticulas(): Particula[] {
   const r = prng(7);
   const lista: Particula[] = [];
-  const coresImpacto = [CORES.ciano, CORES.azul, CORES.carmesim, CORES.ciano];
+  const coresImpacto = [CORES.ciano, auraDe("jvbsbr").brilho, auraDe("rvmm255").brilho, CORES.ciano];
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2 + r() * 0.4;
     const vel = 14 + r() * 12;
@@ -127,7 +128,7 @@ export function criarParticulas(): Particula[] {
   }
   // Energia que se dissipa depois da onda (4,8–6,8 s): poucas faíscas lentas subindo.
   for (let i = 0; i < 4; i++) {
-    lista.push({ tipo: "energia", nasce: 4.4 + i * 0.25, vida: 1.8, p0: [(i - 1.5) * 10, -2, 4], v: [(r() - 0.5) * 4, 5 + r() * 3, (r() - 0.5) * 3], escala: 0.9, cor: i % 2 ? CORES.azul : CORES.carmesim });
+    lista.push({ tipo: "energia", nasce: 4.4 + i * 0.25, vida: 1.8, p0: [(i - 1.5) * 10, -2, 4], v: [(r() - 0.5) * 4, 5 + r() * 3, (r() - 0.5) * 3], escala: 0.9, cor: i % 2 ? auraDe("jvbsbr").brilho : auraDe("rvmm255").brilho });
   }
   for (let i = 0; i < 8; i++) {
     lista.push({ tipo: "ambiente", nasce: 0, vida: 1e9, p0: [-70 + r() * 140, -4 + r() * 40, -20 + r() * 20], v: [0, 0, 0], escala: 0.55, cor: CORES.ciano });

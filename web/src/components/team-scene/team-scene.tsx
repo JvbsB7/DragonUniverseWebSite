@@ -17,7 +17,7 @@ import { useEquipeStore } from "@/store/equipe";
 // deslizáveis sem WebGL. Os dados vêm só de config/equipe.ts. Os controles são HTML e nunca ficam dentro da cena (role="img").
 const CenaEquipe = dynamic(() => import("./cena-equipe"), { ssr: false });
 
-const energias: Record<IdDaPessoa, string> = { joao: "var(--du-energy-brand)", ricardo: "var(--du-energy-god)", luan: "var(--du-energy-golden)" };
+const energias: Record<IdDaPessoa, string> = { joao: "var(--du-aura-jvbsbr-brilho)", ricardo: "var(--du-aura-rvmm255-brilho)", luan: "var(--du-aura-luan-brilho)" };
 const pessoas = ordemDaVitrine.map((id) => equipe.find((p) => p.id === id)!);
 const rotuloCurto = (p: PessoaDaEquipe) => p.jogador ?? p.nome;
 const descricaoDaCena =

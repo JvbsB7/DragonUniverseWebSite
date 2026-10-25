@@ -20,6 +20,7 @@ import { novoPlayer, texturaDaSkin, vestirPlayer } from "@/components/cinema/per
 import { SKINS } from "@/lib/personagens";
 import { useQualidade } from "@/lib/use-qualidade";
 import { degradar } from "@/lib/perfil";
+import { aura as auraDe } from "@/lib/auras";
 import { parametroQA } from "@/lib/qa";
 import { DURACAO_BATALHA, relogioBatalha, useBatalhaStore } from "@/store/batalha";
 import {
@@ -331,18 +332,18 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       <PerspectiveCamera ref={camRef} makeDefault position={[0, 6, 80]} fov={45} near={5} far={400} />
       <fog attach="fog" args={["#0a1328", 120, 230]} />
       <ambientLight intensity={2.2} />
-      {/* Luz de borda: azul à esquerda, carmesim à direita, violeta de contraluz para o Luan (v4-03 §2.1, §4). */}
-      <directionalLight position={[-60, 20, 30]} intensity={1.0} color={CORES.azul} />
-      <directionalLight position={[60, 20, 30]} intensity={0.9} color={CORES.carmesim} />
-      <directionalLight position={[0, 60, -40]} intensity={0.7} color={CORES.violeta} />
-      {/* Luz de recorte só nas bordas (v4-10 M2): ciano atrás do JvbsBR, carmesim-brilho atrás do rvmm255. */}
-      <directionalLight position={[-45, 18, -55]} intensity={1.3} color={CORES.ciano} />
-      <directionalLight position={[45, 18, -55]} intensity={0.9} color={CORES.brilhoCarmesim} />
+      {/* Luz de borda: roxa à esquerda (JvbsBR), azul à direita (rvmm255), dourada de contraluz para o Luan (v4-03 §2.1, §4; D31). */}
+      <directionalLight position={[-60, 20, 30]} intensity={1.0} color={auraDe("jvbsbr").base} />
+      <directionalLight position={[60, 20, 30]} intensity={0.9} color={auraDe("rvmm255").halo} />
+      <directionalLight position={[0, 60, -40]} intensity={0.7} color={auraDe("luan").base} />
+      {/* Luz de recorte só nas bordas (v4-10 M2; D31): brilho roxo atrás do JvbsBR, brilho azul atrás do rvmm255 (o azul escuro precisa da borda clara). */}
+      <directionalLight position={[-45, 18, -55]} intensity={1.3} color={auraDe("jvbsbr").brilho} />
+      <directionalLight position={[45, 18, -55]} intensity={0.9} color={auraDe("rvmm255").brilho} />
       <Campo />
 
       {[0, 1].map((i) => (
         <sprite key={`a${i}`} ref={(s) => void (auras.current[i] = s)} scale={[34, 54, 1]} renderOrder={-1}>
-          <spriteMaterial map={brilho} color={i === 0 ? CORES.azul : CORES.carmesim} transparent opacity={0.19} depthWrite={false} blending={AdditiveBlending} />
+          <spriteMaterial map={brilho} color={auraDe(i === 0 ? "jvbsbr" : "rvmm255").halo} transparent opacity={0.19} depthWrite={false} blending={AdditiveBlending} />
         </sprite>
       ))}
 
@@ -359,12 +360,12 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       {Array.from({ length: 6 }, (_, i) => (
         <mesh key={`l${i}`} ref={(m) => void (linhas.current[i] = m)} visible={false}>
           <boxGeometry />
-          <meshBasicMaterial color={i < 3 ? CORES.ciano : CORES.carmesim} transparent opacity={0.5} blending={AdditiveBlending} depthWrite={false} />
+          <meshBasicMaterial color={i < 3 ? CORES.ciano : auraDe("rvmm255").brilho} transparent opacity={0.5} blending={AdditiveBlending} depthWrite={false} />
         </mesh>
       ))}
 
       <sprite ref={haloLuan} scale={[36, 56, 1]} visible={false}>
-        <spriteMaterial map={brilho} color={CORES.violeta} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
+        <spriteMaterial map={brilho} color={auraDe("luan").base} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
       <sprite ref={nucleo} position={[0, 7, 5]} visible={false}>
@@ -380,7 +381,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
 
       <instancedMesh ref={parts} args={[undefined, undefined, PARTICULAS.length]} frustumCulled={false} renderOrder={10}>
         <boxGeometry />
-        {/* Desenhadas depois dos brilhos aditivos: a mistura do núcleo ciano com o carmesim clareava as partículas para rosa. */}
+        {/* Desenhadas depois dos brilhos aditivos: a mistura do núcleo ciano com a aura azul clareava as partículas para rosa. */}
         <meshBasicMaterial toneMapped={false} transparent depthWrite={false} />
       </instancedMesh>
     </>

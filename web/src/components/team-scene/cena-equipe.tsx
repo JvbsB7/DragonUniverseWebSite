@@ -10,22 +10,20 @@ import { novoPlayer, texturaDaSkin, vestirPlayer } from "@/components/cinema/per
 import { CLIPES, amostrar, misturar, poseNeutra, type Pose } from "@/lib/personagens";
 import { useEquipeStore } from "@/store/equipe";
 import { DURACAO_CENA, apresentadas } from "@/store/skin-viewer";
+import { aura as auraDe, type IdDaAura } from "@/lib/auras";
 import type { IdDaPessoa } from "@/config/equipe";
 
-// Vitrine da equipe (v4-03 §7.1): JvbsBR à esquerda (azul), Luan flutuando ao centro de braços cruzados (D12) e rvmm255 à direita
-// (carmesim, D15). Do v3 ficam o aceno do João, o olhar do Ricardo para ele e o Luan flutuando, numa apresentação de 4 s por visita;
+// Vitrine da equipe (v4-03 §7.1): JvbsBR à esquerda (roxa, D31), Luan flutuando ao centro de braços cruzados (D12) e rvmm255 à direita
+// (azul escura, D31). Do v3 ficam o aceno do João, o olhar do Ricardo para ele e o Luan flutuando, numa apresentação de 4 s por visita;
 // depois a cena fica parada (sem rotação nem zoom livres). Selecionar uma pessoa aproxima a câmera por uma trajetória curta
 // (≈ 450 ms, até 12% mais perto e ~6° de giro) e leva a pessoa à pose de seleção; os outros continuam visíveis.
-const AZUL = "#1674FF";
-const CARMESIM = "#E62E52";
-const VIOLETA = "#A57BFA";
 const DISTANCIA = 126; // fov 30°: 67,5 unidades de altura visível, 120 de largura (palco 744 × 420)
 
-type Ator = { id: IdDaPessoa; skin: string; x: number; y: number; giro: number; cor: string };
+type Ator = { id: IdDaPessoa; skin: string; x: number; y: number; giro: number; aura: IdDaAura };
 const ATORES: Ator[] = [
-  { id: "joao", skin: "/skins/jvbs.png", x: -31, y: -10.4, giro: 0.5, cor: AZUL },
-  { id: "luan", skin: "/skins/luan.png", x: 0, y: 6, giro: -0.1, cor: VIOLETA },
-  { id: "ricardo", skin: "/skins/rvmm.png", x: 31, y: -10.4, giro: -0.5, cor: CARMESIM },
+  { id: "joao", skin: "/skins/jvbs.png", x: -31, y: -10.4, giro: 0.5, aura: "jvbsbr" },
+  { id: "luan", skin: "/skins/luan.png", x: 0, y: 6, giro: -0.1, aura: "luan" },
+  { id: "ricardo", skin: "/skins/rvmm.png", x: 31, y: -10.4, giro: -0.5, aura: "rvmm255" },
 ];
 
 const J = CLIPES.jvbsbr;
@@ -150,7 +148,7 @@ export default function CenaEquipe({ aoPronto, visivel }: { aoPronto: () => void
       <pointLight position={[0, 20, 80]} intensity={0.6} decay={0} />
       {ATORES.map((a, i) => (
         <sprite key={`a${a.id}`} ref={(sp) => void (auras.current[i] = sp)} position={[a.x, a.y + 1, -6]} scale={[30, 48, 1]}>
-          <spriteMaterial map={brilho} color={a.cor} transparent opacity={0.13} depthWrite={false} blending={AdditiveBlending} />
+          <spriteMaterial map={brilho} color={auraDe(a.aura).halo} transparent opacity={0.13} depthWrite={false} blending={AdditiveBlending} />
         </sprite>
       ))}
       {ATORES.map((a, i) => (

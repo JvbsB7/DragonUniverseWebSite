@@ -204,10 +204,16 @@ html[data-reduzir="true"] *::after {
   scroll-behavior: auto !important;
 }
 
-/* Aura e energia do rvmm255 (D15): só na energia do Ricardo; o ouro continua reservado. */
+/* Auras da equipe (D31, substitui o carmesim de D15): cor do volume e brilho de borda por pessoa. Única fonte: a cena 3D, os
+   halos e as barras leem estes tokens (lib/auras.ts). O azul escuro do rvmm255 não funciona sozinho sobre o fundo (1,88:1):
+   a borda/recorte usa o brilho. */
 :root {
-  --du-aura-carmesim: #e62e52;
-  --du-aura-carmesim-brilho: #ff7185;
+  --du-aura-jvbsbr: #9652c9;
+  --du-aura-jvbsbr-brilho: #d5a2ff;
+  --du-aura-rvmm255: #123c82;
+  --du-aura-rvmm255-brilho: #4c9dff;
+  --du-aura-luan: #d6c347;
+  --du-aura-luan-brilho: #fff2a6;
 }
 
 /* Esferas de energia (v4-03 §9): sprite aprovado com 7 marcas (colunas) e 3 estados (linhas: normal, brilho, coletada). */
