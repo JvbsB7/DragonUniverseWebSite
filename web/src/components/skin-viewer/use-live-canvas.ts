@@ -2,12 +2,16 @@
 
 import { useEffect, useId, useSyncExternalStore, type RefObject } from "react";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
-import { perfilLeve } from "@/lib/perfil";
+import { assinarQualidade, perfilLeve } from "@/lib/perfil";
 
 function subscribeMotion(cb: () => void) {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
+  const sair = assinarQualidade(cb);
+  return () => {
+    mq.removeEventListener("change", cb);
+    sair();
+  };
 }
 // Perfil completo (decisão M7): sem movimento reduzido, sem economia de dados, > 4 núcleos, ≥ 768 px e ponteiro fino.
 const perfilCompleto = () => !perfilLeve();

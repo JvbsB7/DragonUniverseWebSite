@@ -201,3 +201,12 @@ html[data-perfil="completo"] .ki-particle {
 [data-hero-stage][data-planeta="3d"] .hero-2d-print {
   opacity: 0;
 }
+
+/* Botão "Reduzir animações" (v4): mesmo efeito do prefers-reduced-motion para o CSS. O WebGL trata a escolha em lib/perfil.ts. */
+html[data-reduzir="true"] *,
+html[data-reduzir="true"] *::before,
+html[data-reduzir="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
