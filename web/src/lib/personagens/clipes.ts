@@ -7,11 +7,11 @@ const v = (x: number, y: number, z: number): Vec3 => [x, y, z];
 // Pose de guarda (punhos à frente, pé esquerdo à frente)
 const GUARDA = { rightArm: v(-1.15, 0.25, -0.15), leftArm: v(-1.0, -0.35, 0.15), rightLeg: v(0.3, 0, 0), leftLeg: v(-0.3, 0, 0), body: v(0.12, -0.15, 0), head: v(-0.08, 0.1, 0) };
 // Braços cruzados estilo aldeão: os dois braços horizontais à frente do peito, sobrepostos. Braço rígido (sem cotovelo): rotação X ≈ -86° leva o
-// braço à horizontal para a frente e Y ≈ ±83° o puxa para dentro (ponta cruza o centro). O pivô desce 4 px (altura do peito) e vai um pouco para fora
-// (±1 px) para o par ficar centrado; o direito encosta no peito (z=4,4) e o esquerdo fica à frente (z=7,2), com deslocamentos em y/x de 0,3–0,4 px
-// para as faces dos dois braços não ficarem coplanares (z-fighting).
+// braço à horizontal para a frente e Y ≈ ±83° o puxa para dentro, cruzando o centro; as mãos saem 4 px além de cada lado do tronco. O direito fica
+// atrás e mais baixo (z=4,4, y=-6,4) e o esquerdo à frente e mais alto (z=6,6, y=-3,2), com 0,8 px de sobreposição vertical e 2,2 px em z, o que
+// separa os dois braços na leitura e evita faces coplanares (z-fighting). Pivôs a ±4 px do centro.
 const CRUZADOS = { rightArm: v(-1.5, 1.45, 0), leftArm: v(-1.5, -1.45, 0) };
-const POS_CRUZADOS = { rightArm: v(-1, -4, 4.4), leftArm: v(1.4, -4.3, 7.2) };
+const POS_CRUZADOS = { rightArm: v(1, -6.4, 4.4), leftArm: v(-1, -3.2, 6.6) };
 
 // ---------- JvbsBR ----------
 const jvbsIdle: Clipe = {
@@ -43,11 +43,11 @@ const jvbsVoo: Clipe = {
 };
 const jvbsInvestida: Clipe = {
   nome: 'investida', duracao: 0.5, loop: true, vista: 'lado',
-  nota: 'Corrida aérea: braços varridos para trás. O avanço (x/z) vem da cena/câmera, não do clipe.',
+  nota: 'Corrida aérea: corpo quase horizontal, braços e pernas alinhados ao corpo (aerodinâmico). O avanço (x/z) vem da cena/câmera, não do clipe.',
   chaves: [
-    { t: 0, rot: { root: v(1.25, 0, 0), head: v(-1.05, 0, 0), rightArm: v(1.05, 0, -0.18), leftArm: v(1.2, 0, 0.18), rightLeg: v(0.65, 0, 0), leftLeg: v(0.35, 0, 0), body: v(0.08, 0, 0) }, pos: { root: v(0, 0, 0) } },
-    { t: 0.25, rot: { rightArm: v(1.2, 0, -0.22), leftArm: v(1.05, 0, 0.22), rightLeg: v(0.35, 0, 0), leftLeg: v(0.65, 0, 0) }, pos: { root: v(0, 0.8, 0) } },
-    { t: 0.5, rot: { root: v(1.25, 0, 0), head: v(-1.05, 0, 0), rightArm: v(1.05, 0, -0.18), leftArm: v(1.2, 0, 0.18), rightLeg: v(0.65, 0, 0), leftLeg: v(0.35, 0, 0), body: v(0.08, 0, 0) }, pos: { root: v(0, 0, 0) } },
+    { t: 0, rot: { root: v(1.25, 0, 0), head: v(-0.95, 0, 0), rightArm: v(0.3, 0, -0.14), leftArm: v(0.45, 0, 0.14), rightLeg: v(0.25, 0, -0.04), leftLeg: v(0.1, 0, 0.04), body: v(0.06, 0, 0) }, pos: { root: v(0, 0, 0) } },
+    { t: 0.25, rot: { rightArm: v(0.45, 0, -0.18), leftArm: v(0.3, 0, 0.18), rightLeg: v(0.1, 0, -0.04), leftLeg: v(0.25, 0, 0.04) }, pos: { root: v(0, 0.8, 0) } },
+    { t: 0.5, rot: { root: v(1.25, 0, 0), head: v(-0.95, 0, 0), rightArm: v(0.3, 0, -0.14), leftArm: v(0.45, 0, 0.14), rightLeg: v(0.25, 0, -0.04), leftLeg: v(0.1, 0, 0.04), body: v(0.06, 0, 0) }, pos: { root: v(0, 0, 0) } },
   ],
 };
 const jvbsSoco: Clipe = {
