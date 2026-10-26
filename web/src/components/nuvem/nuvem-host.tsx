@@ -10,8 +10,9 @@ import { temParametroQA } from "@/lib/qa";
 import { useQualidade } from "@/lib/use-qualidade";
 import { faixas, rolagem } from "./faixas";
 
-// Agenda a nuvem dourada (v4-03 §8.3): 1ª elegibilidade após 20 s de visita, com a faixa inteira à vista e a rolagem parada
-// por 2 s; a 2ª só 90 s depois e em outra faixa; no máximo 2 por visita (1 no nível baixo); nunca com movimento reduzido.
+// Agenda a nuvem dourada (D45/D46): 1ª elegibilidade após 6 s de visita, com a faixa à vista e a rolagem parada por 1 s; as seguintes só
+// 45 s depois e em faixas diferentes; no máximo 3 por visita (2 no nível baixo); nunca com movimento reduzido. No celular, se até 20 s
+// ninguém parou a rolagem diante de uma faixa, a 1ª passagem sai sem exigir a parada (garante uma passagem numa visita de ~30 s).
 // Teste (só em build de QA, NEXT_PUBLIC_DU_QA=1): `?nuvem=1` ignora as esperas e solta a nuvem na primeira faixa visível.
 const INICIO = typeof performance !== "undefined" ? Date.now() - performance.now() : 0;
 
@@ -30,8 +31,8 @@ export function NuvemHost() {
       const q = qualidadeAtual();
       if (q === "estatico") return;
       const c = lerContagem();
-      const limite = q === "baixo" ? 1 : 2;
-      if (!forcado && (c.n >= limite || agora - INICIO < 20000 || (c.n > 0 && agora - c.ultima < 90000))) return;
+      const limite = q === "baixo" ? 2 : 3;
+      if (!forcado && (c.n >= limite || agora - INICIO < 6000 || (c.n > 0 && agora - c.ultima < 45000))) return;
       if (forcado && c.n >= 1) return;
       const ocupado =
         useMenu.getState().open ||
@@ -40,11 +41,14 @@ export function NuvemHost() {
         agora < ocupacao.ate ||
         ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName ?? "");
       if (ocupado) return;
-      const espera = forcado ? 0 : 2000;
-      if (!forcado && agora - rolagem.ultima < espera) return;
-      const candidata = [...faixas.values()].find((f) => f.visivelDesde !== null && agora - f.visivelDesde >= espera && f.id !== c.faixa);
+      const celular = !window.matchMedia("(min-width: 48rem)").matches;
+      const semParada = forcado || (celular && c.n === 0 && agora - INICIO >= 20000);
+      const espera = semParada ? 0 : 1000;
+      if (!semParada && agora - rolagem.ultima < espera) return;
+      const usadas = c.usadas ?? (c.faixa ? [c.faixa] : []);
+      const candidata = [...faixas.values()].find((f) => f.visivelDesde !== null && agora - f.visivelDesde >= espera && !usadas.includes(f.id));
       if (!candidata) return;
-      gravarContagem({ n: c.n + 1, ultima: agora, faixa: candidata.id });
+      gravarContagem({ n: c.n + 1, ultima: agora, faixa: candidata.id, usadas: [...usadas, candidata.id] });
       useNuvem.getState().iniciar(candidata.id);
     }, 500);
     return () => {

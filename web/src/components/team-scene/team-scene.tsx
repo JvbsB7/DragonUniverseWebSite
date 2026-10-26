@@ -7,8 +7,10 @@ import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
 import { buttonClass } from "@/components/button";
+import { RaioDoCartao } from "@/components/team-scene/raio-do-cartao";
 import { FalaSlot } from "@/components/fala/balao";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
+import { temAtaque } from "@/config/ataques";
 import { FALAS_DA_VITRINE, LOCUTOR } from "@/config/falas";
 import { asset, assetSet } from "@/lib/asset";
 import { useReduzir } from "@/lib/use-qualidade";
@@ -175,6 +177,7 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
 
 function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titulo: Titulo }) {
   const selecionar = useEquipeStore((s) => s.selecionar);
+  const ataque = useEquipeStore((s) => s.ataque);
   const trilho = useRef<HTMLUListElement>(null);
   const [indice, setIndice] = useState(0);
 
@@ -210,7 +213,7 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
           >
             <div aria-hidden="true" className="h-3 rounded-t-xl" style={{ background: energias[p.id] }} />
             <div className="grid justify-items-center gap-3 p-4">
-              <div className="cartao-halo relative w-full overflow-hidden rounded-md bg-surface" data-selecionada={selecionada === p.id || undefined} style={{ ["--halo" as string]: energias[p.id] }}>
+              <div className="cartao-halo relative w-full overflow-hidden rounded-md bg-surface pt-24" data-selecionada={selecionada === p.id || undefined} style={{ ["--halo" as string]: energias[p.id] }}>
                 {/* Pôster de corpo inteiro da Forja (3:4, sobre a cor do cartão); o halo é só CSS e para com o movimento reduzido. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -223,6 +226,16 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
                   loading="lazy"
                   className="relative block h-auto w-full"
                 />
+                {/* Balão da pessoa selecionada: na faixa de 96 px reservada acima do pôster (em todos os cartões, sem deslocar nada ao aparecer), com a cauda para a cabeça; nunca cobre o personagem nem fica perto dos botões. */}
+                {selecionada === p.id && (
+                  <FalaSlot
+                    contexto="vitrine"
+                    apontar="baixo"
+                    alinhar="inicio"
+                    className={cn("absolute inset-x-1 top-2 z-10", p.id === "joao" && "[--cauda-x:88px]", p.id === "ricardo" && "[--cauda-x:107px]", p.id === "luan" && "[--cauda-x:120px]")}
+                  />
+                )}
+                {ataque?.id === p.id && selecionada === p.id && <RaioDoCartao key={ataque.chave} id={ataque.id} />}
               </div>
               <p className="font-display text-xl font-bold [overflow-wrap:anywhere]">{tituloDaPessoa(p)}</p>
               <button
@@ -250,7 +263,6 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
           Próxima<span className="sr-only"> pessoa</span>
         </button>
       </div>
-      <FalaSlot contexto="vitrine" className="mt-1 min-h-[7.5rem]" />
       <div className="mt-4">
         <Painel id={selecionada} titulo={titulo} />
       </div>
@@ -279,6 +291,8 @@ export function TeamScene({ className, titulo = "h3" }: { className?: string; ti
         const n = selecoes[selecionada] ?? 0;
         selecoes[selecionada] = n + 1;
         useFalaStore.getState().falar({ contexto: "vitrine", ...LOCUTOR[selecionada], texto: textos[n % textos.length], acao: true });
+        // D42: o grito do golpe (1ª, 3ª... seleção) vem com o ataque de ki; a frase (2ª, 4ª...) só com a guarda. Desktop (cena 3D) e celular (sprites no cartão).
+        if (temAtaque(selecionada) && n % 2 === 0) useEquipeStore.getState().disparar(selecionada);
       },
       450,
     );

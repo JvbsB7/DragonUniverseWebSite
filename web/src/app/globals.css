@@ -210,8 +210,10 @@ html[data-reduzir="true"] *::after {
 :root {
   --du-aura-jvbsbr: #9652c9;
   --du-aura-jvbsbr-brilho: #d5a2ff;
+  --du-aura-jvbsbr-nucleo: #e4c3ff;
   --du-aura-rvmm255: #123c82;
   --du-aura-rvmm255-brilho: #4c9dff;
+  --du-aura-rvmm255-nucleo: #aed3ff;
   --du-aura-luan: #d6c347;
   --du-aura-luan-brilho: #fff2a6;
 }
@@ -414,14 +416,16 @@ dialog.lightbox[open] {
 }
 
 /* Nuvem dourada (v4-03 §8): travessia de uma faixa reservada, só CSS + quadros do sprite. Sem movimento com "Reduzir animações". */
+/* A travessia anima `transform` (e não `left`), para não gerar layout shift; a largura da faixa vem de `cqw` (a faixa é um contêiner). */
 .nuvem-cruza {
-  left: calc(var(--w) * -1);
+  left: 0;
+  transform: translateX(calc(var(--w) * -1));
   animation: nuvem-cruza var(--dur, 5s) linear 1 both;
   pointer-events: none;
 }
 @keyframes nuvem-cruza {
-  from { left: calc(var(--w) * -1); }
-  to { left: 100%; }
+  from { transform: translateX(calc(var(--w) * -1)); }
+  to { transform: translateX(100cqw); }
 }
 .nuvem-bob {
   animation: nuvem-bob 2s ease-in-out infinite;
@@ -430,6 +434,16 @@ dialog.lightbox[open] {
   0%, 100% { transform: translateY(-2px); }
   50% { transform: translateY(2px); }
 }
+
+/* Ataque de ki no cartão do celular (D44): esfera de carga e raio por quadros. Só existe com movimento permitido (o componente nem é
+   montado com redução). A esfera segura o último quadro até o disparo (1,00 s) e some; o raio dura 0,9 s e some. */
+.raio-orbe, .raio-feixe { background-repeat: no-repeat; image-rendering: pixelated; opacity: 0; }
+.raio-orbe { background-size: 600% 100%; transform: translate(-50%, -50%); animation: raio-orbe-q 0.8s steps(5) both, raio-orbe-v 1.1s linear both; }
+.raio-feixe { background-size: 700% 100%; animation: raio-feixe-q 0.9s steps(6) 1s both, raio-feixe-v 0.9s linear 1s both; }
+@keyframes raio-orbe-q { from { background-position: 0 0; } to { background-position: 100% 0; } }
+@keyframes raio-orbe-v { 0% { opacity: 0; } 8% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes raio-feixe-q { from { background-position: 0 0; } to { background-position: 100% 0; } }
+@keyframes raio-feixe-v { 0% { opacity: 1; } 99% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Balão de fala em pixel (v4-15 §0.2, D29): painel #F8FAFC, texto #060A16 (18,89:1), contorno de 2 px, degraus de 4 px, cauda quadrada
    e sombra deslocada de 4 px sem glow. Entra/sai só por opacidade (120 ms); parado com "Reduzir animações". */
@@ -489,8 +503,7 @@ dialog.lightbox[open] {
 .balao[data-cauda="centro"] { --cauda-x: calc(50% - 8px); }
 .balao[data-cauda="direita"] { --cauda-x: calc(100% - 44px); }
 /* Balão ao lado do sprite (aceno da nuvem): uma linha, sem margem de cima; a cauda aponta para o sprite. */
-.balao[data-lado] { margin-top: 0; width: max-content; max-width: min(16rem, 100%); white-space: nowrap; }
-.balao[data-lado] .balao-corpo p { white-space: nowrap; }
+.balao[data-lado] { margin-top: 0; width: max-content; max-width: min(16rem, 100%); }
 .balao[data-lado]::before, .balao[data-lado]::after { left: auto; top: calc(50% - 8px); }
 .balao[data-lado="esquerda"]::before { right: -8px; }
 .balao[data-lado="esquerda"]::after { right: -5px; top: calc(50% - 6px); }

@@ -18,12 +18,15 @@ export function FalaSlot({
   className = "",
   faixa,
   apontar,
+  alinhar,
 }: {
   contexto: ContextoDeFala;
   className?: string;
   faixa?: string;
   /** Onde fica a cauda: "baixo" (balão acima da pessoa), "esquerda" (balão à direita dela) ou "direita" (balão à esquerda dela); por padrão, em cima. */
   apontar?: "baixo" | "esquerda" | "direita";
+  /** "inicio": o balão encosta na esquerda da área (celular, onde a cauda é medida a partir da borda). */
+  alinhar?: "inicio";
 }) {
   const atual = useFalaStore((s) => s.atual);
   const ultima = useFalaStore((s) => s.ultima[contexto]);
@@ -57,11 +60,12 @@ export function FalaSlot({
         {mostrando?.acao ? `${mostrando.locutor} diz: ${mostrando.texto}` : ""}
       </p>
       {mostrando ? (
-        <div className={lateral ? "flex" : `flex ${ALINHAR[mostrando.cauda]}`} onMouseEnter={() => setPausado(true)} onMouseLeave={() => setPausado(false)} onFocus={() => setPausado(true)} onBlur={() => setPausado(false)}>
+        <div className={lateral || alinhar === "inicio" ? "flex" : `flex ${ALINHAR[mostrando.cauda]}`} onMouseEnter={() => setPausado(true)} onMouseLeave={() => setPausado(false)} onFocus={() => setPausado(true)} onBlur={() => setPausado(false)}>
           <div
             key={mostrando.chave}
             className="balao"
             data-cauda={lateral ? undefined : mostrando.cauda}
+            style={lateral?.larguraMax ? { maxWidth: lateral.larguraMax } : undefined}
             data-lado={lateral?.lado ?? (apontar === "esquerda" ? "direita" : apontar === "direita" ? "esquerda" : undefined)}
             data-baixo={apontar === "baixo" || undefined}
             data-saindo={saindo || undefined}

@@ -26,11 +26,14 @@ export function Nuvem() {
   const sprite = useRef<HTMLDivElement>(null);
   const modo = useRef<Modo>("voo");
   const quadro = useRef(0);
+  const segura = useRef(0);
   const [saindo, setSaindo] = useState(false);
   const [pausada, setPausada] = useState(false);
   const [largo] = useState(() => window.matchMedia("(min-width: 48rem)").matches);
   const [aceno, setAceno] = useState(false);
-  const L = largo ? { w: 112, h: 80, arq: "desktop", dur: 5 } : { w: 72, h: 52, arq: "celular", dur: 4 };
+  const L = largo ? { w: 172, h: 122, arq: "desktop", dur: 7 } : { w: 128, h: 92, arq: "celular", dur: 6 };
+  // Celular (D46): no aceno a nuvem desacelera e para junto da borda mais próxima; `parada` guarda o `left` (px) da faixa.
+  const [parada, setParada] = useState<number | null>(null);
 
   const sair = () => {
     setSaindo(true);
@@ -45,6 +48,9 @@ export function Nuvem() {
       const i = quadro.current;
       if (modo.current !== "voo" && i >= n - 1) {
         if (modo.current === "aceno") {
+          // Segura o último quadro do aceno por ~1,5 s para o balão aparecer ao lado dela antes de a nuvem seguir viagem.
+          segura.current += 1;
+          if (segura.current < 18) return;
           modo.current = "saida";
           quadro.current = 0;
         } else {
@@ -88,6 +94,23 @@ export function Nuvem() {
     const LARGURA = 260; // balão de uma linha com o botão de fechar de 48 px
     const lateral =
       x - 8 >= LARGURA ? { lado: "esquerda" as const, pos: area.width - x + 8 } : area.width - (x + caixa.width) - 8 >= LARGURA ? { lado: "direita" as const, pos: x + caixa.width + 8 } : null;
+    if (!largo) {
+      // Para junto da borda mais próxima e põe o balão (até 2 linhas) no lado livre.
+      const esq = x + caixa.width / 2 < area.width / 2;
+      const alvo = esq ? 4 : area.width - caixa.width - 4;
+      setParada(x);
+      requestAnimationFrame(() => requestAnimationFrame(() => setParada(alvo)));
+      const livre = area.width - caixa.width - 4 - 12;
+      useFalaStore.getState().falar({
+        contexto: "nuvem",
+        ...LOCUTOR.joao,
+        texto: FALA_DO_ACENO,
+        acao: true,
+        lateral: esq ? { lado: "direita", pos: alvo + caixa.width + 8, larguraMax: livre } : { lado: "esquerda", pos: area.width - alvo + 8, larguraMax: livre },
+        faixa: id,
+      });
+      return;
+    }
     if (!lateral) {
       anunciar("JvbsBR acenou e a nuvem seguiu viagem.");
       return;
@@ -110,7 +133,14 @@ export function Nuvem() {
         if (e.animationName === "nuvem-cruza") encerrar();
       }}
       className="nuvem-cruza absolute top-1/2 -translate-y-1/2"
-      style={{ ["--dur" as string]: `${L.dur}s`, ["--w" as string]: `${L.w}px`, animationPlayState: pausada || aceno ? "paused" : "running", opacity: saindo ? 0 : 1, transition: "opacity 150ms linear" }}
+      style={{
+        ["--dur" as string]: `${L.dur}s`,
+        ["--w" as string]: `${L.w}px`,
+        animationPlayState: pausada || aceno ? "paused" : "running",
+        opacity: saindo ? 0 : 1,
+        transition: parada !== null ? "opacity 150ms linear, transform 500ms ease-out" : "opacity 150ms linear",
+        ...(parada !== null ? { animation: "none", transform: `translateX(${parada}px)` } : {}),
+      }}
     >
       <div className="nuvem-bob" style={{ animationPlayState: pausada ? "paused" : "running" }}>
         <div

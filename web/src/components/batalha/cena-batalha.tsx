@@ -8,7 +8,9 @@ import {
   Color,
   DoubleSide,
   InstancedMesh,
+  MeshBasicMaterial,
   Object3D,
+  Vector3,
   PerspectiveCamera as CameraThree,
   Sprite,
   SpriteMaterial,
@@ -30,6 +32,7 @@ import {
   aura,
   camera as cameraEm,
   combatenteGiro,
+  curva,
   combatenteY,
   criarParticulas,
   joaoX,
@@ -37,6 +40,10 @@ import {
   luanVisivel,
   luanY,
   nucleoDeImpacto,
+  realceDoBloqueio,
+  residual,
+  ATRASOS_RESIDUAIS,
+  OPACIDADES_RESIDUAIS,
   PUNHOS_DY,
   poseJoao,
   poseLuan,
@@ -139,6 +146,11 @@ function Campo() {
 }
 
 const PARTICULAS = criarParticulas();
+const fjTmp = new Vector3();
+const frTmp = new Vector3();
+const ptMedio = new Vector3();
+/** Ponta da mão: o braço mede 12 px e gira em torno do ombro; devolve a posição no mundo (vetor reaproveitado). */
+const pontaDoBraco = (braco: Object3D, saida: Vector3) => braco.localToWorld(saida.set(0, -12, 0));
 
 export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => void; visivel: boolean }) {
   const nivel = useQualidade();
@@ -148,6 +160,12 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
   const adaptadores = useRef<ReturnType<typeof vestirPlayer>[]>([]);
   const [prontos, setProntos] = useState(false);
   const jogadores = useMemo(() => [novoPlayer(), novoPlayer(), novoPlayer()], []);
+  // Imagens residuais (D41): 2 cópias por combatente, só silhueta na cor da aura, aditivas e de baixa opacidade.
+  const fantasmas = useMemo(() => [0, 1, 2, 3].map(() => novoPlayer()), []);
+  const gruposFantasma = useRef<(Group | null)[]>([null, null, null, null]);
+  const materiaisFantasma = useRef<MeshBasicMaterial[]>([]);
+  const realce2 = useRef<Sprite>(null);
+  const adaptadoresFantasma = useRef<ReturnType<typeof vestirPlayer>[]>([]);
   const brilho = useMemo(() => texturaDeBrilho(), []);
   const auras = useRef<(Sprite | null)[]>([null, null]);
   const nucleo = useRef<Sprite>(null);
@@ -163,6 +181,19 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     Promise.all([SKINS.jvbsbr, SKINS.rvmm255, SKINS.luan].map(texturaDaSkin)).then((ts) => {
       if (!vivo) return;
       adaptadores.current = ts.map((tex, i) => vestirPlayer(jogadores[i], tex));
+      // Fantasmas: 0 e 1 são do JvbsBR (60 e 120 ms), 2 e 3 do rvmm255.
+      fantasmas.forEach((f, i) => {
+        adaptadoresFantasma.current[i] = vestirPlayer(f, ts[i < 2 ? 0 : 1]);
+        const mat = new MeshBasicMaterial({ color: auraDe(i < 2 ? "jvbsbr" : "rvmm255").halo, transparent: true, opacity: 0 });
+        // Só a camada interna (a silhueta do corpo) e com profundidade: as caixas não se somam, e a opacidade fica a real (22% e 10%).
+        (["head", "body", "rightArm", "leftArm", "rightLeg", "leftLeg"] as const).forEach((k) => {
+          (f.skin[k] as unknown as { outerLayer: Object3D }).outerLayer.visible = false;
+        });
+        materiaisFantasma.current[i] = mat;
+        f.traverse((o) => {
+          if ((o as Mesh).isMesh) (o as Mesh).material = mat;
+        });
+      });
       if (parts.current) PARTICULAS.forEach((p, i) => parts.current!.setColorAt(i, new Color(p.cor)));
       if (parts.current?.instanceColor) parts.current.instanceColor.needsUpdate = true;
       setProntos(true);
@@ -191,14 +222,43 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const [gj, gr, gl] = grupos.current;
     const giro = combatenteGiro(t);
     const yc = combatenteY(t);
-    const xj = joaoX(t);
-    const xr = ricardoX(t);
-    gj?.position.set(xj, yc, 0);
+    let xj = joaoX(t);
+    let xr = ricardoX(t);
+    let yj = yc;
+    let yr = yc;
+    gj?.position.set(xj, yj, 0);
     if (gj) gj.rotation.y = giro;
-    gr?.position.set(xr, yc, 0);
+    gr?.position.set(xr, yr, 0);
     if (gr) gr.rotation.y = -giro;
     adaptadores.current[0]?.aplicar(poseJoao(t));
     adaptadores.current[1]?.aplicar(poseRicardo(t));
+    // Contato (item 46): nos instantes de bloqueio (2,15 s) e de choque (2,65–2,77 s) os punhos medidos nos ossos se encontram: os dois
+    // combatentes se aproximam o que faltar entre as mãos, e o realce fica no ponto médio REAL dos punhos (não numa posição fixa).
+    const contato = Math.max(curva(t, [[2.0, 0], [2.15, 1], [2.4, 0]]), curva(t, [[2.45, 0], [2.65, 1], [2.77, 1], [3.3, 0]]));
+    let pontoDoContato: Vector3 | null = null;
+    let punhoDoRicardo: Vector3 | null = null;
+    if (contato > 0.001 && gj && gr && prontos) {
+      gj.updateMatrixWorld(true);
+      gr.updateMatrixWorld(true);
+      const fj = pontaDoBraco(jogadores[0].skin.rightArm, fjTmp);
+      const fr = pontaDoBraco(jogadores[1].skin.leftArm, frTmp);
+      const folga = fr.x - fj.x - 3;
+      if (folga > 0) {
+        xj += (folga / 2) * contato;
+        xr -= (folga / 2) * contato;
+      }
+      const dy = ((fr.y - fj.y) / 2) * contato;
+      yj += dy;
+      yr -= dy;
+      gj.position.set(xj, yj, 0);
+      gr.position.set(xr, yr, 0);
+      gj.updateMatrixWorld(true);
+      gr.updateMatrixWorld(true);
+      const a = pontaDoBraco(jogadores[0].skin.rightArm, fjTmp);
+      const b = pontaDoBraco(jogadores[1].skin.leftArm, frTmp);
+      pontoDoContato = ptMedio.copy(a).add(b).multiplyScalar(0.5);
+      punhoDoRicardo = b;
+    }
     const pl = poseLuan(t);
     // Cabeça de Luan desce de leve ao observar (6,65–7,45 s), mantendo os braços cruzados do clipe.
     pl.rot.head[0] += 0.22 * suave((t - 6.65) / 0.8);
@@ -224,6 +284,23 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       c.updateProjectionMatrix();
     }
 
+    // Imagens residuais: cada cópia repete a pose, a posição e o giro de alguns milissegundos atrás.
+    fantasmas.forEach((_, i) => {
+      const g = gruposFantasma.current[i];
+      const mat = materiaisFantasma.current[i];
+      if (!g || !mat) return;
+      const joao = i < 2;
+      const c = i % 2;
+      const tt = t - ATRASOS_RESIDUAIS[c];
+      const op = nv === "alto" ? OPACIDADES_RESIDUAIS[c] * residual(t, joao ? "joao" : "ricardo") : 0;
+      g.visible = op > 0.003;
+      mat.opacity = op;
+      if (!g.visible) return;
+      g.position.set(joao ? joaoX(tt) : ricardoX(tt), combatenteY(tt), 0);
+      g.rotation.y = joao ? combatenteGiro(tt) : -combatenteGiro(tt);
+      adaptadoresFantasma.current[i]?.aplicar(joao ? poseJoao(tt) : poseRicardo(tt));
+    });
+
     // Auras (sprites aditivos atrás de cada combatente).
     const posAura: [number, number][] = [[xj, yc], [xr, yc]];
     auras.current.forEach((s, i) => {
@@ -237,9 +314,19 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const k = nucleoDeImpacto(t);
     if (nucleo.current) {
       nucleo.current.visible = k > 0;
-      nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
+      if (pontoDoContato) nucleo.current.position.set(pontoDoContato.x, pontoDoContato.y, 6);
+      else nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
       nucleo.current.scale.setScalar(2 + 8 * k);
       (nucleo.current.material as SpriteMaterial).opacity = 0.85 * k;
+    }
+    // Realce pequeno do bloqueio (golpe 2, 2,15 s): ≤ 4% da largura, junto ao braço do JvbsBR.
+    const kb = realceDoBloqueio(t);
+    if (realce2.current) {
+      realce2.current.visible = kb > 0;
+      if (punhoDoRicardo) realce2.current.position.set(punhoDoRicardo.x, punhoDoRicardo.y, 6);
+      else realce2.current.position.set(xj + 9, yc + PUNHOS_DY + 2, 6);
+      realce2.current.scale.setScalar(1.5 + 3 * kb);
+      (realce2.current.material as SpriteMaterial).opacity = 0.7 * kb;
     }
     aneis.current.forEach((m, i) => {
       if (!m) return;
@@ -387,6 +474,16 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
 
       <sprite ref={haloLuan} scale={[36, 56, 1]} visible={false}>
         <spriteMaterial map={brilho} color={auraDe("luan").base} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
+      </sprite>
+
+      {fantasmas.map((f, i) => (
+        <group key={`f${i}`} ref={(g) => void (gruposFantasma.current[i] = g)} visible={false}>
+          <primitive object={f} />
+        </group>
+      ))}
+
+      <sprite ref={realce2} visible={false}>
+        <spriteMaterial map={brilho} color={CORES.ciano} transparent opacity={0.7} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
       <sprite ref={nucleo} position={[0, 7, 5]} visible={false}>
