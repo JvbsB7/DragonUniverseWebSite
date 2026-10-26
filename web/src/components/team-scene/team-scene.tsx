@@ -9,6 +9,7 @@ import { GithubMark } from "@/components/github-mark";
 import { buttonClass } from "@/components/button";
 import { FalaSlot } from "@/components/fala/balao";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
+import { temAtaque } from "@/config/ataques";
 import { FALAS_DA_VITRINE, LOCUTOR } from "@/config/falas";
 import { asset, assetSet } from "@/lib/asset";
 import { useReduzir } from "@/lib/use-qualidade";
@@ -279,6 +280,8 @@ export function TeamScene({ className, titulo = "h3" }: { className?: string; ti
         const n = selecoes[selecionada] ?? 0;
         selecoes[selecionada] = n + 1;
         useFalaStore.getState().falar({ contexto: "vitrine", ...LOCUTOR[selecionada], texto: textos[n % textos.length], acao: true });
+        // D42: o grito do golpe (1ª, 3ª... seleção) vem com o ataque de ki; a frase (2ª, 4ª...) só com a guarda. Só no desktop com 3D.
+        if (temAtaque(selecionada) && n % 2 === 0 && window.matchMedia("(min-width: 48rem)").matches) useEquipeStore.getState().disparar(selecionada);
       },
       450,
     );
