@@ -10,7 +10,7 @@ export function TestWarning() {
     >
       <div className="du-container flex flex-wrap items-center gap-x-6 gap-y-2">
         <p className="flex-[1_1_36rem]">
-          <strong>Versão de teste</strong> · Requer <strong>Minecraft Bedrock 26.52</strong> com os experimentos <strong>Beta APIs</strong> e{" "}
+          <strong>Versão de teste</strong> · Requer <strong>Minecraft Bedrock 26.52</strong> com <strong>Beta APIs</strong> e{" "}
           <strong>Próximos recursos do criador</strong> ativados · <strong>Faça backup do seu mundo</strong>
         </p>
         <Link
