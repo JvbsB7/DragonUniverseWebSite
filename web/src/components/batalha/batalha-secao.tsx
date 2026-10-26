@@ -7,7 +7,6 @@ import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { FalaSlot } from "@/components/fala/balao";
 import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
-import { buttonClass } from "@/components/button";
 import { batalha } from "@/config/batalha";
 import { asset, assetSet } from "@/lib/asset";
 import { useQualidade } from "@/lib/use-qualidade";
@@ -18,12 +17,10 @@ import { useBatalhaStore } from "@/store/batalha";
 
 const CenaBatalha = dynamic(() => import("./cena-batalha"), { ssr: false });
 
-// Seção da batalha (v4-03 §3 e §4; copy v4-04 §2.2, R1–R6). Pôster + descrição + controles HTML independem de 3D.
-// Alto: a sequência toca sozinha uma vez quando a seção fica ≥ 50% visível (D16) e termina no repouso. Médio: pôster e
-// "Ver a batalha". Baixo: clipe vertical da Forja (quando existir) ou só o pôster. Estático: pôster, descrição à vista e
-// "Ler a descrição da cena". O início automático e o fim espontâneo não são anunciados; só ações do visitante.
-const botao = (extra = "") => `${buttonClass("secondary")} aria-disabled:cursor-not-allowed aria-disabled:opacity-60 ${extra}`;
-
+// Seção da batalha (v4-03 §3 e §4; v4.2 D49–D51: sem botões). Pôster + descrição independem de 3D. A luta toca UMA vez por carregamento,
+// sozinha, quando a seção fica ≥ 50% visível, e termina no repouso: alto e médio com a cena 3D, baixo/celular com o clipe vertical
+// (mudo, sem controles), estático/movimento reduzido/economia de dados só com o pôster e a descrição em texto visível.
+// Não há pausa, pulo, replay nem anúncio de controle; o "Reduzir animações" global (rodapé e menu) continua sendo o meio de parar tudo.
 export function BatalhaSecao() {
   const nivel = useQualidade();
   const hidratado = useSyncExternalStore(
@@ -31,31 +28,28 @@ export function BatalhaSecao() {
     () => true,
     () => false,
   );
-  const { status, pausada, jaTocou, anuncio } = useBatalhaStore();
-  const { iniciar, pausar, retomar, pular, terminou } = useBatalhaStore.getState();
+  const status = useBatalhaStore((s) => s.status);
+  const { terminou } = useBatalhaStore.getState();
   const palco = useRef<HTMLDivElement>(null);
-  const descricao = useRef<HTMLParagraphElement>(null);
   const video = useRef<HTMLVideoElement>(null);
-  const [tocandoVideo, setTocandoVideo] = useState(false);
-  const [videoJaTocou, setVideoJaTocou] = useState(false);
   const [aviso, setAviso] = useState("");
 
   const com3d = nivel === "alto" || nivel === "medio";
   const estatico = nivel === "estatico";
   const clipe = batalha.videoVertical;
-  // Médio só liga o 3D depois do botão; alto sempre (e o início é automático).
+  // O 3D do médio só é carregado quando a luta vai começar (≥ 50% visível); o alto liga logo. O início é automático nos dois.
   const habilitada = nivel === "alto" || (nivel === "medio" && status !== "parado");
 
-  // Início automático no nível alto (D16): uma vez por visita, com a seção ≥ 50% visível. Sem anúncio.
+  // Início automático nos níveis alto e médio (D50): uma vez por carregamento, com a seção ≥ 50% visível. Sem anúncio.
   useEffect(() => {
     const el = palco.current;
-    if (!el || nivel !== "alto") return;
+    if (!el || !(nivel === "alto" || nivel === "medio")) return;
     // O cabeçalho fixo cobre o topo da tela: os 50% de visibilidade descontam a altura dele (v4-10 B4).
     const topo = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--du-header-offset")) || 0;
     const io = new IntersectionObserver(
       ([e]) => {
         const s = useBatalhaStore.getState();
-        if (e.isIntersecting && s.status === "parado" && !s.jaTocou) s.iniciar(false);
+        if (e.isIntersecting && s.status === "parado" && !s.jaTocou) s.iniciar();
       },
       { threshold: 0.5, rootMargin: `-${Math.round(topo)}px 0px 0px 0px` },
     );
@@ -74,7 +68,31 @@ export function BatalhaSecao() {
     if (nivel === "estatico" && antes !== "estatico" && !reduzirAtivo()) setAviso("Animações reduzidas. O conteúdo é o mesmo.");
   }, [nivel, terminou]);
 
-  const tocando = status === "tocando";
+  // Baixo/celular (D50): o clipe vertical toca sozinho, mudo, UMA vez, quando ≥ 50% visível (o cabeçalho fixo não conta). Sai da tela:
+  // pausa; volta a ficar visível antes do fim: continua de onde parou. Com economia de dados o nível é estático e o vídeo nem é pedido.
+  const comVideo = !com3d && !estatico && !!clipe;
+  useEffect(() => {
+    const el = palco.current;
+    const v = video.current;
+    if (!comVideo || !el || !v) return;
+    const topo = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--du-header-offset")) || 0;
+    let acabou = false;
+    const fim = () => (acabou = true);
+    v.addEventListener("ended", fim);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (acabou) return;
+        if (e.intersectionRatio >= 0.5) void v.play().catch(() => {});
+        else if (e.intersectionRatio < 0.2) v.pause();
+      },
+      { threshold: [0, 0.2, 0.5], rootMargin: `-${Math.round(topo)}px 0px 0px 0px` },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      v.removeEventListener("ended", fim);
+    };
+  }, [comVideo]);
 
   // Fala do repouso (D34): uma por reprodução, em rodízio, só depois de a ação terminar (nunca no choque nem na revelação do Luan).
   // Automática e decorativa; sai quando a cena recomeça. Sem 3D (vídeo, pôster, movimento reduzido) não há balão.
@@ -86,7 +104,6 @@ export function BatalhaSecao() {
     const t = window.setTimeout(() => fala.falar({ contexto: "repouso", ...LOCUTOR[id], texto, acao: false }), 400);
     return () => clearTimeout(t);
   }, [status, com3d]);
-  const rotuloReplay = tocando ? "Batalha em andamento" : jaTocou || status === "repouso" ? "Rever a batalha" : "Ver a batalha";
 
   return (
     <section aria-labelledby="titulo-batalha" className="py-12 md:py-16">
@@ -116,11 +133,6 @@ export function BatalhaSecao() {
                     height={clipe.height}
                     aria-label="Clipe curto da cena da equipe: JvbsBR e rvmm255 se enfrentam, e Luan Dias observa de cima. Decorativo."
                     className="absolute inset-0 h-full w-full object-cover"
-                    onPlay={() => setTocandoVideo(true)}
-                    onEnded={() => {
-                      setTocandoVideo(false);
-                      setVideoJaTocou(true);
-                    }}
                   >
                     {/* MP4 primeiro (menor no Android/Chrome e nativo no Safari/iOS); WebM como reserva. */}
                     <source src={asset(clipe.mp4)} type="video/mp4" />
@@ -148,72 +160,19 @@ export function BatalhaSecao() {
             />
           </div>
           <figcaption>
-            <p ref={descricao} id="batalha-descricao" tabIndex={-1} className={estatico ? "mt-4 text-muted-foreground" : "sr-only"}>
+            <p id="batalha-descricao" className={estatico ? "mt-4 text-muted-foreground" : "sr-only"}>
               {batalha.alt} {batalha.descricao}
             </p>
           </figcaption>
         </figure>
 
-        {/* Faixa da fala: entre o palco e os controles, com a altura reservada desde o início. */}
+        {/* Faixa da fala: logo abaixo do palco, com a altura reservada desde o início. */}
         {com3d && <FalaSlot contexto="repouso" className="mx-auto mt-2 min-h-[7.5rem] max-w-[72rem]" />}
 
         <FaixaNuvem id="batalha" className="mx-auto my-6 max-w-[72rem]" />
 
-        {hidratado && (
-          <div role="group" aria-label="Controles da cena" className="mx-auto mt-4 flex w-full max-w-[72rem] flex-wrap items-center gap-3">
-            {com3d && (
-              <>
-                <button
-                  type="button"
-                  aria-disabled={tocando}
-                  title="Toca a cena de novo, do início."
-                  onClick={() => {
-                    if (!tocando) iniciar(true);
-                  }}
-                  className={botao()}
-                >
-                  {rotuloReplay}
-                </button>
-                <button type="button" onClick={() => (pausada ? retomar() : pausar())} aria-disabled={status === "parado"} className={botao()}>
-                  {pausada ? "Retomar cena" : "Pausar cena"}
-                </button>
-                <button type="button" aria-disabled={!tocando} onClick={() => tocando && pular()} className={botao()}>
-                  Pular para o repouso
-                </button>
-              </>
-            )}
-            {!com3d && !estatico && clipe && (
-              <button
-                type="button"
-                aria-disabled={tocandoVideo}
-                onClick={() => {
-                  const v = video.current;
-                  if (!v || tocandoVideo) return;
-                  v.currentTime = 0;
-                  void v.play();
-                  setAviso("Cena iniciada.");
-                }}
-                className={botao()}
-              >
-                {tocandoVideo ? "Batalha em andamento" : videoJaTocou ? "Rever a batalha" : "Ver a batalha"}
-              </button>
-            )}
-            {estatico && (
-              <button
-                type="button"
-                onClick={() => {
-                  descricao.current?.focus();
-                  setAviso("Descrição da cena.");
-                }}
-                className={botao()}
-              >
-                Ler a descrição da cena
-              </button>
-            )}
-          </div>
-        )}
         <p role="status" aria-live="polite" className="sr-only">
-          {anuncio || aviso}
+          {aviso}
         </p>
         <div className="mx-auto mt-2 w-full max-w-[72rem]">{hidratado && <ReduzirAnimacoes id="reduzir-batalha" />}</div>
       </div>

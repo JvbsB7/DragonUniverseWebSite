@@ -410,7 +410,7 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       rel.t = st.status === "tocando" ? 0 : DURACAO_BATALHA;
     }
     // Avança só enquanto a região está na tela, a aba visível e sem pausa; o quadro nunca pula segundos acumulados.
-    const rodando = quadroDeTeste === null && visivel && !document.hidden && !st.pausada && st.status !== "parado";
+    const rodando = quadroDeTeste === null && visivel && !document.hidden && st.status !== "parado";
     if (rodando) {
       const dt = Math.min(dtBruto, 0.25);
       vigiarQuadros(dtBruto);
