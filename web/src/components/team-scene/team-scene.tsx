@@ -213,7 +213,7 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
           >
             <div aria-hidden="true" className="h-3 rounded-t-xl" style={{ background: energias[p.id] }} />
             <div className="grid justify-items-center gap-3 p-4">
-              <div className="cartao-halo relative w-full overflow-hidden rounded-md bg-surface" data-selecionada={selecionada === p.id || undefined} style={{ ["--halo" as string]: energias[p.id] }}>
+              <div className="cartao-halo relative w-full overflow-hidden rounded-md bg-surface pt-24" data-selecionada={selecionada === p.id || undefined} style={{ ["--halo" as string]: energias[p.id] }}>
                 {/* Pôster de corpo inteiro da Forja (3:4, sobre a cor do cartão); o halo é só CSS e para com o movimento reduzido. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -226,7 +226,7 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
                   loading="lazy"
                   className="relative block h-auto w-full"
                 />
-                {/* Balão da pessoa selecionada: sobre o próprio pôster, acima da cabeça, com a cauda para o personagem (nunca perto dos botões). */}
+                {/* Balão da pessoa selecionada: na faixa de 96 px reservada acima do pôster (em todos os cartões, sem deslocar nada ao aparecer), com a cauda para a cabeça; nunca cobre o personagem nem fica perto dos botões. */}
                 {selecionada === p.id && (
                   <FalaSlot
                     contexto="vitrine"
