@@ -7,7 +7,8 @@ import { inferModelType, loadImage, loadSkinToCanvas } from "skinview-utils";
 // Só o modelo (caixas com UV da skin, camada externa e braço slim/clássico); não importa o viewer nem o renderer do skinview3d.
 import { PlayerObject } from "skinview3d/libs/model.js";
 import { asset } from "@/lib/asset";
-import { amostrar, criarAdaptador, poseNeutra, type Clipe, type Pose } from "@/lib/personagens";
+import { amostrar, poseNeutra, type Clipe, type Pose } from "@/lib/personagens";
+import { criarAdaptador } from "@/lib/personagens/adaptador-skinview";
 
 // Textura de cada skin carregada uma vez e compartilhada por todas as vistas (no rig antigo, cada Presenter baixava a sua).
 const texturas = new Map<string, Promise<CanvasTexture>>();
