@@ -284,18 +284,18 @@ export default function CenaEquipe({ aoPronto, visivel }: { aoPronto: () => void
         </group>
       ))}
       <sprite ref={carga} visible={false} renderOrder={5}>
-        <spriteMaterial map={brilho} transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+        <spriteMaterial map={brilho} transparent opacity={0} depthWrite={false} />
       </sprite>
       {[0, 1, 2].map((i) => (
         <mesh key={`fx${i}`} ref={(m) => void (camadasDoFeixe.current[i] = m)} visible={false} renderOrder={5 + i}>
           <boxGeometry />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       ))}
       {Array.from({ length: 18 }, (_, i) => (
         <mesh key={`pt${i}`} ref={(m) => void (particulas.current[i] = m)} visible={false} renderOrder={7}>
           <boxGeometry />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       ))}
     </>
