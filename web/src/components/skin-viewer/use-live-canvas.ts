@@ -2,12 +2,16 @@
 
 import { useEffect, useId, useSyncExternalStore, type RefObject } from "react";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
-import { perfilLeve } from "@/lib/perfil";
+import { assinarQualidade, perfilLeve } from "@/lib/perfil";
 
 function subscribeMotion(cb: () => void) {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
+  const sair = assinarQualidade(cb);
+  return () => {
+    mq.removeEventListener("change", cb);
+    sair();
+  };
 }
 // Perfil completo (decisão M7): sem movimento reduzido, sem economia de dados, > 4 núcleos, ≥ 768 px e ponteiro fino.
 const perfilCompleto = () => !perfilLeve();
@@ -50,12 +54,28 @@ export function useLiveCanvas(ref: RefObject<HTMLElement | null>, enabled: boole
   useEffect(() => {
     const el = ref.current;
     if (!el || !active) return;
-    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting && hasWebGL() ? request(id) : release(id)), {
-      rootMargin: "100px",
-    });
+    let dentro = false;
+    let timer = 0;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        dentro = entry.isIntersecting;
+        if (dentro && !document.hidden && hasWebGL()) request(id);
+        else if (!dentro) release(id);
+      },
+      { rootMargin: "100px" },
+    );
     io.observe(el);
+    // Aba oculta por mais de 5 s: devolve a vaga e libera o contexto; ao voltar, pede de novo se ainda estiver na tela.
+    const aba = () => {
+      clearTimeout(timer);
+      if (document.hidden) timer = window.setTimeout(() => release(id), 5000);
+      else if (dentro && hasWebGL()) request(id);
+    };
+    document.addEventListener("visibilitychange", aba);
     return () => {
       io.disconnect();
+      document.removeEventListener("visibilitychange", aba);
+      clearTimeout(timer);
       release(id);
     };
   }, [active, id, ref, request, release]);

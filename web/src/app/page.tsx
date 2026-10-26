@@ -18,6 +18,9 @@ import { destinos } from "@/config/universo";
 import { galeria } from "@/config/galeria";
 import { getTransformacoes } from "@/lib/transformacoes-data";
 import { asset, assetSet } from "@/lib/asset";
+import { EsferaNicho } from "@/components/esferas/esfera";
+import { ColecaoEsferas } from "@/components/esferas/colecao-esferas";
+import { BatalhaSecao } from "@/components/batalha/batalha-secao";
 
 export const metadata: Metadata = pageMetadata({
   title: "Dragon Universe: seu universo, sua história, seu poder",
@@ -99,6 +102,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <BatalhaSecao />
+
       <section aria-labelledby="o-que-e" className="bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="o-que-e">O que é o Dragon Universe</SectionHeading>
@@ -125,6 +130,7 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+          <EsferaNicho id="origem" />
         </div>
       </section>
 
@@ -157,6 +163,7 @@ export default function HomePage() {
           <div className="mt-8">
             <LinkButton href="/wiki/racas">Ver todas as raças</LinkButton>
           </div>
+          <EsferaNicho id="racas" />
         </div>
       </section>
 
@@ -169,6 +176,7 @@ export default function HomePage() {
           <div className="mt-8">
             <LinkButton href="/wiki/transformacoes">Ver todas as transformações</LinkButton>
           </div>
+          <EsferaNicho id="formas" />
         </div>
       </section>
 
@@ -188,10 +196,11 @@ export default function HomePage() {
           <div className="mt-6">
             <LinkButton href="/wiki/planetas-e-dimensoes">Ver todos os destinos</LinkButton>
           </div>
+          <EsferaNicho id="destinos" />
         </div>
       </section>
 
-      <section aria-labelledby="desenvolvimento-teaser" className="cv-auto bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="desenvolvimento-teaser" className="bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="desenvolvimento-teaser" lead="O que a equipe construiu, o que está construindo e o que vem pela frente. Sem datas, sem percentuais e sem promessa de entrega.">
             Em desenvolvimento e planejado
@@ -229,10 +238,11 @@ export default function HomePage() {
               <ConteudoFuturo headingId="conteudo-futuro-home" nivel={3} compacto />
             </div>
           </div>
+          <EsferaNicho id="construcao" />
         </div>
       </section>
 
-      <section aria-labelledby="equipe-teaser" className="cv-auto py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="equipe-teaser" className="py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="equipe-teaser" lead="Três fãs, um add-on. Conheça João, Ricardo e Luan.">
             Quem faz o Dragon Universe
@@ -241,16 +251,18 @@ export default function HomePage() {
           <div className="mt-6">
             <LinkButton href="/equipe">Conhecer a equipe</LinkButton>
           </div>
+          <EsferaNicho id="pessoas" />
         </div>
       </section>
 
-      <section aria-labelledby="comunidade" className="cv-auto bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="comunidade" className="bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <Community />
+          <EsferaNicho id="comunidade" />
         </div>
       </section>
 
-      <section aria-labelledby="apoio-chamada" className="cv-auto py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="apoio-chamada" className="py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <div className="grid gap-4 rounded-xl border border-edge bg-surface p-6 md:p-8 nav:grid-cols-[minmax(0,1fr)_auto] nav:items-center">
             <div className="grid gap-2">
@@ -263,6 +275,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ColecaoEsferas />
     </>
   );
 }

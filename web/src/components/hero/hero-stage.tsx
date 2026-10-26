@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { asset } from "@/lib/asset";
-import { perfilLeve } from "@/lib/perfil";
+import { assinarQualidade, perfilLeve } from "@/lib/perfil";
 import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
 import { use3dAllowed, useLiveCanvas } from "@/components/skin-viewer/use-live-canvas";
 
@@ -15,13 +15,12 @@ import { use3dAllowed, useLiveCanvas } from "@/components/skin-viewer/use-live-c
 // A legenda e o status do Bills ficam FORA do palco (na página), então não dependem do renderizador.
 const HeroScene = dynamic(() => import("./hero-scene"), { ssr: false });
 
-const semAssinatura = () => () => {};
 
 export function HeroStage({ children }: { children: ReactNode }) {
   const box = useRef<HTMLDivElement>(null);
   const quadro = useRef(0);
   const permitido = use3dAllowed();
-  const leve = useSyncExternalStore(semAssinatura, perfilLeve, () => true);
+  const leve = useSyncExternalStore(assinarQualidade, perfilLeve, () => true);
   const habilitado = permitido && !leve;
   const [falhou, setFalhou] = useState(false);
   const vivo = useLiveCanvas(box, habilitado && !falhou);

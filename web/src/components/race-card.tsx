@@ -3,6 +3,8 @@ import type { Raca } from "@/config/racas";
 import { StatusBadge, type Status } from "@/components/status-badge";
 import { prefetchFor } from "@/lib/prefetch";
 import { asset, assetSet } from "@/lib/asset";
+import { dadosDaRaca } from "@/lib/dados-da-raca";
+import { LeitorDeDados } from "@/components/leitor-de-dados";
 
 const statusMap: Record<Raca["status"], Status> = { live: "live", dev: "dev", planned: "planned" };
 
@@ -15,6 +17,8 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
   const H = titulo;
   const dev = raca.status === "dev";
   const href = `/wiki/racas/${raca.wiki}`;
+  // Leitor de dados só para raças já no jogo e só com dados reais da wiki (sem dado útil, sem gatilho).
+  const dados = raca.status === "live" ? dadosDaRaca(raca.wiki) : null;
   return (
     <div className="tilt-card h-full">
       <article
@@ -44,6 +48,8 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
               alt={raca.poster.alt}
               className="absolute top-[50%] left-1/2 h-[17rem] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
             />
+            {/* Varredura única do leitor de dados (só visual; decorativa). */}
+            <span aria-hidden="true" className="leitor-varredura" />
           </div>
         )}
         <H className="text-card-title">{raca.nome}</H>
@@ -71,6 +77,7 @@ export function RaceCard({ raca, titulo = "h4" }: { raca: Raca; titulo?: "h3" | 
             </ul>
           </div>
         )}
+        {dados && <LeitorDeDados nome={raca.nome} dados={dados} />}
         <div className="mt-auto pt-2">
           <Link
             href={href}

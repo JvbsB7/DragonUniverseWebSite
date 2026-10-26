@@ -185,13 +185,6 @@ html[data-perfil="completo"] .ki-particle {
   }
 }
 
-/* Seções longas abaixo da dobra da Home (depois do #universo, para não afetar a âncora): o navegador pula estilo e layout
-   até elas se aproximarem. O tamanho estimado fica "auto" (lembra o tamanho real depois da 1ª renderização). */
-.cv-auto {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 700px;
-}
-
 /* Hero: o 2D (logo SVG e pôster do planeta) só some depois do primeiro quadro da peça 3D correspondente. */
 .hero-2d-logo,
 .hero-2d-print {
@@ -201,3 +194,309 @@ html[data-perfil="completo"] .ki-particle {
 [data-hero-stage][data-planeta="3d"] .hero-2d-print {
   opacity: 0;
 }
+
+/* Botão "Reduzir animações" (v4): mesmo efeito do prefers-reduced-motion para o CSS. O WebGL trata a escolha em lib/perfil.ts. */
+html[data-reduzir="true"] *,
+html[data-reduzir="true"] *::before,
+html[data-reduzir="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Auras da equipe (D31, substitui o carmesim de D15): cor do volume e brilho de borda por pessoa. Única fonte: a cena 3D, os
+   halos e as barras leem estes tokens (lib/auras.ts). O azul escuro do rvmm255 não funciona sozinho sobre o fundo (1,88:1):
+   a borda/recorte usa o brilho. */
+:root {
+  --du-aura-jvbsbr: #9652c9;
+  --du-aura-jvbsbr-brilho: #d5a2ff;
+  --du-aura-rvmm255: #123c82;
+  --du-aura-rvmm255-brilho: #4c9dff;
+  --du-aura-luan: #d6c347;
+  --du-aura-luan-brilho: #fff2a6;
+}
+
+/* Esferas de energia (v4-03 §9): sprite aprovado com 7 marcas (colunas) e 3 estados (linhas: normal, brilho, coletada). */
+.esfera-sprite {
+  width: 48px;
+  height: 48px;
+  background-image: var(--e1);
+  background-image: image-set(var(--e1) 1x, var(--e2) 2x);
+  background-size: 336px 144px;
+  background-position: var(--ex) 0;
+  image-rendering: pixelated;
+}
+.esfera-botao:hover .esfera-sprite,
+.esfera-botao:focus-visible .esfera-sprite {
+  background-position: var(--ex) -48px;
+}
+.esfera-botao[data-esfera="coletada"] .esfera-sprite {
+  background-position: var(--ex) -96px;
+}
+.esfera-botao[data-animando] .esfera-sprite {
+  animation: esfera-coleta 280ms var(--du-ease-out) 1;
+}
+@keyframes esfera-coleta {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+.esfera-fagulhas i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #f6b943;
+  animation: esfera-fagulha 280ms ease-out 1 forwards;
+}
+.esfera-fagulhas i:nth-child(1) { --dx: -14px; --dy: -14px; }
+.esfera-fagulhas i:nth-child(2) { --dx: 14px; --dy: -10px; }
+.esfera-fagulhas i:nth-child(3) { --dx: 0px; --dy: 16px; }
+@keyframes esfera-fagulha {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); opacity: 0; }
+}
+
+/* Fechamento: sete pontos formam um aro em até 1,8 s e ficam numa moldura dourada. */
+.esferas-aro i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #f6b943;
+  transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(-34px);
+}
+.esferas-aro[data-tocando] i {
+  animation: esfera-aro 1.8s var(--du-ease-out) 1 both;
+  animation-delay: calc(var(--i) * 120ms);
+}
+@keyframes esfera-aro {
+  from { opacity: 0; transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) rotate(calc(var(--i) * 51.43deg)) translateY(-34px); }
+}
+
+/* Halo do cartão selecionado (celular): brilho suave de contorno, só CSS. Sem movimento com "Reduzir animações". */
+.cartao-halo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: box-shadow 200ms var(--du-ease-out);
+}
+.cartao-halo[data-selecionada]::after {
+  box-shadow: inset 0 0 24px 2px var(--halo);
+  animation: halo-pulso 3s ease-in-out infinite;
+}
+@keyframes halo-pulso {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Leitor de dados (v4-03 §10): uma varredura de 240 ms sobre a mídia do cartão; sem animação com "Reduzir animações". */
+.leitor-varredura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(35, 215, 255, 0.35) 50%, transparent 100%);
+  background-size: 100% 28%;
+  background-repeat: no-repeat;
+  background-position: 0 -30%;
+}
+[data-race][data-leitura="varrendo"] .leitor-varredura {
+  animation: leitor-varre 240ms linear 1 both;
+}
+@keyframes leitor-varre {
+  0% { opacity: 1; background-position: 0 -30%; }
+  100% { opacity: 0; background-position: 0 130%; }
+}
+
+/* Transições de ki (v4-03 §11.1): a borda do painel recebe energia ciano por ~220 ms. O foco duplo não é substituído.
+   "Reduzir animações" e prefers-reduced-motion anulam estas animações (regras globais). */
+.ki-pulso,
+.leitor-painel:not([hidden]),
+details.group[open] > div {
+  animation: ki-borda 220ms ease-out 1;
+}
+@keyframes ki-borda {
+  0% { box-shadow: 0 0 0 0 rgba(35, 215, 255, 0); }
+  40% { box-shadow: 0 0 0 2px rgba(35, 215, 255, 0.55); }
+  100% { box-shadow: 0 0 0 0 rgba(35, 215, 255, 0); }
+}
+/* Lightbox: opacidade em 140 ms e um recorte ciano breve na moldura. */
+dialog.lightbox[open] {
+  animation: lightbox-entra 140ms ease-out 1;
+}
+@keyframes lightbox-entra {
+  from { opacity: 0; box-shadow: 0 0 0 3px rgba(35, 215, 255, 0.7); }
+  to { opacity: 1; box-shadow: 0 0 0 0 rgba(35, 215, 255, 0); }
+}
+
+/* Nave do Universo (v4-03 §11.2): sprite autoral aprovado (4 quadros de rastro, 128 × 32). A travessia é só CSS. */
+.faixa-viagem {
+  background-image: radial-gradient(#23d7ff 1px, transparent 1.5px), radial-gradient(#a8c4ff 1px, transparent 1.5px);
+  background-size: 46px 46px, 71px 71px;
+  background-position: 6px 8px, 30px 24px;
+  background-color: #060a16;
+}
+.nave-sprite {
+  width: 128px;
+  height: 32px;
+  background-image: var(--nave-1x);
+  background-image: image-set(var(--nave-1x) 1x, var(--nave-2x) 2x);
+  background-size: 512px 32px;
+  image-rendering: pixelated;
+  animation: nave-quadros 500ms steps(4) infinite;
+}
+@keyframes nave-quadros {
+  from { background-position: 0 0; }
+  to { background-position: -512px 0; }
+}
+.nave-voo {
+  left: -128px;
+  animation: nave-cruza var(--nave-dur, 400ms) cubic-bezier(0.2, 0.8, 0.2, 1) 1 both;
+}
+@media (min-width: 1100px) {
+  .nave-voo { --nave-dur: 650ms; }
+}
+@keyframes nave-cruza {
+  from { left: -128px; }
+  to { left: 100%; }
+}
+
+/* Cartões de apoio (v4-03 §11.4): luz de borda de até 180 ms, opacidade máxima 0,18. Sem rotação, inclinação, loop nem animação de preço. */
+.apoio-card {
+  transition: box-shadow 180ms ease-out;
+}
+@media (hover: hover) {
+  .apoio-card:hover {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--luz) 18%, transparent), 0 0 24px color-mix(in srgb, var(--luz) 18%, transparent);
+  }
+}
+.apoio-card:has(:focus-visible) {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--luz) 18%, transparent), 0 0 24px color-mix(in srgb, var(--luz) 18%, transparent);
+}
+
+/* Ambiente (v4-03 §11.3): estrelas quadradas estáticas e névoa azul/violeta atrás das mídias (nunca sobre texto), e um reflexo
+   de borda de 1,2 s por visita. Sem parallax e sem movimento com "Reduzir animações". */
+.ambiente-palco {
+  /* Estrelas quadradas estáticas em posições irregulares e fixas (semente única, 3 tamanhos/brilhos, menos densas perto dos personagens). */
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1152 576' preserveAspectRatio='xMidYMid slice'><rect x='1095' y='354' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='212' y='326' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='196' y='472' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='151' y='371' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='255' y='35' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='384' y='57' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='15' y='406' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1133' y='366' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='821' y='13' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='821' y='59' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='697' y='13' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='207' y='463' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='293' y='38' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='968' y='23' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='1087' y='224' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='214' y='358' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='926' y='385' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='339' y='469' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='973' y='429' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='955' y='357' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1023' y='304' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='37' y='147' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='45' y='302' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='69' y='346' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='115' y='214' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='126' y='268' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='996' y='143' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='825' y='152' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='805' y='131' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1119' y='287' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='513' y='425' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='105' y='21' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='870' y='39' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='692' y='138' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1035' y='75' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='954' y='426' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='395' y='281' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='653' y='76' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='56' y='90' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='584' y='394' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='360' y='12' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='458' y='126' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='217' y='274' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='795' y='272' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='379' y='253' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='326' y='106' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='624' y='156' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1118' y='146' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1010' y='365' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='863' y='125' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='804' y='129' width='4' height='4' fill='%23ffffff' opacity='0.95'/><rect x='1101' y='18' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='704' y='103' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='681' y='141' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='66' y='212' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='425' y='198' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='41' y='175' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1033' y='438' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='763' y='162' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1127' y='402' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='132' y='401' width='3' height='3' fill='%23cfe7ff' opacity='0.8'/><rect x='1085' y='332' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='1060' y='401' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='329' y='106' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='846' y='99' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='485' y='121' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='899' y='174' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='229' y='412' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='796' y='41' width='2' height='2' fill='%238fb8ff' opacity='0.55'/><rect x='405' y='72' width='2' height='2' fill='%238fb8ff' opacity='0.55'/></svg>"),
+    radial-gradient(ellipse at 20% 85%, rgba(22, 116, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 15%, rgba(165, 123, 250, 0.14), transparent 50%),
+    linear-gradient(180deg, #060a16 0%, #0d1a36 55%, #122344 100%);
+  background-size: cover, auto, auto, auto;
+  background-position: center, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat;
+}
+.reflexo-borda {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, #23d7ff, transparent);
+  background-size: 30% 100%;
+  background-repeat: no-repeat;
+  background-position: -40% 0;
+}
+.reflexo-borda[data-passando] {
+  animation: reflexo-passa 1.2s ease-in-out 1 both;
+}
+@keyframes reflexo-passa {
+  0% { opacity: 1; background-position: -40% 0; }
+  100% { opacity: 0; background-position: 140% 0; }
+}
+
+/* Nuvem dourada (v4-03 §8): travessia de uma faixa reservada, só CSS + quadros do sprite. Sem movimento com "Reduzir animações". */
+.nuvem-cruza {
+  left: calc(var(--w) * -1);
+  animation: nuvem-cruza var(--dur, 5s) linear 1 both;
+  pointer-events: none;
+}
+@keyframes nuvem-cruza {
+  from { left: calc(var(--w) * -1); }
+  to { left: 100%; }
+}
+.nuvem-bob {
+  animation: nuvem-bob 2s ease-in-out infinite;
+}
+@keyframes nuvem-bob {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(2px); }
+}
+
+/* Balão de fala em pixel (v4-15 §0.2, D29): painel #F8FAFC, texto #060A16 (18,89:1), contorno de 2 px, degraus de 4 px, cauda quadrada
+   e sombra deslocada de 4 px sem glow. Entra/sai só por opacidade (120 ms); parado com "Reduzir animações". */
+.balao {
+  --balao-tinta: #060a16;
+  position: relative;
+  margin-top: 10px;
+  width: fit-content;
+  max-width: min(320px, 100%);
+  filter: drop-shadow(4px 4px 0 var(--balao-tinta));
+  color: var(--balao-tinta);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  animation: balao-entra 120ms linear both;
+}
+.balao[data-saindo] {
+  animation: balao-sai 120ms linear both;
+}
+.balao[data-parado] {
+  animation: none;
+}
+@keyframes balao-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes balao-sai { from { opacity: 1; } to { opacity: 0; } }
+.balao-borda,
+.balao-corpo {
+  clip-path: polygon(0 8px, 4px 8px, 4px 4px, 8px 4px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px));
+}
+.balao-borda {
+  background: var(--balao-tinta);
+  padding: 2px;
+}
+.balao-corpo {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+}
+.balao::before,
+.balao::after {
+  content: "";
+  position: absolute;
+  left: var(--cauda-x, 28px);
+}
+.balao::before {
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--balao-tinta);
+}
+.balao::after {
+  top: -5px;
+  left: calc(var(--cauda-x, 28px) + 2px);
+  width: 12px;
+  height: 12px;
+  background: #f8fafc;
+  z-index: 1;
+}
+.balao[data-cauda="centro"] { --cauda-x: calc(50% - 8px); }
+.balao[data-cauda="direita"] { --cauda-x: calc(100% - 44px); }
+/* Balão ao lado do sprite (aceno da nuvem): uma linha, sem margem de cima; a cauda aponta para o sprite. */
+.balao[data-lado] { margin-top: 0; width: max-content; max-width: min(16rem, 100%); white-space: nowrap; }
+.balao[data-lado] .balao-corpo p { white-space: nowrap; }
+.balao[data-lado]::before, .balao[data-lado]::after { left: auto; top: calc(50% - 8px); }
+.balao[data-lado="esquerda"]::before { right: -8px; }
+.balao[data-lado="esquerda"]::after { right: -5px; top: calc(50% - 6px); }
+.balao[data-lado="direita"]::before { left: -8px; }
+.balao[data-lado="direita"]::after { left: -5px; top: calc(50% - 6px); }
+/* Cauda para baixo (balão acima de quem fala). */
+.balao[data-baixo] { margin-top: 0; margin-bottom: 10px; }
+.balao[data-baixo]::before { top: auto; bottom: -8px; }
+.balao[data-baixo]::after { top: auto; bottom: -5px; }

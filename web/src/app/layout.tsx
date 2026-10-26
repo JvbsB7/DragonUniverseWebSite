@@ -5,6 +5,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { TestWarning } from "@/components/test-warning";
 import { MenuHost } from "@/components/menu-host";
+import { CinemaHost } from "@/components/cinema/cinema-host";
+import { NuvemHost } from "@/components/nuvem/nuvem-host";
 import { siteConfig } from "@/config/site";
 import { defaultImage } from "@/lib/seo";
 import { asset } from "@/lib/asset";
@@ -41,14 +43,14 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  // Ícones do emblema C (favicon 16 em grade de pixels). Favicon transparente; apple-touch e manifest com fundo #060A16 e margem de 12%.
+  // Ícones do emblema C (favicon 16 em grade de pixels). "?v=du" força os navegadores a largar o favicon antigo do cache (mesmo nome de arquivo). Favicon transparente; apple-touch e manifest com fundo #060A16 e margem de 12%.
   icons: {
     icon: [
-      { url: asset("/img/logo/favicon-16.png"), sizes: "16x16", type: "image/png" },
-      { url: asset("/img/logo/favicon-32.png"), sizes: "32x32", type: "image/png" },
-      { url: asset("/img/logo/favicon-48.png"), sizes: "48x48", type: "image/png" },
+      { url: asset("/img/logo/favicon-16.png?v=du"), sizes: "16x16", type: "image/png" },
+      { url: asset("/img/logo/favicon-32.png?v=du"), sizes: "32x32", type: "image/png" },
+      { url: asset("/img/logo/favicon-48.png?v=du"), sizes: "48x48", type: "image/png" },
     ],
-    apple: { url: asset("/img/logo/apple-touch-icon-180.png"), sizes: "180x180", type: "image/png" },
+    apple: { url: asset("/img/logo/apple-touch-icon-180.png?v=du"), sizes: "180x180", type: "image/png" },
   },
   openGraph: {
     title: siteConfig.name,
@@ -76,6 +78,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter />
         <MenuHost />
+        <CinemaHost />
+        <NuvemHost />
       </body>
     </html>
   );

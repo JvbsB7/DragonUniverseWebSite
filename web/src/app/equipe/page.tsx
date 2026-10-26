@@ -38,7 +38,7 @@ export default function EquipePage() {
         <p className="text-lg text-muted-foreground">Um projeto de fãs, feito por pessoas de verdade.</p>
       </header>
 
-      <TeamScene />
+      <TeamScene titulo="h2" />
 
       <ul className="grid gap-6 md:grid-cols-3">
         {equipe.map((p, i) => (

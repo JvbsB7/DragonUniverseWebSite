@@ -1,6 +1,6 @@
-# Dragon Universe: site e wiki (v3)
+# Dragon Universe: site e wiki
 
-Next.js 16 (App Router, TypeScript), Tailwind v4, Base UI, Zustand, Lucide, three 0.186.1, skinview3d, React Three Fiber + drei, Motion e GSAP (as quatro últimas só sob demanda).
+Next.js 16 (App Router, TypeScript), Tailwind v4, Base UI, Zustand, Lucide, three 0.186.1, skinview3d (só o modelo `PlayerObject`), React Three Fiber + drei, Motion e GSAP (as últimas só sob demanda).
 Exportação estática: o resultado do build é a pasta `out/`, só arquivos, sem Node no servidor.
 
 ## Rodar em desenvolvimento
@@ -52,7 +52,7 @@ Como funciona a subpasta:
 
 Testar a subpasta localmente (sem sobrescrever o `out/` normal): copie `web/` sem `node_modules`, `.next` e `out`
 para outra pasta, ligue o `node_modules` (`cp -al`), rode `NEXT_PUBLIC_BASE_PATH=/DragonUniverseWebSite npm run build` e sirva
-`out/` sob `/DragonUniverseWebSite/` (por exemplo com `serve-pages.js` em `backups-v2/`, em `127.0.0.1:8093`).
+`out/` sob `/DragonUniverseWebSite/` em `127.0.0.1` com qualquer servidor estático que mapeie esse prefixo.
 
 ### Trocar para domínio próprio depois
 
@@ -93,28 +93,68 @@ Texto em Markdown simples. Use `##` e `###` (viram o sumário lateral). Sem JSX.
 
 Links internos começam com `/` (ex.: `/wiki/racas/saiyajin`); links externos abrem em nova aba.
 
-## Skins em 3D (arte decorativa)
+## Personagens, cenas e efeitos (v4)
 
-As skins são arte, não um visualizador: não há controles nem foco de teclado. O sentido de cada cena vem do texto alternativo (`role="img"` com `aria-label`).
+Os três personagens da equipe (JvbsBR, rvmm255 e Luan Dias) usam as skins reais em `public/skins/`. Não há GLB: cada skin é aplicada ao
+modelo de caixas `PlayerObject` (importado de `skinview3d/libs/model.js`, só o modelo, sem o viewer) dentro do canvas do R3F, e as poses
+vêm de **clipes como dados**.
 
-- **Cena da equipe** (`src/components/team-scene/`): João, Ricardo e Luan juntos, interagindo, em um único canvas. Aparece no topo de `/equipe` e no bloco "Quem faz o Dragon Universe" da home. Os dados da equipe ficam em `src/config/equipe.ts`.
-- **Apresentadores** (`src/components/presenter.tsx`): uma skin 3D com balão de fala. Usados na home (João e Ricardo), `/wiki` (João), `/instalar` (João), `/roadmap` (Ricardo), `/apoie` (Ricardo) e no 404 (Luan voando). Uso: `<Presenter src="/skins/jvbs.png" name="João Vitor" alt="..." animation="wave">Fala.</Presenter>` (`animation`: `idle | walk | run | fly | wave`). O 404 usa `SkinViewer` direto.
-- **Como o 3D é carregado:** three.js e skinview3d ficam em chunks separados (`next/dynamic`, `ssr: false`). O canvas só nasce depois da primeira interação (rolar, tocar, mover o mouse ou usar o teclado), enquanto o elemento está visível na tela, e é descartado (`dispose` e perda do contexto WebGL) quando sai. No máximo 2 canvas vivos no site inteiro (`MAX_LIVE_CANVAS` em `src/store/skin-viewer.ts`).
-- **Fallback:** sem WebGL, com `prefers-reduced-motion` ou antes de o 3D carregar, aparece a cabeça 2D da skin (`SkinFace`). Nunca há caixa vazia.
+- **Biblioteca de poses:** `src/lib/personagens/` (`tipos.ts`, `nucleo.ts`, `adaptador-skinview.ts`, `clipes.ts`). Cada clipe é uma tabela de chaves por osso
+  (`root`, `body`, `head`, `rightArm`, `leftArm`, `rightLeg`, `leftLeg`; radianos, ordem de Euler YXZ, 1 unidade = 1 px de skin). `amostrar(clipe, t)` devolve a pose,
+  `misturar` faz a transição entre clipes e `criarAdaptador(player).aplicar(pose)` move os ossos. Gestos só do site ficam em `src/components/cinema/clipes-site.ts`.
+- **Canvas "cinema" compartilhado** (`src/components/cinema/`): um único canvas R3F (`frameloop="demand"`, `View` do drei) desenha todas as vistas 3D da página.
+  `CinemaHost` fica no layout e só carrega o canvas quando uma vista (`CinemaView`) entra na tela, depois da primeira interação, com vaga no limite global de **2 canvases**
+  (`MAX_LIVE_CANVAS`, o outro é o do hero). Ele é liberado 3 s depois de nenhuma vista estar visível e 5 s depois de a aba ficar oculta.
+- **Cenas:** batalha da Home (`src/components/batalha/`; a cena é função pura do tempo, em `batalha-linha.ts`), vitrine da equipe (`src/components/team-scene/`),
+  apresentadores (`src/components/skin-viewer/`, usados por `Presenter`) e 404. Dados da equipe em `src/config/equipe.ts`; mídia da batalha em `src/config/batalha.ts`.
+- **Níveis de qualidade** (`src/lib/perfil.ts`): `estatico` (movimento reduzido, economia de dados ou botão "Reduzir animações"), `baixo` (celular, ponteiro grosso, ≤ 4 núcleos/GB),
+  `medio` e `alto`. O monitor de quadros desce um nível se a cena ficar lenta. Sem WebGL (estático e baixo): pôster, descrição e, no celular, o clipe vertical (`public/video/batalha/`,
+  `preload="none"`). O estado do controle "Reduzir animações" fica em `localStorage` (`du-reduzir-animacoes`).
+- **Efeitos só com CSS e sprites (sem WebGL):** esferas de energia (`src/components/esferas/`, `src/store/esferas.ts`, sprites em `public/img/esferas/`), leitor de dados nos cartões de raça
+  (`src/components/leitor-de-dados.tsx`; os dados são lidos da wiki no build), nave do Universo (`public/img/nave/`), Nuvem dourada (`src/components/nuvem/`, `public/img/nuvem/`;
+  faixas reservadas com `<FaixaNuvem id="..." />`), transições de ki e ambiente (`src/app/globals.css`).
 
-## v3: o que mudou e como mexer
+### Onde ficam os ativos de personagem
 
-**Branch `v3`.** O workflow do Pages só roda em push na `main`; a v3 só vai ao ar com o ok do João (mesclar na `main`).
+| O quê | Onde |
+|---|---|
+| Skins (PNG 64×64, não editar) | `public/skins/jvbs.png`, `rvmm.png`, `luan.png` |
+| Pôsteres de corpo inteiro (cartões do celular) | `public/img/equipe/<slug>-corpo-{1x,2x}-fundo.webp` |
+| Pôster da batalha e quadros de referência | `public/img/batalha/batalha-poster-{576,1152}.webp` |
+| Clipe vertical do celular (MP4, WebM e pôsteres) | `public/video/batalha/mobile-vertical.*` |
+| Sprites de esferas, nave e Nuvem dourada | `public/img/esferas/`, `public/img/nave/`, `public/img/nuvem/` |
+| Planeta do Bills (modelo 3D e pôsteres) | `public/models/planeta-do-bills-medio.glb`, `public/img/bills/` |
+
+Todo caminho de ativo deve passar por `asset()` para funcionar na subpasta do GitHub Pages (vale também para `url()` em CSS: use variáveis CSS definidas inline, como em `esfera.tsx`).
+
+### Build de QA (parâmetros de teste)
+
+Alguns parâmetros de URL existem **só em build de QA**; no build de produção são ignorados:
+
+```bash
+NEXT_PUBLIC_DU_QA=1 npm run build          # build de QA (out/)
+NEXT_PUBLIC_DU_QA=1 NEXT_PUBLIC_BASE_PATH=/DragonUniverseWebSite npm run build   # idem, na subpasta
+```
+
+| Parâmetro | Efeito |
+|---|---|
+| `?batalha-quadro=4.5` | congela a batalha no instante (s), para capturas exatas sem depender do fps |
+| `?du-sem-degradar` | desliga a queda automática de qualidade (útil com renderização por software) |
+| `?nuvem=1` | solta a Nuvem dourada na primeira faixa visível, sem as esperas |
+
+Nunca publique um build de QA. O workflow do GitHub Pages usa o build normal.
+
+## O que mudou na v3 e como mexer
 
 - **Tokens:** `src/app/tokens.css` (nomes `--du-*` mantidos; valores da paleta v3, raios 20/12 px, sombras suaves). Contorno decorativo = `border-edge`; contorno de controle = `border-border` (`#A8B6D0`, 3:1). Botão primário `#1674FF` com texto `#060A16` (4,68:1): **nunca** texto claro sobre o azul.
 - **Fontes** (`src/app/fonts/`, self-hosted, subset pt-BR, ~60 KB no total): Space Grotesk 600–700 (variável), Inter 400 e 600, Oxanium 600 (`font-game`: selos, preços e rótulos curtos). Para regerar o subset use `subset-font` com ASCII + Latin-1 + pontuação tipográfica.
 - **Navegação** (`src/config/site.ts`: `nav` e `mais`): cabeçalho flutuante (`header-shell.tsx` mede a ocupação e publica `--du-header-offset`, usado por `scroll-padding`/`scroll-margin` e pelo sumário da wiki; um `focusin` rola o foco para fora da barra) e menu em tela cheia no celular (`menu-sheet.tsx`). **Não há hotbar.** As rotas da v2 não mudaram; `/wiki/racas/demonio` é uma página-ponte (meta refresh) para `/wiki/racas/glind`.
 - **Perfil leve** (`src/lib/perfil.ts`): movimento reduzido, economia de dados, ≤ 4 núcleos, ≤ 4 GB, tela < 768 px ou ponteiro grosso → sem WebGL, sem GSAP, sem blur (`<html data-perfil="leve">`). Nesse perfil o hero é o 2.5D estático.
 - **Hero** (`src/components/hero/`): H1 em texto (é ele ou o pôster que fecha o LCP; **não anime a opacidade do H1**), logo SVG, print inteiro do Planeta do Bills em camada própria com legenda fora da mídia. A cena R3F (`hero-scene.tsx`: logo 3D aprovado + `Points` + profundidade do mouse ≤ 3°, `frameloop="demand"`) só entra no desktop completo, após interação ou 8 s, com vaga no limite de **2 canvases** (`store/skin-viewer.ts`). Para trocar o print por um `.glb` do Ricardo, mantenha o mesmo espaço e use o print como pôster durante carregamento, erro e falta de vaga.
-- **Bibliotecas sob demanda** (nunca no caminho crítico): R3F/drei/three (`next/dynamic`, `ssr:false`), Motion (`motion-lazy.tsx`: `LazyMotion`; recursos só após a 1ª interação), GSAP + ScrollTrigger (`home-reveal.tsx`, só perfil completo). Com `prefers-reduced-motion` nada disso é baixado.
-- **Compatibilidade three 0.186 × skinview3d 3.4.2** (`src/lib/three-compat.ts`): `overrides` do `package.json` mantém **um** `three`; `liberarViewer()` corrige o `dispose()` do skinview3d (`fxaaPass.fsQuad` virou `_fsQuad`); o aviso `THREE.Clock` (R3F e skinview3d) é filtrado só nos módulos 3D. Ao atualizar o three, rever essas duas peças.
-- **Conteúdo:** raças em `src/config/racas.ts` (posters em `public/img/racas/`, copiados de `ativos-addon/posters/` por `backups-v2/copiar-posters.sh`), destinos em `src/config/universo.ts`, transformações lidas da wiki (`src/lib/transformacoes-data.ts`), apoio em `src/config/plans.ts`. Textos seguem `entregas/v3-03-copy.md` (Apêndice A).
-- **Testar:** `npx tsc --noEmit && npx eslint && npx next build`; subpasta com `backups-v2/build-pages.sh` + `serve-pages.js` (8093) e `NEXT_PUBLIC_BASE_PATH=/DragonUniverseWebSite`. Conferir: 0 overflow a 320/375 px com 100% e 200% de texto, máximo de 2 canvases, 0 canvas e 0 JS 3D com movimento reduzido, 0 `<form>` em `/apoie`.
+- **Bibliotecas sob demanda** (nunca no caminho crítico): R3F/drei/three (`next/dynamic`, `ssr:false`), Motion (`motion-lazy.tsx`: `motion/mini`, só após a 1ª troca feita pela pessoa), GSAP + ScrollTrigger (`home-reveal.tsx`, só perfil completo). Com `prefers-reduced-motion` nada disso é baixado.
+- **Compatibilidade three 0.186 × skinview3d 3.4.2:** `overrides` do `package.json` mantém **um** `three`; `src/lib/three-compat.ts` filtra só o aviso `THREE.Clock` (usado por dentro do R3F) nos módulos 3D. Ao atualizar o three, rever.
+- **Conteúdo:** raças em `src/config/racas.ts` (pôsteres em `public/img/racas/`), destinos em `src/config/universo.ts`, transformações lidas da wiki (`src/lib/transformacoes-data.ts`), apoio em `src/config/plans.ts`.
+- **Testar:** `npx tsc --noEmit && npx eslint && npx next build`; subpasta com `NEXT_PUBLIC_BASE_PATH=/DragonUniverseWebSite`. Conferir: 0 overflow a 320/375 px com 100% e 200% de texto, máximo de 2 canvases, 0 canvas e 0 JS 3D com movimento reduzido, 0 `<form>` em `/apoie`.
 
 ## SEO
 

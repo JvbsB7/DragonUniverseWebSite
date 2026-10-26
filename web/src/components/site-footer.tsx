@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prefetchFor } from "@/lib/prefetch";
 import { links } from "@/config/links";
+import { ReduzirAnimacoes } from "@/components/reduzir-animacoes";
 
 const linkClass = "inline-flex min-h-12 max-w-full items-center text-brand underline underline-offset-4 hover:decoration-[0.14em]";
 
@@ -75,7 +76,10 @@ export function SiteFooter() {
             </div>
           ))}
         </nav>
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-4">
+        <div className="mt-8 border-t border-edge pt-4">
+          <ReduzirAnimacoes id="reduzir-rodape" />
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-4">
           <p>Projeto de fãs Dragon Universe.</p>
           <a href="#topo" className={linkClass}>
             Voltar ao topo
