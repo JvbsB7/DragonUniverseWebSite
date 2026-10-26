@@ -31,7 +31,7 @@ export function Nuvem() {
   const [pausada, setPausada] = useState(false);
   const [largo] = useState(() => window.matchMedia("(min-width: 48rem)").matches);
   const [aceno, setAceno] = useState(false);
-  const L = largo ? { w: 160, h: 114, arq: "desktop", dur: 7 } : { w: 128, h: 92, arq: "celular", dur: 6 };
+  const L = largo ? { w: 172, h: 122, arq: "desktop", dur: 7 } : { w: 128, h: 92, arq: "celular", dur: 6 };
   // Celular (D46): no aceno a nuvem desacelera e para junto da borda mais próxima; `parada` guarda o `left` (px) da faixa.
   const [parada, setParada] = useState<number | null>(null);
 
