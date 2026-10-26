@@ -226,6 +226,15 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
                   loading="lazy"
                   className="relative block h-auto w-full"
                 />
+                {/* Balão da pessoa selecionada: sobre o próprio pôster, acima da cabeça, com a cauda para o personagem (nunca perto dos botões). */}
+                {selecionada === p.id && (
+                  <FalaSlot
+                    contexto="vitrine"
+                    apontar="baixo"
+                    alinhar="inicio"
+                    className={cn("absolute inset-x-1 top-2 z-10", p.id === "joao" && "[--cauda-x:88px]", p.id === "ricardo" && "[--cauda-x:107px]", p.id === "luan" && "[--cauda-x:120px]")}
+                  />
+                )}
                 {ataque?.id === p.id && selecionada === p.id && <RaioDoCartao key={ataque.chave} id={ataque.id} />}
               </div>
               <p className="font-display text-xl font-bold [overflow-wrap:anywhere]">{tituloDaPessoa(p)}</p>
@@ -254,7 +263,6 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
           Próxima<span className="sr-only"> pessoa</span>
         </button>
       </div>
-      <FalaSlot contexto="vitrine" className="mt-1 min-h-[7.5rem]" />
       <div className="mt-4">
         <Painel id={selecionada} titulo={titulo} />
       </div>
