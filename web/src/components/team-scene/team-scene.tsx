@@ -7,6 +7,7 @@ import { FaixaNuvem } from "@/components/nuvem/faixa-nuvem";
 import { ReflexoBorda } from "@/components/reflexo-borda";
 import { GithubMark } from "@/components/github-mark";
 import { buttonClass } from "@/components/button";
+import { RaioDoCartao } from "@/components/team-scene/raio-do-cartao";
 import { FalaSlot } from "@/components/fala/balao";
 import { equipe, ordemDaVitrine, tituloDaPessoa, type IdDaPessoa, type PessoaDaEquipe } from "@/config/equipe";
 import { temAtaque } from "@/config/ataques";
@@ -176,6 +177,7 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
 
 function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titulo: Titulo }) {
   const selecionar = useEquipeStore((s) => s.selecionar);
+  const ataque = useEquipeStore((s) => s.ataque);
   const trilho = useRef<HTMLUListElement>(null);
   const [indice, setIndice] = useState(0);
 
@@ -224,6 +226,7 @@ function Celular({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
                   loading="lazy"
                   className="relative block h-auto w-full"
                 />
+                {ataque?.id === p.id && selecionada === p.id && <RaioDoCartao key={ataque.chave} id={ataque.id} />}
               </div>
               <p className="font-display text-xl font-bold [overflow-wrap:anywhere]">{tituloDaPessoa(p)}</p>
               <button
@@ -280,8 +283,8 @@ export function TeamScene({ className, titulo = "h3" }: { className?: string; ti
         const n = selecoes[selecionada] ?? 0;
         selecoes[selecionada] = n + 1;
         useFalaStore.getState().falar({ contexto: "vitrine", ...LOCUTOR[selecionada], texto: textos[n % textos.length], acao: true });
-        // D42: o grito do golpe (1ª, 3ª... seleção) vem com o ataque de ki; a frase (2ª, 4ª...) só com a guarda. Só no desktop com 3D.
-        if (temAtaque(selecionada) && n % 2 === 0 && window.matchMedia("(min-width: 48rem)").matches) useEquipeStore.getState().disparar(selecionada);
+        // D42: o grito do golpe (1ª, 3ª... seleção) vem com o ataque de ki; a frase (2ª, 4ª...) só com a guarda. Desktop (cena 3D) e celular (sprites no cartão).
+        if (temAtaque(selecionada) && n % 2 === 0) useEquipeStore.getState().disparar(selecionada);
       },
       450,
     );
