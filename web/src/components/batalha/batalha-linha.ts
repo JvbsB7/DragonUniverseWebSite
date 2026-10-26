@@ -69,8 +69,19 @@ function aereo(p: Pose, t: number, braco: "rightArm" | "leftArm"): Pose {
   return { rot, pos: p.pos };
 }
 
-export const poseJoao = (t: number) => aereo(poseDe(trechosJoao, t), t, "rightArm");
-export const poseRicardo = (t: number) => aereo(poseDe(trechosRicardo, t), t, "leftArm");
+// D40: em investida, voo e choque a cabeça olha para o adversário, não para o chão. O pescoço compensa a inclinação do tronco: o
+// ângulo da cabeça no mundo (tronco + pescoço) vai a ~0,1 rad (levemente para baixo) conforme o tronco passa de ~0,3 rad de inclinação.
+const OLHAR_RESIDUAL = 0.1;
+function olharAdversario(p: Pose): Pose {
+  const incl = p.rot.root[0];
+  const w = suave((incl - 0.3) / 0.6);
+  if (w <= 0) return p;
+  const h = p.rot.head;
+  return { rot: { ...p.rot, head: [h[0] + (-(incl - OLHAR_RESIDUAL) - h[0]) * w, h[1], h[2]] }, pos: p.pos };
+}
+
+export const poseJoao = (t: number) => olharAdversario(aereo(poseDe(trechosJoao, t), t, "rightArm"));
+export const poseRicardo = (t: number) => olharAdversario(aereo(poseDe(trechosRicardo, t), t, "leftArm"));
 export const poseLuan = (t: number) => amostrar(CLIPES.luan.flutuar, t);
 
 // Posição (x, y) e giro (rad; + olha para +x) de cada combatente. Esquerda/direita são do visitante (v4-03 §4).
