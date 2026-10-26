@@ -51,7 +51,7 @@ export function SiteFooter() {
           </p>
           <p className="font-semibold text-text">Inspirado no Dragon Evolution, de About04.</p>
           <p lang="en">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</p>
-          <p>Requer Minecraft Bedrock 26.52 com Beta APIs ativado · Versão de teste · Faça backup do seu mundo</p>
+          <p>Requer Minecraft Bedrock 26.52 com os experimentos Beta APIs e Próximos recursos do criador ativados · Versão de teste · Faça backup do seu mundo</p>
         </div>
         <nav id="menu-completo" tabIndex={-1} aria-label="Links do rodapé" className="mt-8 grid gap-6 md:grid-cols-3">
           {colunas.map((c) => (

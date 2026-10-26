@@ -31,11 +31,11 @@ const grupos: { titulo: string; perguntas: Pergunta[] }[] = [
       },
       {
         p: "O que eu preciso para jogar?",
-        r: <><strong>Minecraft Bedrock 26.52</strong> com o experimento <strong>Beta APIs</strong> ativado no mundo. Como é versão de teste, <strong>faça backup do seu mundo</strong>.</>,
+        r: <><strong>Minecraft Bedrock 26.52</strong> com os experimentos <strong>Beta APIs</strong> e <strong>Próximos recursos do criador</strong> ativados no mundo. Como é versão de teste, <strong>faça backup do seu mundo</strong>.</>,
       },
       {
         p: "Funciona no celular e no PC?",
-        r: <>Sim. <strong>Por enquanto, o Dragon Universe funciona em PC e celular</strong>, com <strong>Minecraft Bedrock 26.52</strong> e o experimento <strong>Beta APIs</strong> ativado. Sobre console, ainda não temos confirmação.</>,
+        r: <>Sim. <strong>Por enquanto, o Dragon Universe funciona em PC e celular</strong>, com <strong>Minecraft Bedrock 26.52</strong> e os experimentos <strong>Beta APIs</strong> e <strong>Próximos recursos do criador</strong> ativados. Sobre console, ainda não temos confirmação.</>,
       },
       {
         p: "É de graça?",

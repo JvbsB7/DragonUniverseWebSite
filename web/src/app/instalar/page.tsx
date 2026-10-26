@@ -7,7 +7,7 @@ import { links } from "@/config/links";
 
 export const metadata: Metadata = pageMetadata({
   title: "Como instalar | Dragon Universe",
-  description: "Requisitos do Dragon Universe: Minecraft Bedrock 26.52, Beta APIs ativado e backup do mundo. Download em breve.",
+  description: "Requisitos do Dragon Universe: Minecraft Bedrock 26.52, experimentos Beta APIs e Próximos recursos do criador ativados e backup do mundo. Download em breve.",
   path: "/instalar",
 });
 
@@ -35,7 +35,7 @@ export default function InstalarPage() {
         <h2 id="requisitos-titulo">Requisitos</h2>
         <ul className="list-disc space-y-2 pl-6">
           <li><strong>Minecraft Bedrock 26.52</strong></li>
-          <li>Experimento <strong>Beta APIs</strong> ativado no mundo onde você vai jogar</li>
+          <li>Experimentos <strong>Beta APIs</strong> e <strong>Próximos recursos do criador</strong> ativados no mundo onde você vai jogar</li>
           <li><strong>PC e celular</strong> por enquanto. Console: sem confirmação.</li>
         </ul>
       </section>
@@ -48,7 +48,7 @@ export default function InstalarPage() {
         <p>O que você já pode fazer agora:</p>
         <ol className="list-decimal space-y-2 pl-6">
           <li>Confira se o seu Minecraft Bedrock está na versão <strong>26.52</strong>.</li>
-          <li>Saiba onde ativar o experimento <strong>Beta APIs</strong>.</li>
+          <li>Saiba onde ativar os experimentos <strong>Beta APIs</strong> e <strong>Próximos recursos do criador</strong>.</li>
           <li>Entre no Discord para ser avisado.</li>
           <li>Faça <strong>backup dos seus mundos</strong>.</li>
         </ol>
@@ -59,7 +59,7 @@ export default function InstalarPage() {
         <dl className="flex flex-col gap-4">
           <div>
             <dt className="font-display font-semibold">Não consigo jogar com o add-on.</dt>
-            <dd className="text-muted-foreground">Confira se o Minecraft Bedrock está na versão 26.52 e se o experimento <strong className="text-text">Beta APIs</strong> está ativado no mundo.</dd>
+            <dd className="text-muted-foreground">Confira se o Minecraft Bedrock está na versão 26.52 e se os experimentos <strong className="text-text">Beta APIs</strong> e <strong className="text-text">Próximos recursos do criador</strong> estão ativados no mundo.</dd>
           </div>
           <div>
             <dt className="font-display font-semibold">Algo deu errado no meu mundo.</dt>

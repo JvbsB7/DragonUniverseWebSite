@@ -57,7 +57,7 @@ export default function SobrePage() {
         <h2 id="requisitos">Requisitos</h2>
         <ul className="list-disc space-y-2 pl-6">
           <li><strong>Minecraft Bedrock 26.52</strong></li>
-          <li>Experimento <strong>Beta APIs</strong> ativado no mundo</li>
+          <li>Experimentos <strong>Beta APIs</strong> e <strong>Próximos recursos do criador</strong> ativados no mundo</li>
           <li><strong>PC e celular</strong> (console: sem confirmação)</li>
           <li><strong>Faça backup do seu mundo.</strong> É uma versão de teste.</li>
         </ul>
