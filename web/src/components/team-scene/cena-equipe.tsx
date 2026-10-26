@@ -88,53 +88,90 @@ export default function CenaEquipe({ aoPronto, visivel }: { aoPronto: () => void
     return useEquipeStore.subscribe(() => invalidate());
   }, [visivel, invalidate]);
 
-  // Raio de ki (D42): carga (esfera nas mãos que cresce), disparo (feixe que avança para fora do palco) e dissipação. Cores da aura (D31),
-  // opacidades baixas e nenhuma troca súbita de brilho: sem clarão de tela inteira.
+  // Raio de ki (D42, v4-1-spec-luta-ki §3): carga de 0 a 0,95 s (esfera de 3 a 9 px e 8 quadrados em espiral), disparo em 1,00 s, raio de
+  // 1,00 a 1,90 s (cresce em 0,1 s, sustenta com ±8% de ondulação e some em 0,1 s) e faíscas. Três camadas na cor da aura (D31): halo,
+  // corpo e núcleo claro, com no máximo 9% da largura do palco. Só existe ao longo do eixo: nada de clarão de tela inteira.
   const carga = useRef<Sprite>(null);
-  const feixe = useRef<Mesh>(null);
-  const nucleoFeixe = useRef<Mesh>(null);
+  const camadasDoFeixe = useRef<(Mesh | null)[]>([]);
+  const particulas = useRef<(Mesh | null)[]>([]);
+  const origem = useMemo(() => new Vector3(), []);
   function desenharRaio(id: IdDoCombatente | null, t: number) {
     const c = carga.current;
-    const f = feixe.current;
-    const n = nucleoFeixe.current;
-    if (!c || !f || !n) return;
+    const camadas = camadasDoFeixe.current.slice(0, 3);
+    const ps = particulas.current;
+    if (!c || camadas.length < 3 || camadas.some((m) => !m)) return;
     if (!id) {
-      c.visible = f.visible = n.visible = false;
+      c.visible = false;
+      camadas.forEach((m) => (m!.visible = false));
+      ps.forEach((m) => m && (m.visible = false));
       return;
     }
     const at = ATAQUES[id];
     const ator = ATORES.find((a) => a.id === id)!;
     const cor = auraDe(ator.aura);
     const sentido = at.sentido;
-    const origem = new Vector3(ator.x + sentido * 14, ator.y + 4, 3);
-    const subida = 0.12; // o feixe sobe levemente: sai pelo alto do lado, longe dos outros
-    // Carga: cresce de 0 a 1 até o disparo e some por inteiro em 0,3 s depois dele.
-    const kc = suave(Math.min(1, t / at.disparo));
-    const apaga = 1 - suave(Math.min(1, Math.max(0, (t - at.disparo) / 0.3)));
-    c.visible = t < at.disparo + 0.3;
+    origem.set(ator.x + sentido * 12, ator.y + 4, 3);
+    const subida = Math.tan((6 * Math.PI) / 180); // ≤ 8° para cima
+    // Carga: esfera entre as mãos.
+    const kc = suave(Math.min(1, t / 0.95));
+    c.visible = t < at.disparo + 0.1;
     c.position.copy(origem);
-    c.scale.setScalar(2 + 7 * kc);
+    c.scale.setScalar((3 + 6 * kc) * (t < at.disparo ? 1 : 1 - (t - at.disparo) / 0.1));
     const mc = c.material as SpriteMaterial;
-    mc.color.set(cor.brilho);
-    mc.opacity = 0.7 * kc * apaga;
-    // Feixe: avança em 0,25 s, segura e se dissipa nos últimos 0,5 s.
+    mc.color.set(cor.nucleo);
+    mc.opacity = 0.75 * kc;
+    // Quadrados que entram em espiral até a esfera (8, de 0 a 0,95 s).
+    ps.forEach((m, i) => {
+      if (!m) return;
+      const fase = i < 8 ? (t - i * 0.05) / 0.6 : 0;
+      m.visible = i < 8 && fase > 0 && fase < 1 && t < at.disparo;
+      if (!m.visible) return;
+      const r = 12 * (1 - fase);
+      const ang = i * 0.785 + fase * 6;
+      m.position.set(origem.x + Math.cos(ang) * r, origem.y + Math.sin(ang) * r, origem.z);
+      m.scale.setScalar(1.6);
+      (m.material as MeshBasicMaterial).color.set(cor.brilho);
+      (m.material as MeshBasicMaterial).opacity = 0.8;
+    });
+    // Raio: avanço em 0,1 s, sustentado, some em 0,1 s (a base some primeiro: o comprimento fica e a origem anda).
     const dt = t - at.disparo;
-    const avanco = suave(Math.min(1, Math.max(0, dt / 0.25)));
-    const fim = 1 - suave(Math.min(1, Math.max(0, (t - (at.duracao - 0.5)) / 0.5)));
-    const longo = 70 * avanco;
-    f.visible = n.visible = dt > 0 && fim > 0.001;
-    if (!f.visible) return;
-    for (const [m, esp, op, cc] of [
-      [f, 3.4, 0.55, cor.base],
-      [n, 1.3, 0.85, cor.brilho],
-    ] as const) {
-      m.position.set(origem.x + (sentido * longo) / 2, origem.y + (subida * longo) / 2, origem.z);
-      m.scale.set(longo, esp * (1 + 0.04 * Math.sin(t * 30)), esp);
-      m.rotation.z = sentido > 0 ? Math.atan(subida) : -Math.atan(subida);
-      const mm = m.material as MeshBasicMaterial;
-      mm.color.set(cc);
-      mm.opacity = op * fim;
+    const avanco = Math.min(1, Math.max(0, dt / 0.1));
+    const sumiu = Math.min(1, Math.max(0, (t - (at.disparo + 0.8)) / 0.1));
+    const visivel = dt > 0 && sumiu < 1;
+    camadas.forEach((m) => (m!.visible = visivel));
+    if (visivel) {
+      const alcance = 70; // até a borda do palco, que é a mesma nos dois lados
+      const ini = alcance * sumiu;
+      const fim = alcance * avanco;
+      const comprimento = Math.max(0.01, fim - ini);
+      const onda = 1 + 0.08 * Math.sin(t * 40);
+      const total = 5.4 * onda; // 4,5% da largura de 120: bem abaixo do teto de 9%
+      const dados = [
+        [camadas[0]!, total, id === "ricardo" ? 0.7 : 0.55, cor.base],
+        [camadas[1]!, total * 0.7, 0.8, cor.brilho],
+        [camadas[2]!, total * 0.35, 0.9, cor.nucleo],
+      ] as const;
+      for (const [m, esp, op, cc] of dados) {
+        m.position.set(origem.x + sentido * (ini + comprimento / 2), origem.y + (subida * (ini + comprimento / 2)), origem.z);
+        m.scale.set(comprimento, esp, esp);
+        m.rotation.z = sentido > 0 ? Math.atan(subida) : -Math.atan(subida);
+        const mm = m.material as MeshBasicMaterial;
+        mm.color.set(cc);
+        mm.opacity = op;
+      }
     }
+    // Faíscas: 10 quadrados que saem junto com a ponta e somem em 0,5 s.
+    ps.forEach((m, i) => {
+      if (!m || i < 8) return;
+      const vida = (dt - (i - 8) * 0.05) / 0.5;
+      m.visible = vida > 0 && vida < 1;
+      if (!m.visible) return;
+      const d = 18 + 60 * vida;
+      m.position.set(origem.x + sentido * d, origem.y + subida * d + Math.sin(i * 2.3) * 3, origem.z);
+      m.scale.setScalar(2.2 * (1 - vida));
+      (m.material as MeshBasicMaterial).color.set(cor.brilho);
+      (m.material as MeshBasicMaterial).opacity = 0.8 * (1 - vida);
+    });
   }
 
   useFrame((_, dtBruto) => {
@@ -211,13 +248,21 @@ export default function CenaEquipe({ aoPronto, visivel }: { aoPronto: () => void
       const g = grupos.current[i];
       if (g) {
         const emAtaque = s.ataque.id === a.id;
-        const alvoGiro = emAtaque ? ATAQUES[a.id as IdDoCombatente].sentido * 1.45 : a.giro;
+        const alvoGiro = emAtaque ? ATAQUES[a.id as IdDoCombatente].sentido * 1.13 : a.giro;
         g.rotation.y += (alvoGiro - g.rotation.y) * (1 - Math.exp(-dt / 0.1));
         if (Math.abs(alvoGiro - g.rotation.y) > 0.005) movendo = true;
       }
       adaptadores.current[i]?.aplicar(w > 0.001 ? misturar(base, poseSelecionada(a.id), s.ataque.id === a.id ? 0 : w) : base);
       const aura = auras.current[i];
-      if (aura) (aura.material as SpriteMaterial).opacity = 0.13 + 0.17 * w;
+      // Durante o ataque a aura sobe até ×1,6 na carga e dá dois pulsos suaves (JvbsBR 0,55 e 0,85 s; rvmm255 0,45 s), voltando ao repouso.
+      let fator = 1;
+      if (s.ataque.id === a.id) {
+        const tt = s.ataque.t;
+        const pulsos = a.id === "joao" ? [0.55, 0.85] : [0.45];
+        const sobe = suave(Math.min(1, tt / 0.95)) * (1 - suave(Math.min(1, Math.max(0, (tt - 1.0) / 0.9))));
+        fator = 1 + 0.6 * sobe + pulsos.reduce((acc, p) => acc + 0.25 * Math.exp(-(((tt - p) / 0.08) ** 2)), 0);
+      }
+      if (aura) (aura.material as SpriteMaterial).opacity = (0.13 + 0.17 * w) * fator;
     });
 
     if (movendo) invalidate();
@@ -241,14 +286,18 @@ export default function CenaEquipe({ aoPronto, visivel }: { aoPronto: () => void
       <sprite ref={carga} visible={false} renderOrder={5}>
         <spriteMaterial map={brilho} transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
-      <mesh ref={feixe} visible={false} renderOrder={5}>
-        <boxGeometry />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
-      </mesh>
-      <mesh ref={nucleoFeixe} visible={false} renderOrder={6}>
-        <boxGeometry />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
-      </mesh>
+      {[0, 1, 2].map((i) => (
+        <mesh key={`fx${i}`} ref={(m) => void (camadasDoFeixe.current[i] = m)} visible={false} renderOrder={5 + i}>
+          <boxGeometry />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+      ))}
+      {Array.from({ length: 18 }, (_, i) => (
+        <mesh key={`pt${i}`} ref={(m) => void (particulas.current[i] = m)} visible={false} renderOrder={7}>
+          <boxGeometry />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+      ))}
     </>
   );
 }

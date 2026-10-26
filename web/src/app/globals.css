@@ -210,8 +210,10 @@ html[data-reduzir="true"] *::after {
 :root {
   --du-aura-jvbsbr: #9652c9;
   --du-aura-jvbsbr-brilho: #d5a2ff;
+  --du-aura-jvbsbr-nucleo: #e4c3ff;
   --du-aura-rvmm255: #123c82;
   --du-aura-rvmm255-brilho: #4c9dff;
+  --du-aura-rvmm255-nucleo: #aed3ff;
   --du-aura-luan: #d6c347;
   --du-aura-luan-brilho: #fff2a6;
 }
