@@ -154,12 +154,17 @@ export function criarParticulas(): Particula[] {
 export const GRAVIDADE = 30;
 
 // Imagens residuais (D41, spec §2.3): duas cópias por lutador, atrasadas 60 e 120 ms, a 22% e 10% de opacidade (cor da aura), que duram
-// no máximo 0,18 s e só aparecem depois de investida, golpe ou impacto, com pelo menos 0,25 s entre dois eventos do mesmo lutador.
+// 0,27 s com fade de entrada e saída e só aparecem depois de investida, golpe ou impacto, com pelo menos 0,25 s entre dois eventos do mesmo lutador.
 export const EVENTOS_RESIDUAIS: Record<"joao" | "ricardo", readonly number[]> = { joao: [1.4, 1.8, 2.65], ricardo: [1.4, 2.15, 2.4, 2.67] };
 export const ATRASOS_RESIDUAIS = [0.06, 0.12] as const;
 export const OPACIDADES_RESIDUAIS = [0.22, 0.1] as const;
-/** 1 no evento e 0 depois de 0,18 s; 0 fora das janelas. */
+/** Envelope das cópias: entra em 0,12 s e sai em 0,15 s (fade, sem corte seco: nenhum quadro ganha área de uma vez); 0 fora das janelas. */
 export function residual(t: number, quem: "joao" | "ricardo"): number {
-  for (const e of EVENTOS_RESIDUAIS[quem]) if (t >= e && t - e <= 0.18) return 1 - (t - e) / 0.18;
-  return 0;
+  let v = 0;
+  for (const e of EVENTOS_RESIDUAIS[quem]) {
+    const d = t - e;
+    if (d <= 0 || d >= 0.27) continue;
+    v = Math.max(v, d < 0.12 ? d / 0.12 : 1 - (d - 0.12) / 0.15);
+  }
+  return v;
 }
