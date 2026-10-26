@@ -416,14 +416,16 @@ dialog.lightbox[open] {
 }
 
 /* Nuvem dourada (v4-03 §8): travessia de uma faixa reservada, só CSS + quadros do sprite. Sem movimento com "Reduzir animações". */
+/* A travessia anima `transform` (e não `left`), para não gerar layout shift; a largura da faixa vem de `cqw` (a faixa é um contêiner). */
 .nuvem-cruza {
-  left: calc(var(--w) * -1);
+  left: 0;
+  transform: translateX(calc(var(--w) * -1));
   animation: nuvem-cruza var(--dur, 5s) linear 1 both;
   pointer-events: none;
 }
 @keyframes nuvem-cruza {
-  from { left: calc(var(--w) * -1); }
-  to { left: 100%; }
+  from { transform: translateX(calc(var(--w) * -1)); }
+  to { transform: translateX(100cqw); }
 }
 .nuvem-bob {
   animation: nuvem-bob 2s ease-in-out infinite;

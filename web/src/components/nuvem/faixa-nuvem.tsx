@@ -29,7 +29,7 @@ export function FaixaNuvem({ id, className }: { id: string; className?: string }
 
   return (
     <div ref={ref} data-nuvem-faixa={id} className={cn("relative h-28 overflow-hidden md:h-32", className)}>
-      <div aria-hidden="true" className="absolute inset-0">
+      <div aria-hidden="true" className="absolute inset-0 [container-type:inline-size]">
         {ativa && <Nuvem />}
       </div>
       {/* Fala do aceno (D37): ao lado do sprite, dentro da faixa; fica fora do bloco aria-hidden para o anúncio chegar ao leitor de tela. */}

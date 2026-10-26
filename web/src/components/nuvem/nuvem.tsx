@@ -138,8 +138,8 @@ export function Nuvem() {
         ["--w" as string]: `${L.w}px`,
         animationPlayState: pausada || aceno ? "paused" : "running",
         opacity: saindo ? 0 : 1,
-        transition: parada !== null ? "opacity 150ms linear, left 500ms ease-out" : "opacity 150ms linear",
-        ...(parada !== null ? { animation: "none", left: parada } : {}),
+        transition: parada !== null ? "opacity 150ms linear, transform 500ms ease-out" : "opacity 150ms linear",
+        ...(parada !== null ? { animation: "none", transform: `translateX(${parada}px)` } : {}),
       }}
     >
       <div className="nuvem-bob" style={{ animationPlayState: pausada ? "paused" : "running" }}>
