@@ -10,6 +10,7 @@ import {
   InstancedMesh,
   MeshBasicMaterial,
   Object3D,
+  Vector3,
   PerspectiveCamera as CameraThree,
   Sprite,
   SpriteMaterial,
@@ -31,6 +32,7 @@ import {
   aura,
   camera as cameraEm,
   combatenteGiro,
+  curva,
   combatenteY,
   criarParticulas,
   joaoX,
@@ -144,6 +146,11 @@ function Campo() {
 }
 
 const PARTICULAS = criarParticulas();
+const fjTmp = new Vector3();
+const frTmp = new Vector3();
+const ptMedio = new Vector3();
+/** Ponta da mão: o braço mede 12 px e gira em torno do ombro; devolve a posição no mundo (vetor reaproveitado). */
+const pontaDoBraco = (braco: Object3D, saida: Vector3) => braco.localToWorld(saida.set(0, -12, 0));
 
 export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => void; visivel: boolean }) {
   const nivel = useQualidade();
@@ -177,7 +184,11 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       // Fantasmas: 0 e 1 são do JvbsBR (60 e 120 ms), 2 e 3 do rvmm255.
       fantasmas.forEach((f, i) => {
         adaptadoresFantasma.current[i] = vestirPlayer(f, ts[i < 2 ? 0 : 1]);
-        const mat = new MeshBasicMaterial({ color: auraDe(i < 2 ? "jvbsbr" : "rvmm255").halo, transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false });
+        const mat = new MeshBasicMaterial({ color: auraDe(i < 2 ? "jvbsbr" : "rvmm255").halo, transparent: true, opacity: 0 });
+        // Só a camada interna (a silhueta do corpo) e com profundidade: as caixas não se somam, e a opacidade fica a real (22% e 10%).
+        (["head", "body", "rightArm", "leftArm", "rightLeg", "leftLeg"] as const).forEach((k) => {
+          (f.skin[k] as unknown as { outerLayer: Object3D }).outerLayer.visible = false;
+        });
         materiaisFantasma.current[i] = mat;
         f.traverse((o) => {
           if ((o as Mesh).isMesh) (o as Mesh).material = mat;
@@ -211,14 +222,43 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const [gj, gr, gl] = grupos.current;
     const giro = combatenteGiro(t);
     const yc = combatenteY(t);
-    const xj = joaoX(t);
-    const xr = ricardoX(t);
-    gj?.position.set(xj, yc, 0);
+    let xj = joaoX(t);
+    let xr = ricardoX(t);
+    let yj = yc;
+    let yr = yc;
+    gj?.position.set(xj, yj, 0);
     if (gj) gj.rotation.y = giro;
-    gr?.position.set(xr, yc, 0);
+    gr?.position.set(xr, yr, 0);
     if (gr) gr.rotation.y = -giro;
     adaptadores.current[0]?.aplicar(poseJoao(t));
     adaptadores.current[1]?.aplicar(poseRicardo(t));
+    // Contato (item 46): nos instantes de bloqueio (2,15 s) e de choque (2,65–2,77 s) os punhos medidos nos ossos se encontram: os dois
+    // combatentes se aproximam o que faltar entre as mãos, e o realce fica no ponto médio REAL dos punhos (não numa posição fixa).
+    const contato = Math.max(curva(t, [[2.0, 0], [2.15, 1], [2.4, 0]]), curva(t, [[2.45, 0], [2.65, 1], [2.77, 1], [3.3, 0]]));
+    let pontoDoContato: Vector3 | null = null;
+    let punhoDoRicardo: Vector3 | null = null;
+    if (contato > 0.001 && gj && gr && prontos) {
+      gj.updateMatrixWorld(true);
+      gr.updateMatrixWorld(true);
+      const fj = pontaDoBraco(jogadores[0].skin.rightArm, fjTmp);
+      const fr = pontaDoBraco(jogadores[1].skin.leftArm, frTmp);
+      const folga = fr.x - fj.x - 3;
+      if (folga > 0) {
+        xj += (folga / 2) * contato;
+        xr -= (folga / 2) * contato;
+      }
+      const dy = ((fr.y - fj.y) / 2) * contato;
+      yj += dy;
+      yr -= dy;
+      gj.position.set(xj, yj, 0);
+      gr.position.set(xr, yr, 0);
+      gj.updateMatrixWorld(true);
+      gr.updateMatrixWorld(true);
+      const a = pontaDoBraco(jogadores[0].skin.rightArm, fjTmp);
+      const b = pontaDoBraco(jogadores[1].skin.leftArm, frTmp);
+      pontoDoContato = ptMedio.copy(a).add(b).multiplyScalar(0.5);
+      punhoDoRicardo = b;
+    }
     const pl = poseLuan(t);
     // Cabeça de Luan desce de leve ao observar (6,65–7,45 s), mantendo os braços cruzados do clipe.
     pl.rot.head[0] += 0.22 * suave((t - 6.65) / 0.8);
@@ -274,7 +314,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const k = nucleoDeImpacto(t);
     if (nucleo.current) {
       nucleo.current.visible = k > 0;
-      nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
+      if (pontoDoContato) nucleo.current.position.set(pontoDoContato.x, pontoDoContato.y, 6);
+      else nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
       nucleo.current.scale.setScalar(2 + 8 * k);
       (nucleo.current.material as SpriteMaterial).opacity = 0.85 * k;
     }
@@ -282,7 +323,8 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     const kb = realceDoBloqueio(t);
     if (realce2.current) {
       realce2.current.visible = kb > 0;
-      realce2.current.position.set(xj + 9, yc + PUNHOS_DY + 2, 6);
+      if (punhoDoRicardo) realce2.current.position.set(punhoDoRicardo.x, punhoDoRicardo.y, 6);
+      else realce2.current.position.set(xj + 9, yc + PUNHOS_DY + 2, 6);
       realce2.current.scale.setScalar(1.5 + 3 * kb);
       (realce2.current.material as SpriteMaterial).opacity = 0.7 * kb;
     }
