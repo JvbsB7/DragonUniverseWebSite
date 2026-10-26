@@ -6,7 +6,7 @@ import type { Cauda } from "@/config/falas";
 export type ContextoDeFala = "vitrine" | "repouso" | "dragao" | "nuvem";
 export type Fala = { contexto: ContextoDeFala; locutor: string; texto: string; cauda: Cauda; acao: boolean; semLimite: boolean; chave: number;
   /** Balão ao lado de um sprite dentro de uma faixa (aceno da nuvem): `lado` é onde fica o balão e `pos` a distância (px) da borda da faixa. */
-  lateral?: { lado: "esquerda" | "direita"; pos: number };
+  lateral?: { lado: "esquerda" | "direita"; pos: number; /** Largura máxima do balão (px), para quebrar em até 2 linhas no celular. */ larguraMax?: number };
   /** Faixa da nuvem onde a fala aparece (só o aceno). */
   faixa?: string };
 type Entrada = Omit<Fala, "chave" | "semLimite"> & { semLimite?: boolean };

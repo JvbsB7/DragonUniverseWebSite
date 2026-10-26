@@ -27,7 +27,7 @@ export function ocuparNuvem(ms: number) {
 }
 
 const CHAVE = "du-nuvem";
-type Contagem = { n: number; ultima: number; faixa: string };
+type Contagem = { n: number; ultima: number; faixa: string; /** Faixas já usadas nesta visita: a nuvem não repete faixa (D45). */ usadas?: string[] };
 let memoria: Contagem = { n: 0, ultima: 0, faixa: "" };
 
 export function lerContagem(): Contagem {

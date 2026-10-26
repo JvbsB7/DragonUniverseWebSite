@@ -62,6 +62,7 @@ export function FalaSlot({
             key={mostrando.chave}
             className="balao"
             data-cauda={lateral ? undefined : mostrando.cauda}
+            style={lateral?.larguraMax ? { maxWidth: lateral.larguraMax } : undefined}
             data-lado={lateral?.lado ?? (apontar === "esquerda" ? "direita" : apontar === "direita" ? "esquerda" : undefined)}
             data-baixo={apontar === "baixo" || undefined}
             data-saindo={saindo || undefined}
