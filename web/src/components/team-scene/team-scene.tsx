@@ -121,7 +121,7 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
               mundo={{ largura: 744, altura: 420 }}
               cameraPropria
               fallback={
-                // Sem 3D: os corpos inteiros (os mesmos pôsteres do celular), lado a lado; a seleção só realça o contorno.
+                // Sem 3D: os corpos inteiros (os mesmos pôsteres do celular), lado a lado; a seleção só realça o contorno. Proporção do arquivo (296×400) + object-contain: se o flex encolher a largura, a imagem não achata.
                 <div className="absolute inset-0 flex items-center justify-center gap-3 md:gap-6">
                   {pessoas.map((m) => (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -134,7 +134,7 @@ function Desktop({ selecionada, titulo }: { selecionada: IdDaPessoa | null; titu
                       height={m.preview.height}
                       alt=""
                       loading="lazy"
-                      className={cn("aspect-[3/4] h-[78%] w-auto rounded-md transition-transform", selecionada === m.id && "scale-105 outline-2 outline-offset-4 outline-brand")}
+                      className={cn("aspect-[296/400] h-[78%] w-auto min-w-0 rounded-md object-contain transition-transform", selecionada === m.id && "scale-105 outline-2 outline-offset-4 outline-brand")}
                     />
                   ))}
                 </div>
