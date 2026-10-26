@@ -521,6 +521,16 @@ dialog.lightbox[open] {
   content-visibility: auto;
   contain-intrinsic-block-size: auto var(--ih-m, 900px);
 }
+/* Ao ir para uma âncora (#racas, #universo...), as seções ANTES dela e a própria voltam ao cálculo normal: o salto usa a
+   altura real e nada se desloca depois (sem isso, o erro das estimativas moveria a tela). Na abertura com #hash vale o
+   :target; nos cliques em links com #, o HomeReveal marca data-adiar="off" antes do salto. */
+[data-adiar="off"] .du-adiada,
+.du-adiada:target,
+.du-adiada:has(:target),
+.du-adiada:has(~ :target),
+.du-adiada:has(~ * :target) {
+  content-visibility: visible;
+}
 @media (min-width: 48rem) {
   .du-adiada {
     contain-intrinsic-block-size: auto var(--ih-t, var(--ih-m, 900px));

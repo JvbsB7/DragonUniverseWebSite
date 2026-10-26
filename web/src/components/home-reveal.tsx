@@ -9,6 +9,25 @@ import { armFirstInteraction, useSkinViewerStore } from "@/store/skin-viewer";
 // ABAIXO da dobra (até 8 px de deslocamento e opacidade a partir de 0,6, 320 ms): o conteúdo nunca fica invisível, o
 // H1 e a área visual do hero não participam e nenhum layout se move.
 export function HomeReveal() {
+  // Seções adiadas (.du-adiada): antes de ir a uma âncora (menu, "Explorar o Universo"), o cálculo volta ao normal em toda a
+  // página para o salto usar as alturas reais. Vale em qualquer perfil e só nesta visita.
+  useEffect(() => {
+    const raiz = document.documentElement;
+    const liberar = () => {
+      raiz.dataset.adiar = "off";
+    };
+    const aoClicar = (e: MouseEvent) => {
+      const link = e.target instanceof Element ? e.target.closest("a[href]") : null;
+      if (link?.getAttribute("href")?.includes("#")) liberar();
+    };
+    document.addEventListener("click", aoClicar, true);
+    window.addEventListener("hashchange", liberar);
+    return () => {
+      document.removeEventListener("click", aoClicar, true);
+      window.removeEventListener("hashchange", liberar);
+      delete raiz.dataset.adiar;
+    };
+  }, []);
   useEffect(() => {
     // Perfil leve (movimento reduzido, economia de dados, ≤ 4 núcleos, celular): nenhuma revelação e nenhum GSAP baixado.
     if (perfilLeve()) return;
