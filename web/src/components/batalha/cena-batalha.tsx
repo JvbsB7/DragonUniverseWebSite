@@ -8,6 +8,7 @@ import {
   Color,
   DoubleSide,
   InstancedMesh,
+  MeshBasicMaterial,
   Object3D,
   PerspectiveCamera as CameraThree,
   Sprite,
@@ -37,6 +38,10 @@ import {
   luanVisivel,
   luanY,
   nucleoDeImpacto,
+  realceDoBloqueio,
+  residual,
+  ATRASOS_RESIDUAIS,
+  OPACIDADES_RESIDUAIS,
   PUNHOS_DY,
   poseJoao,
   poseLuan,
@@ -148,6 +153,12 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
   const adaptadores = useRef<ReturnType<typeof vestirPlayer>[]>([]);
   const [prontos, setProntos] = useState(false);
   const jogadores = useMemo(() => [novoPlayer(), novoPlayer(), novoPlayer()], []);
+  // Imagens residuais (D41): 2 cópias por combatente, só silhueta na cor da aura, aditivas e de baixa opacidade.
+  const fantasmas = useMemo(() => [0, 1, 2, 3].map(() => novoPlayer()), []);
+  const gruposFantasma = useRef<(Group | null)[]>([null, null, null, null]);
+  const materiaisFantasma = useRef<MeshBasicMaterial[]>([]);
+  const realce2 = useRef<Sprite>(null);
+  const adaptadoresFantasma = useRef<ReturnType<typeof vestirPlayer>[]>([]);
   const brilho = useMemo(() => texturaDeBrilho(), []);
   const auras = useRef<(Sprite | null)[]>([null, null]);
   const nucleo = useRef<Sprite>(null);
@@ -163,6 +174,15 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
     Promise.all([SKINS.jvbsbr, SKINS.rvmm255, SKINS.luan].map(texturaDaSkin)).then((ts) => {
       if (!vivo) return;
       adaptadores.current = ts.map((tex, i) => vestirPlayer(jogadores[i], tex));
+      // Fantasmas: 0 e 1 são do JvbsBR (60 e 120 ms), 2 e 3 do rvmm255.
+      fantasmas.forEach((f, i) => {
+        adaptadoresFantasma.current[i] = vestirPlayer(f, ts[i < 2 ? 0 : 1]);
+        const mat = new MeshBasicMaterial({ color: auraDe(i < 2 ? "jvbsbr" : "rvmm255").halo, transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false });
+        materiaisFantasma.current[i] = mat;
+        f.traverse((o) => {
+          if ((o as Mesh).isMesh) (o as Mesh).material = mat;
+        });
+      });
       if (parts.current) PARTICULAS.forEach((p, i) => parts.current!.setColorAt(i, new Color(p.cor)));
       if (parts.current?.instanceColor) parts.current.instanceColor.needsUpdate = true;
       setProntos(true);
@@ -224,6 +244,23 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       c.updateProjectionMatrix();
     }
 
+    // Imagens residuais: cada cópia repete a pose, a posição e o giro de alguns milissegundos atrás.
+    fantasmas.forEach((_, i) => {
+      const g = gruposFantasma.current[i];
+      const mat = materiaisFantasma.current[i];
+      if (!g || !mat) return;
+      const joao = i < 2;
+      const c = i % 2;
+      const tt = t - ATRASOS_RESIDUAIS[c];
+      const op = nv === "alto" ? OPACIDADES_RESIDUAIS[c] * residual(t, joao ? "joao" : "ricardo") : 0;
+      g.visible = op > 0.003;
+      mat.opacity = op;
+      if (!g.visible) return;
+      g.position.set(joao ? joaoX(tt) : ricardoX(tt), combatenteY(tt), 0);
+      g.rotation.y = joao ? combatenteGiro(tt) : -combatenteGiro(tt);
+      adaptadoresFantasma.current[i]?.aplicar(joao ? poseJoao(tt) : poseRicardo(tt));
+    });
+
     // Auras (sprites aditivos atrás de cada combatente).
     const posAura: [number, number][] = [[xj, yc], [xr, yc]];
     auras.current.forEach((s, i) => {
@@ -240,6 +277,14 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
       nucleo.current.position.set(0, yc + PUNHOS_DY, 6);
       nucleo.current.scale.setScalar(2 + 8 * k);
       (nucleo.current.material as SpriteMaterial).opacity = 0.85 * k;
+    }
+    // Realce pequeno do bloqueio (golpe 2, 2,15 s): ≤ 4% da largura, junto ao braço do JvbsBR.
+    const kb = realceDoBloqueio(t);
+    if (realce2.current) {
+      realce2.current.visible = kb > 0;
+      realce2.current.position.set(xj + 9, yc + PUNHOS_DY + 2, 6);
+      realce2.current.scale.setScalar(1.5 + 3 * kb);
+      (realce2.current.material as SpriteMaterial).opacity = 0.7 * kb;
     }
     aneis.current.forEach((m, i) => {
       if (!m) return;
@@ -387,6 +432,16 @@ export default function CenaBatalha({ aoPronto, visivel }: { aoPronto: () => voi
 
       <sprite ref={haloLuan} scale={[36, 56, 1]} visible={false}>
         <spriteMaterial map={brilho} color={auraDe("luan").base} transparent opacity={0.24} depthWrite={false} blending={AdditiveBlending} />
+      </sprite>
+
+      {fantasmas.map((f, i) => (
+        <group key={`f${i}`} ref={(g) => void (gruposFantasma.current[i] = g)} visible={false}>
+          <primitive object={f} />
+        </group>
+      ))}
+
+      <sprite ref={realce2} visible={false}>
+        <spriteMaterial map={brilho} color={CORES.ciano} transparent opacity={0.7} depthWrite={false} blending={AdditiveBlending} />
       </sprite>
 
       <sprite ref={nucleo} position={[0, 7, 5]} visible={false}>
