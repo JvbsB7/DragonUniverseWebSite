@@ -71,7 +71,7 @@ export function ColecaoEsferas() {
   };
 
   return (
-    <section id="colecao-esferas" aria-labelledby="titulo-esferas" className="bg-surface py-12 md:py-16">
+    <section id="colecao-esferas" aria-labelledby="titulo-esferas" className="du-adiada [--ih-m:304px] [--ih-t:246px] [--ih-d:246px] bg-surface py-12 md:py-16">
       <div className="du-container grid gap-4" ref={painel}>
         <h2 id="titulo-esferas" tabIndex={-1} className="text-2xl">
           Esferas de energia

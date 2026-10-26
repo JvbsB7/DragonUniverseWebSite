@@ -513,3 +513,21 @@ dialog.lightbox[open] {
 .balao[data-baixo] { margin-top: 0; margin-bottom: 10px; }
 .balao[data-baixo]::before { top: auto; bottom: -8px; }
 .balao[data-baixo]::after { top: auto; bottom: -5px; }
+
+/* Seções abaixo da dobra da Home: o navegador só calcula estilo, layout e pintura quando elas chegam perto da tela (menos
+   trabalho no carregamento do celular, sem mudar o visual). `auto` no tamanho intrínseco: o valor é só a estimativa da
+   primeira vez; depois vale a altura real. As variáveis trazem a altura medida em celular, tablet e desktop. */
+.du-adiada {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto var(--ih-m, 900px);
+}
+@media (min-width: 48rem) {
+  .du-adiada {
+    contain-intrinsic-block-size: auto var(--ih-t, var(--ih-m, 900px));
+  }
+}
+@media (min-width: 68.75rem) {
+  .du-adiada {
+    contain-intrinsic-block-size: auto var(--ih-d, var(--ih-t, var(--ih-m, 900px)));
+  }
+}

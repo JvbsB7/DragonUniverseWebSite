@@ -104,7 +104,7 @@ export default function HomePage() {
 
       <BatalhaSecao />
 
-      <section aria-labelledby="o-que-e" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="o-que-e" className="du-adiada [--ih-m:1122px] [--ih-t:740px] [--ih-d:618px] bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="o-que-e">O que é o Dragon Universe</SectionHeading>
           <div className="grid items-start gap-8 nav:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] nav:gap-12">
@@ -134,7 +134,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="racas" aria-labelledby="titulo-racas" className="py-16 md:py-20 nav:py-24">
+      <section id="racas" aria-labelledby="titulo-racas" className="du-adiada [--ih-m:5972px] [--ih-t:3540px] [--ih-d:2638px] py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="titulo-racas" lead="Cada raça tem bônus e transformações próprios. Veja as que já estão no jogo e as que a equipe ainda está construindo.">
             Raças
@@ -167,7 +167,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="transformacoes" aria-labelledby="titulo-transformacoes" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section id="transformacoes" aria-labelledby="titulo-transformacoes" className="du-adiada [--ih-m:1522px] [--ih-t:990px] [--ih-d:1018px] bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="titulo-transformacoes" lead="Do Super Saiyajin ao Ultra Ego: veja as formas que já estão no jogo e as que a equipe ainda planeja.">
             Transformações
@@ -180,7 +180,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="universo" aria-labelledby="titulo-universo" className="py-16 md:py-20 nav:py-24">
+      <section id="universo" aria-labelledby="titulo-universo" className="du-adiada [--ih-m:1352px] [--ih-t:990px] [--ih-d:698px] py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="titulo-universo" lead="Planetas e dimensões do add-on. Escolha um destino para ver o que existe hoje e o que ainda está nos planos.">
             Explore o Universo
@@ -200,7 +200,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="desenvolvimento-teaser" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="desenvolvimento-teaser" className="du-adiada [--ih-m:3942px] [--ih-t:2460px] [--ih-d:2378px] bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="desenvolvimento-teaser" lead="O que a equipe construiu, o que está construindo e o que vem pela frente. Sem datas, sem percentuais e sem promessa de entrega.">
             Em desenvolvimento e planejado
@@ -242,7 +242,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="equipe-teaser" className="py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="equipe-teaser" className="du-adiada [--ih-m:1272px] [--ih-t:1090px] [--ih-d:958px] py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <SectionHeading id="equipe-teaser" lead="Três fãs, um add-on. Conheça João, Ricardo e Luan.">
             Quem faz o Dragon Universe
@@ -255,14 +255,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="comunidade" className="bg-surface py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="comunidade" className="du-adiada [--ih-m:922px] [--ih-t:540px] [--ih-d:388px] bg-surface py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <Community />
           <EsferaNicho id="comunidade" />
         </div>
       </section>
 
-      <section aria-labelledby="apoio-chamada" className="py-16 md:py-20 nav:py-24">
+      <section aria-labelledby="apoio-chamada" className="du-adiada [--ih-m:232px] [--ih-t:197px] [--ih-d:138px] py-16 md:py-20 nav:py-24">
         <div className="du-container" data-reveal>
           <div className="grid gap-4 rounded-xl border border-edge bg-surface p-6 md:p-8 nav:grid-cols-[minmax(0,1fr)_auto] nav:items-center">
             <div className="grid gap-2">
